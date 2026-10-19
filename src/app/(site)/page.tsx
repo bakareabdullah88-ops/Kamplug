@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { BuddyAvatar } from "@/components/app/buddy";
 import { CategoryStrip } from "@/components/landing/category-strip";
 import { FaqPanel } from "@/components/landing/faq-panel";
-import { Clouds3D, GateScene } from "@/components/landing/gate-scene";
+import { Clouds3D, GateScene, RoadStrip } from "@/components/landing/gate-scene";
 import { SpotPicker } from "@/components/landing/spot-picker";
 import {
   Burst,
@@ -143,7 +143,7 @@ export default function LandingPage() {
       <LandingNav />
       <Page>
         {/* Hero: the UNILAG gate on a clear morning, the whole width of the page */}
-        <section className="relative overflow-hidden bg-[#edf1ff] pt-28 md:pt-36">
+        <section className="relative overflow-hidden bg-[#f4f5f8] pt-28 md:pt-36">
           <Clouds3D />
           <div className="relative mx-auto max-w-4xl px-5 text-center">
             <CampusBadge />
@@ -156,7 +156,8 @@ export default function LandingPage() {
               <SpotPicker />
             </div>
           </div>
-          <GateScene className="relative mt-6 h-[300px] w-full sm:h-[340px] md:mt-2 md:h-[420px] xl:h-[460px]" />
+          <GateScene className="relative mt-6 h-[260px] w-full sm:h-[340px] md:mt-2 md:h-[420px] xl:h-[460px]" />
+          <RoadStrip />
         </section>
 
         {/* Categories */}

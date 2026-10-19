@@ -4,8 +4,10 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Landing scenery: UNILAG landmarks and clouds. Shapes are flat 2D with lit
- * tops and shaded sides, so they read as 3D.
+ * The hero scene: the University of Lagos main gate with the Senate tower behind
+ * it, palm trees, the lagoon and traffic on the campus road. It's flat 2D drawn
+ * with a lit top, a front and a shaded side, so it reads as 3D. Layers sit at
+ * different depths: they drop in from the top on load and drift with the pointer.
  */
 
 const NAVY = "#1b1f3b";
@@ -286,397 +288,208 @@ export function Clouds3D({ inApp = false }: { inApp?: boolean }) {
   );
 }
 
-/* ------------------------------ Hero scene ------------------------------ */
-
-/*
- * Flat colour, one light: lit fronts, ink shaded sides, no gradients. Everything
- * stands on one ground line at y=334 and mirrors around the gate at x=720.
- */
-const GROUND = 334;
-const GRASS = "#1f6f55";
-const CREAM = "#fff3d6";
-const COBALT = "#3a5bff";
-const CORAL = "#ff6a4d";
-const SUN = "#ffd84d";
-
-/** A round, lumpy tree like a cut-out, with blossom on some. */
-function Tree({
-  x,
-  s = 1,
-  tone,
-  bloom,
-  delay = 0,
-}: {
-  x: number;
-  s?: number;
-  tone: string;
-  bloom?: string;
-  delay?: number;
-}) {
-  const lumps: [number, number, number][] = [
-    [0, -74, 42],
-    [-38, -54, 32],
-    [38, -52, 34],
-    [-16, -104, 32],
-    [22, -100, 30],
-  ];
-  return (
-    <g transform={`translate(${x} ${GROUND + 24}) scale(${s})`}>
-      <path d="M-5 0 V-50 M-5 -30 l-12 -12 M-5 -36 l14 -14" stroke="#5a3a22" strokeWidth="8" />
-      <g className="lp-sway" style={{ animationDelay: `${delay}s`, animationDuration: "5s" }}>
-        {lumps.map(([cx, cy, r], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} fill={tone} />
-        ))}
-        <circle cx="-18" cy="-98" r="14" fill="#ffffff" opacity="0.18" />
-        {bloom &&
-          [
-            [-30, -62],
-            [8, -112],
-            [30, -70],
-            [-6, -82],
-            [-24, -100],
-          ].map(([bx, by], i) => (
-            <circle
-              key={i}
-              className="lp-twinkle"
-              style={{ ["--lp-delay" as string]: `${i * -0.5}s` } as React.CSSProperties}
-              cx={bx}
-              cy={by}
-              r="5"
-              fill={bloom}
-            />
-          ))}
-      </g>
-    </g>
-  );
-}
-
-/** The steel canopy left of the gate: a dark truss sloping down and away from it. */
-function Canopy() {
-  // Top chord from the gate's shoulder down to its far end; the bottom chord runs 20 below.
-  const [x0, y0, x1, y1] = [596, 98, 380, 146];
-  const zig = Array.from({ length: 13 }, (_, i) => {
-    const t = i / 12;
-    const x = x0 + (x1 - x0) * t;
-    const y = y0 + (y1 - y0) * t + (i % 2 ? 20 : 0);
-    return `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`;
-  }).join(" ");
-  return (
-    <g>
-      <path
-        d={`M430 ${y0 + 56} V${GROUND} M530 ${y0 + 34} V${GROUND}`}
-        stroke={NAVY}
-        strokeWidth="6"
-      />
-      <path d={`M${x0} ${y0} L${x1} ${y1} l0 -7 L${x0} ${y0 - 7} Z`} fill="#c9d1ec" />
-      <path
-        d={`M${x0} ${y0} L${x1} ${y1} M${x0} ${y0 + 20} L${x1} ${y1 + 20} ${zig}`}
-        stroke="#2e3352"
-        strokeWidth="3.5"
-        fill="none"
-        strokeLinejoin="round"
-      />
-    </g>
-  );
-}
-
-/** A maroon guard booth beside the gate, flat roof with a lip. */
-function Booth() {
-  return (
-    <g>
-      <rect x="552" y="268" width="130" height={GROUND - 268} fill="#8a3a2a" />
-      <rect x="546" y="262" width="142" height="7" fill="#5e2219" />
-      <rect x="562" y="282" width="22" height="16" fill="#9fd8ff" />
-    </g>
-  );
-}
-
-const trees: { x: number; s: number; tone: string; bloom?: string; d: number }[] = [
-  { x: 120, s: 1.15, tone: "#2fcf86", d: 0.45 },
-  { x: 300, s: 1, tone: "#1fae6e", bloom: CORAL, d: 0.55 },
-  { x: 470, s: 0.95, tone: "#5be3a4", d: 0.65 },
-  { x: 970, s: 0.95, tone: "#5be3a4", d: 0.65 },
-  { x: 1140, s: 1, tone: "#1fae6e", bloom: SUN, d: 0.55 },
-  { x: 1320, s: 1.15, tone: "#2fcf86", d: 0.45 },
-];
-
-/**
- * The hero scene, drawn from UNILAG itself in flat colour: Senate House on its
- * round drum on the left, the Main Library's overhanging roof on the right, and
- * the main gate in the middle with its seal and steel canopies, and the campus
- * road along the front. Third Mainland Bridge crosses the lagoon behind, and a row of
- * trees stands in front. Layers drop in on load and drift with the pointer.
- */
 export function GateScene({ className }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useParallax(ref);
 
-  // Columns round the Senate drum, closer together towards its edges so it reads round.
-  const drum = Array.from({ length: 13 }, (_, i) => {
-    const a = ((i - 6) / 6) * 1.4;
-    return { x: 190 + 150 * Math.sin(a), w: 2 + 6 * Math.cos(a) };
-  });
-
   return (
     <div ref={ref} className={className} aria-hidden>
       <svg
-        viewBox="0 0 1440 460"
+        viewBox="0 120 1440 400"
         preserveAspectRatio="xMidYMax slice"
         className="block h-full w-full overflow-visible"
       >
-        {/* Far: the lagoon, Third Mainland Bridge with traffic, a boat, birds */}
+        {/* Far: Senate tower, hostels, the lagoon with a boat */}
         <g data-depth="far" className="lp-layer">
-          <rect x="-100" y="280" width="1640" height="60" fill="#9fd8ff" />
-          {[
-            [380, 300],
-            [1000, 310],
-            [880, 296],
-          ].map(([wx, wy], i) => (
-            <path
-              key={i}
-              className="lp-bob"
-              style={{ animationDelay: `${i * -1.2}s` }}
-              d={`M${wx} ${wy} h28`}
-              stroke="#ffffff"
-              strokeWidth="3"
-              strokeLinecap="round"
+          <path d="M1180 470 H1440 V500 H1180 Z" fill="#9fd8ff" />
+          <g className="lp-bob" style={{ animationDuration: "4s" }}>
+            <path d="M1300 474 h54 l-10 12 h-36 Z" fill="#ff6a4d" />
+            <path d="M1326 474 V448 l18 22 Z" fill="#ffffff" />
+          </g>
+          <g className="lp-drop" style={{ animationDelay: "0.05s" }}>
+            <Block
+              x={120}
+              y={150}
+              w={120}
+              h={350}
+              d={30}
+              front="#c4d3ff"
+              side="#8fa6f0"
+              top="#e6ecff"
             />
-          ))}
-          <g className="lp-bob" style={{ animationDuration: "4.4s" }}>
-            <path d="M350 314 h46 l-9 10 h-28 Z" fill={CORAL} />
-            <path d="M372 313 V284 l18 27 Z" fill="#ffffff" />
+            {Array.from({ length: 9 }, (_, r) =>
+              [0, 1, 2].map((c) => (
+                <rect
+                  key={`${r}-${c}`}
+                  x={134 + c * 36}
+                  y={170 + r * 34}
+                  width="22"
+                  height="20"
+                  rx="2"
+                  fill="#3a5bff"
+                  opacity={(r + c) % 4 === 0 ? 0.9 : 0.35}
+                />
+              )),
+            )}
           </g>
-          {Array.from({ length: 24 }, (_, i) => (
-            <rect key={i} x={-60 + i * 66} y="270" width="12" height="22" fill={NAVY} />
-          ))}
-          <rect x="-100" y="262" width="1640" height="9" fill={NAVY} />
-          <rect x="-100" y="258" width="1640" height="5" fill="#3ddc97" />
-          <g transform="translate(0 246)">
-            <g className="lp-drive">
-              <rect width="38" height="13" rx="3" fill={SUN} />
-              <rect x="6" y="2" width="12" height="5" fill="#9fd8ff" />
-            </g>
-          </g>
-          <g transform="translate(0 244)">
-            <g className="lp-drive-slow">
-              <rect width="58" height="15" rx="3" fill={CORAL} />
-              {[0, 1, 2].map((i) => (
-                <rect key={i} x={6 + i * 17} y="3" width="11" height="5" fill="#9fd8ff" />
-              ))}
-            </g>
-          </g>
-          <g className="lp-fly">
-            {[
-              [0, 120, 1],
-              [34, 106, 0.8],
-              [60, 126, 0.7],
-            ].map(([bx, by, bs], i) => (
-              <path
-                key={i}
-                d={`M${bx} ${by} q${8 * bs!} ${-8 * bs!} ${16 * bs!} 0 q${8 * bs!} ${-8 * bs!} ${16 * bs!} 0`}
-                stroke={NAVY}
-                strokeWidth="2.5"
-                fill="none"
-                strokeLinecap="round"
-              />
-            ))}
+          <g className="lp-drop" style={{ animationDelay: "0.12s" }}>
+            <Block
+              x={1190}
+              y={300}
+              w={210}
+              h={170}
+              d={26}
+              front="#ffd9cf"
+              side="#f0a896"
+              top="#fff0eb"
+            />
+            {[0, 1, 2].map((r) =>
+              [0, 1, 2, 3, 4].map((c) => (
+                <rect
+                  key={`${r}-${c}`}
+                  x={1204 + c * 40}
+                  y={316 + r * 46}
+                  width="24"
+                  height="26"
+                  rx="3"
+                  fill="#ff6a4d"
+                  opacity={(r * 5 + c) % 3 === 0 ? 0.85 : 0.35}
+                />
+              )),
+            )}
           </g>
         </g>
 
-        {/* Mid: the ground, the road, and the three landmarks */}
+        {/* Mid: library and the main gate */}
         <g data-depth="mid" className="lp-layer">
-          <rect x="-100" y={GROUND - 4} width="1640" height="200" fill={GRASS} />
-          <rect x="-100" y={GROUND - 4} width="1640" height="10" fill="#2a8a68" />
-          {/* The campus road along the front, with a keke and a danfo */}
-          <rect x="-100" y="396" width="1640" height="70" fill="#2e3352" />
-          <rect x="-100" y="394" width="1640" height="5" fill="#9ff0cc" />
-          <path
-            className="lp-dash"
-            d="M-100 430 H1540"
-            stroke="#ffffff"
-            strokeWidth="4"
-            strokeDasharray="14 22"
+          <ellipse
+            className="lp-shadow"
+            cx="730"
+            cy="500"
+            rx="320"
+            ry="14"
+            fill="#1b1f3b"
+            opacity="0.1"
           />
-          <g transform="translate(0 404)">
-            <g className="lp-drive">
-              <rect width="110" height="34" rx="12" fill={SUN} />
-              <rect width="110" height="10" rx="5" fill="#ffe680" />
-              <rect x="14" y="6" width="40" height="14" rx="3" fill="#9fd8ff" />
-              <rect x="66" y="6" width="22" height="14" rx="3" fill="#9fd8ff" />
-              <circle className="lp-wheel" cx="22" cy="38" r="10" fill="#111" />
-              <circle className="lp-wheel" cx="92" cy="38" r="10" fill="#111" />
-            </g>
+          <g className="lp-drop" style={{ animationDelay: "0.18s" }}>
+            <Block
+              x={270}
+              y={350}
+              w={170}
+              h={150}
+              d={24}
+              front="#d6f7e8"
+              side="#8fd9b6"
+              top="#effcf6"
+            />
+            <path d="M262 350 L355 318 L448 350 Z" fill="#3ddc97" />
+            {[0, 1].map((r) =>
+              [0, 1, 2, 3].map((c) => (
+                <rect
+                  key={`${r}-${c}`}
+                  x={284 + c * 38}
+                  y={386 + r * 50}
+                  width="26"
+                  height="34"
+                  rx="13"
+                  fill="#1b1f3b"
+                  opacity="0.75"
+                />
+              )),
+            )}
           </g>
-          <g transform="translate(0 398)">
-            <g className="lp-drive-slow">
-              <rect width="170" height="44" rx="10" fill={CORAL} />
-              <rect width="170" height="10" rx="5" fill="#ff9a84" />
-              {[0, 1, 2, 3].map((i) => (
-                <rect key={i} x={12 + i * 36} y="10" width="28" height="16" rx="3" fill="#9fd8ff" />
-              ))}
-              <circle className="lp-wheel" cx="30" cy="48" r="11" fill="#111" />
-              <circle className="lp-wheel" cx="138" cy="48" r="11" fill="#111" />
-            </g>
-          </g>
-
-          {/* Senate House: the grid tower on its round drum. Phones pull it in beside the gate. */}
-          <g className="max-sm:[transform:translate(378px,150px)_scale(0.55)]">
-            <g className="lp-drop" style={{ animationDelay: "0.05s" }}>
-              <path d="M150 56 V20 M176 56 V28" stroke={NAVY} strokeWidth="4" />
-              <path d="M130 58 h90 l14 -9 v-20 h-90 l-14 9 Z" fill={SUN} />
-              <path d="M220 58 l14 -9 v-20 l-14 9 Z" fill="#e0b52a" />
-              <path d="M70 70 l28 -18 H330 l-28 18 Z" fill={CORAL} />
-              <path d={`M302 70 l28 -18 V${GROUND - 18} l-28 12 Z`} fill={NAVY} />
-              <rect x="70" y="70" width="232" height={GROUND - 76} fill={CREAM} />
-              {Array.from({ length: 10 }, (_, r) => (
-                <g key={r}>
-                  <rect x="70" y={86 + r * 23} width="232" height="11" fill={NAVY} />
-                  {r % 3 === 1 && (
-                    <rect
-                      className="lp-glow"
-                      style={{ ["--lp-delay" as string]: `${-r * 0.8}s` } as React.CSSProperties}
-                      x={110 + ((r * 53) % 150)}
-                      y={86 + r * 23}
-                      width="34"
-                      height="11"
-                      fill={SUN}
-                    />
-                  )}
+          <g className="lp-drop" style={{ animationDelay: "0.28s" }}>
+            <g transform="translate(170 -66)">
+              <path d="M820 300 l34 -22 v270 l-34 18 Z" fill="#c9ced9" />
+              <path d="M300 300 l34 -22 h520 l-34 22 Z" fill="#ffffff" />
+              <path
+                d="M300 300 H820 V566 H790 V486 A45 45 0 0 0 700 486 V566 H670 V440 A110 110 0 0 0 450 440 V566 H420 V486 A45 45 0 0 0 330 486 V566 H300 Z"
+                fill="#f2efe8"
+              />
+              <path d="M300 300 H820 V372 H300 Z" fill="#ffffff" />
+              <path d="M300 372 H820" stroke="#d8d2c4" strokeWidth="6" />
+              <path
+                d="M450 440 A110 110 0 0 1 670 440 l-16 6 A94 94 0 0 0 466 446 Z"
+                fill="#d8d2c4"
+              />
+              <path
+                d="M330 486 A45 45 0 0 1 420 486 l-10 4 A35 35 0 0 0 340 490 Z"
+                fill="#d8d2c4"
+              />
+              <path
+                d="M700 486 A45 45 0 0 1 790 486 l-10 4 A35 35 0 0 0 710 490 Z"
+                fill="#d8d2c4"
+              />
+              <rect x="534" y="244" width="52" height="40" rx="6" fill="#3a5bff" />
+              <path
+                d="M560 252 l5 10 l11 2 l-8 8 l2 11 l-10 -5 l-10 5 l2 -11 l-8 -8 l11 -2 Z"
+                fill="#ffd23f"
+              />
+              {[318, 802].map((fx, i) => (
+                <g key={fx}>
+                  <path d={`M${fx} 300 V236`} stroke={NAVY} strokeWidth="4" strokeLinecap="round" />
+                  <g className="lp-wave" style={{ animationDelay: `${i * -0.5}s` }}>
+                    <path d={`M${fx + 2} 238 h40 v24 h-40 Z`} fill="#3a5bff" />
+                    <path d={`M${fx + 15} 238 h14 v24 h-14 Z`} fill="#ffffff" />
+                  </g>
                 </g>
               ))}
-              {[108, 146, 186, 226, 264].map((mx) => (
-                <rect key={mx} x={mx} y="76" width="5" height="236" fill={CREAM} />
-              ))}
-              <path d="M40 304 A150 20 0 0 0 340 304 V348 A150 20 0 0 1 40 348 Z" fill={COBALT} />
-              {drum.map((d, i) => (
-                <rect
-                  key={i}
-                  x={(d.x - d.w / 2).toFixed(1)}
-                  y="318"
-                  width={d.w.toFixed(1)}
-                  height="38"
-                  fill={CREAM}
-                />
-              ))}
-              <ellipse cx="190" cy="304" rx="150" ry="20" fill="#7d93ff" />
-            </g>
-          </g>
-
-          {/* Steel canopies either side of the gate (no room for them on phones) */}
-          <g className="lp-drop max-sm:hidden" style={{ animationDelay: "0.15s" }}>
-            <Canopy />
-            <g transform="matrix(-1 0 0 1 1440 0)">
-              <Canopy />
-            </g>
-          </g>
-
-          {/*
-           * The main gate: one cream slab cut into two prongs that slope down into a
-           * notch, the seal hung in the notch on a bar, the sign band under it,
-           * maroon wedges at the lower corners and a guard booth each side.
-           */}
-          <g className="lp-drop" style={{ animationDelay: "0.25s" }}>
-            <Booth />
-            <g transform="matrix(-1 0 0 1 1440 0)">
-              <Booth />
-            </g>
-            <path d={`M842.5 33 l12 -6 V${GROUND - 6} l-12 6 Z`} fill="#d9c7a6" />
-            <path
-              d={`M597.5 ${GROUND} V33 L678 92.5 V187 H762 V92.5 L842.5 33 V${GROUND} Z`}
-              fill={CREAM}
-            />
-            <path d="M597.5 33 L678 92.5 V99 L597.5 40 Z" fill="#ffffff" />
-            <path d="M762 92.5 L842.5 33 V40 L762 99 Z" fill="#ead9b8" />
-            <rect x="678" y="187" width="84" height="6" fill="#e2cfa8" />
-            <path d={`M597.5 194 L678 267.5 V${GROUND} H597.5 Z`} fill="#9c3d2e" />
-            <path d={`M842.5 194 L762 267.5 V${GROUND} H842.5 Z`} fill="#7e2f23" />
-            <rect x="640" y="198" width="160" height="15" fill="#e8b13a" />
-            <rect
-              x="640"
-              y="198"
-              width="160"
-              height="15"
-              fill="none"
-              stroke="#b8862a"
-              strokeWidth="2"
-            />
-            <rect x="678" y="150" width="84" height="6" fill={NAVY} />
-            <circle cx="720" cy="153" r="34" fill="#9c3d2e" />
-            <circle
-              className="lp-spin-slow"
-              cx="720"
-              cy="153"
-              r="29"
-              fill="none"
-              stroke={SUN}
-              strokeWidth="4"
-              strokeDasharray="7 6"
-            />
-            <circle cx="720" cy="153" r="22" fill={COBALT} />
-            <path d="M698 156 a22 22 0 0 0 44 0 Z" fill="#3ddc97" />
-            <path
-              d="M720 136 l4 9 l10 1.5 l-7 7 l1.5 10 l-8.5 -5 l-8.5 5 l1.5 -10 l-7 -7 l10 -1.5 Z"
-              fill={SUN}
-            />
-            {/* Shrubs along the foot of the gate */}
-            {[628, 660, 692, 748, 780, 812].map((bx, i) => (
-              <circle
-                key={bx}
-                cx={bx}
-                cy={GROUND + 4}
-                r="15"
-                fill={i % 3 === 1 ? "#2fcf86" : "#b5465a"}
-              />
-            ))}
-          </g>
-
-          {/* Main Library: fins over dark glass under an overhanging inverted pyramid */}
-          <g className="max-sm:[transform:translate(270px,150px)_scale(0.55)]">
-            <g className="lp-drop" style={{ animationDelay: "0.35s" }}>
-              <path d={`M1360 170 l26 -14 V${GROUND - 14} l-26 14 Z`} fill="#12152b" />
-              <rect x="1150" y="170" width="210" height={GROUND - 170} fill={NAVY} />
-              {Array.from({ length: 6 }, (_, i) => (
-                <rect
-                  key={`w${i}`}
-                  className="lp-glow"
-                  style={{ ["--lp-delay" as string]: `${i * -1.1}s` } as React.CSSProperties}
-                  x={1166 + i * 33}
-                  y={196 + (i % 3) * 34}
-                  width="10"
-                  height="24"
-                  fill={SUN}
-                />
-              ))}
-              {Array.from({ length: 11 }, (_, i) => (
-                <rect
-                  key={i}
-                  x={1153 + i * 19.6}
-                  y="170"
-                  width="8"
-                  height={GROUND - 194}
-                  fill={CREAM}
-                />
-              ))}
-              <rect x="1150" y={GROUND - 24} width="210" height="24" fill={CORAL} />
-              <rect x="1150" y={GROUND - 24} width="210" height="5" fill="#ff9fb8" />
-              <path d="M1100 112 L1130 96 H1430 L1400 112 Z" fill={SUN} />
-              <path d="M1100 112 H1400 L1360 172 H1150 Z" fill="#e9d3a6" />
-              <path d="M1112 128 H1388 M1128 150 H1374" stroke="#d2b682" strokeWidth="4" />
-              <path d="M1400 112 L1430 96 L1386 158 L1360 172 Z" fill="#b8955f" />
             </g>
           </g>
         </g>
 
-        {/* Near: a row of trees, mirrored around the gate */}
+        {/* Near: palms */}
         <g data-depth="near" className="lp-layer">
-          {trees.map((t, i) => (
-            <g key={i} className="lp-grow" style={{ animationDelay: `${t.d}s` }}>
-              <Tree x={t.x} s={t.s} tone={t.tone} bloom={t.bloom} delay={i * -0.7} />
+          {[
+            [40, 1.2, 0.4, 0],
+            [470, 1.15, 0.5, -0.6],
+            [1050, 1.2, 0.6, -1.2],
+            [1420, 1.1, 0.7, -0.3],
+          ].map(([x, s, d, sd], i) => (
+            <g key={i} className="lp-grow" style={{ animationDelay: `${d}s` }}>
+              <Palm x={x!} y={500} s={s!} delay={sd!} />
             </g>
           ))}
         </g>
       </svg>
     </div>
+  );
+}
+
+/** The campus road along the bottom of the hero, with a keke and a danfo driving past. */
+export function RoadStrip() {
+  return (
+    <svg
+      viewBox="0 0 1440 90"
+      preserveAspectRatio="xMidYMax slice"
+      className="block h-[70px] w-full md:h-[90px]"
+      aria-hidden
+    >
+      <rect x="0" y="0" width="1440" height="16" fill="#3ddc97" />
+      <rect x="0" y="16" width="1440" height="74" fill="#2a2d3e" />
+      <path d="M0 54 H1440" stroke="#f6f6f4" strokeWidth="4" strokeDasharray="34 26" />
+      <g transform="translate(0 20)">
+        <g className="lp-drive">
+          <rect x="0" y="0" width="110" height="34" rx="12" fill="#ffd23f" />
+          <rect x="0" y="0" width="110" height="10" rx="5" fill="#ffe680" />
+          <rect x="14" y="6" width="40" height="14" rx="3" fill="#9fd8ff" />
+          <rect x="66" y="6" width="22" height="14" rx="3" fill="#9fd8ff" />
+          <circle className="lp-wheel" cx="22" cy="38" r="10" fill="#111" />
+          <circle className="lp-wheel" cx="92" cy="38" r="10" fill="#111" />
+        </g>
+      </g>
+      <g transform="translate(0 12)">
+        <g className="lp-drive-slow">
+          <rect x="0" y="0" width="170" height="44" rx="10" fill="#ff6a4d" />
+          <rect x="0" y="0" width="170" height="10" rx="5" fill="#ff9a84" />
+          {[0, 1, 2, 3].map((i) => (
+            <rect key={i} x={12 + i * 36} y="10" width="28" height="16" rx="3" fill="#9fd8ff" />
+          ))}
+          <circle className="lp-wheel" cx="30" cy="48" r="11" fill="#111" />
+          <circle className="lp-wheel" cx="138" cy="48" r="11" fill="#111" />
+        </g>
+      </g>
+    </svg>
   );
 }
