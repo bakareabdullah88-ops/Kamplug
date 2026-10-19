@@ -97,7 +97,7 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
       <button
         type="button"
         onClick={() => setCommandOpen(true)}
-        className="flex h-14 min-w-0 flex-1 items-center gap-3 rounded-full bg-surface px-5 text-left text-[15px] text-muted shadow-[0_4px_0_var(--line-strong)] ring-1 ring-line transition-transform hover:translate-y-px"
+        className="flex h-14 min-w-0 flex-1 items-center gap-3 rounded-full bg-surface px-5 text-left text-[15px] text-muted ring-1 ring-line transition-colors hover:ring-line-strong"
       >
         <Search className="size-5 shrink-0 text-accent" aria-hidden />
         <span className="truncate">Search food, thrift, shops…</span>
@@ -107,7 +107,7 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
         onClick={onFilters}
         aria-label={active ? `Sort and filter (${active} on)` : "Sort and filter"}
         aria-haspopup="dialog"
-        className="relative grid size-14 shrink-0 place-items-center rounded-full bg-accent text-on-accent shadow-[0_4px_0_var(--accent-edge)] transition-transform hover:translate-y-px"
+        className="relative grid size-14 shrink-0 place-items-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-hover"
       >
         <SlidersHorizontal className="size-5" aria-hidden />
         {active > 0 && (
@@ -140,7 +140,7 @@ function Hero({
       <Clouds3D inApp />
       <Link
         href="/account"
-        className="absolute top-4 right-4 z-20 hidden h-10 items-center gap-2 rounded-full bg-surface px-4 text-[14px] font-semibold shadow-[0_3px_0_var(--line-strong)] ring-1 ring-line transition-transform hover:translate-y-px md:inline-flex"
+        className="absolute top-4 right-4 z-20 hidden h-10 items-center gap-2 rounded-full bg-surface px-4 text-[14px] font-semibold ring-1 ring-line transition-colors hover:bg-surface-2 md:inline-flex"
       >
         <Gauge className="size-4" aria-hidden /> Your dashboard
       </Link>

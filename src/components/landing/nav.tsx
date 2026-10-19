@@ -50,17 +50,12 @@ export function LandingNav() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const pill =
-    "rounded-full bg-white shadow-[0_6px_20px_-12px_rgba(27,31,59,0.35)] ring-1 ring-[#1b1f3b]/[0.06]";
   const cta =
-    "flex h-12 items-center gap-1.5 rounded-full bg-[#3a5bff] px-6 text-[15px] font-bold text-white shadow-[0_4px_0_#1f37b8] transition-[transform,box-shadow] hover:translate-y-[2px] hover:shadow-[0_2px_0_#1f37b8] active:translate-y-[4px] active:shadow-none md:h-14 md:text-[16px]";
+    "flex h-11 items-center gap-1.5 rounded-full bg-[#3a5bff] px-5 text-[15px] font-bold text-white transition-colors hover:bg-[#2a45d6]";
 
   return (
     <header
-      className={cn(
-        "pointer-events-none fixed inset-x-0 top-0 z-(--z-header) px-4 transition-[padding] duration-300 md:px-8",
-        scrolled ? "pt-3 pb-3" : "pt-4 md:pt-6",
-      )}
+      className={cn("pointer-events-none fixed inset-x-0 top-0 z-(--z-header) px-4 py-3 md:px-8")}
     >
       {/* Once you scroll, a frosted bar slides in behind the pills so page content
           passing underneath never fights with the logo and buttons. */}
@@ -86,22 +81,19 @@ export function LandingNav() {
         )}
       </AnimatePresence>
       <div className="relative mx-auto flex max-w-[1240px] items-center gap-3">
-        {/* The wordmark stays plain text; only the links and buttons are pills. */}
-        <div className="pointer-events-auto flex h-12 items-center md:h-14">
+        <div className="pointer-events-auto flex h-11 items-center">
           <LogoText />
         </div>
+        {/* A plain row of links next to the wordmark. */}
         <nav
           aria-label="Main"
-          className={cn(
-            "pointer-events-auto absolute left-1/2 hidden h-14 -translate-x-1/2 items-center gap-1 px-3 lg:flex",
-            pill,
-          )}
+          className="pointer-events-auto ml-8 hidden items-center gap-1 lg:flex"
         >
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="flex h-10 items-center rounded-full px-5 text-[16px] font-semibold text-[#1b1f3b] transition-colors hover:bg-[#1b1f3b]/[0.05] hover:text-[#3a5bff]"
+              className="flex h-10 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1b1f3b]/80 transition-colors hover:text-[#3a5bff]"
             >
               {l.label}
             </Link>
@@ -116,10 +108,7 @@ export function LandingNav() {
             <>
               <Link
                 href="/login"
-                className={cn(
-                  "hidden h-14 items-center px-6 text-[16px] font-semibold text-[#1b1f3b] transition-colors hover:text-[#3a5bff] sm:flex",
-                  pill,
-                )}
+                className="hidden h-11 items-center px-4 text-[15px] font-semibold text-[#1b1f3b] transition-colors hover:text-[#3a5bff] sm:flex"
               >
                 Log in
               </Link>
@@ -134,7 +123,7 @@ export function LandingNav() {
             aria-expanded={open}
             aria-controls="landing-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className={cn("grid size-12 place-items-center text-[#1b1f3b] lg:hidden", pill)}
+            className="grid size-11 place-items-center rounded-lg text-[#1b1f3b] hover:bg-[#1b1f3b]/[0.05] lg:hidden"
           >
             {open ? <X className="size-5" /> : <MenuIcon className="size-5" />}
           </button>
@@ -149,7 +138,7 @@ export function LandingNav() {
               exit={{ opacity: 0, y: -10, rotateX: -20 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               style={{ transformPerspective: 800, transformOrigin: "top" }}
-              className="pointer-events-auto absolute top-[calc(100%+10px)] right-0 left-0 rounded-[24px] bg-white p-3 shadow-xl lg:hidden"
+              className="pointer-events-auto absolute top-[calc(100%+12px)] right-0 left-0 rounded-2xl bg-white p-2 ring-1 ring-[#1b1f3b]/10 lg:hidden"
             >
               {links.map((l) => (
                 <Link

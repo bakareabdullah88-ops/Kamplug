@@ -94,7 +94,7 @@ export function SpotPicker() {
           if (picked) go(picked, street.trim());
           else if (current) choose(current);
         }}
-        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 shadow-[0_6px_0_rgba(27,31,59,0.12),0_18px_40px_-20px_rgba(27,31,59,0.35)] ring-1 ring-[#1b1f3b]/10 md:h-[68px]"
+        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1b1f3b]/10 md:h-[68px]"
       >
         <MapPin className="size-5 shrink-0 text-[#3a5bff]" aria-hidden />
         <label htmlFor="spot-q" className="sr-only">

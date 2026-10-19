@@ -192,7 +192,6 @@ export function CategoryStrip() {
         <TiltLink
           href="/explore"
           className="flex min-h-[200px] flex-col justify-between bg-[#1b1f3b] p-6 text-white md:p-8"
-          style={{ boxShadow: "0 10px 0 #000" }}
         >
           <div>
             <p className="text-[13px] font-extrabold tracking-[0.2em] text-[#ffd23f] uppercase">

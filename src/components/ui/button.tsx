@@ -18,13 +18,10 @@ const base =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 const variants: Record<ButtonVariant, string> = {
-  // Main call to action, with a solid edge under it like the landing page: it sinks when pressed.
-  primary:
-    "bg-accent text-on-accent shadow-[0_3px_0_var(--accent-edge)] hover:bg-accent-hover hover:translate-y-px hover:shadow-[0_2px_0_var(--accent-edge)] active:translate-y-[3px] active:shadow-none",
-  accent:
-    "bg-accent text-on-accent shadow-[0_3px_0_var(--accent-edge)] hover:bg-accent-hover hover:translate-y-px hover:shadow-[0_2px_0_var(--accent-edge)] active:translate-y-[3px] active:shadow-none",
-  secondary:
-    "bg-surface text-ink shadow-[inset_0_0_0_1px_var(--line-strong),0_3px_0_var(--line-strong)] hover:bg-surface-2 hover:translate-y-px hover:shadow-[inset_0_0_0_1px_var(--line-strong),0_2px_0_var(--line-strong)] active:translate-y-[3px] active:shadow-[inset_0_0_0_1px_var(--line-strong)]",
+  // Flat, like the landing page: colour does the work, no shadows.
+  primary: "bg-accent text-on-accent hover:bg-accent-hover",
+  accent: "bg-accent text-on-accent hover:bg-accent-hover",
+  secondary: "bg-surface text-ink ring-1 ring-inset ring-line-strong hover:bg-surface-2",
   ghost: "bg-transparent text-ink hover:bg-ink/[0.06] dark:hover:bg-ink/[0.08]",
   danger: "bg-danger text-white hover:brightness-110 dark:text-canvas",
   link: "bg-transparent px-0! h-auto! text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink",

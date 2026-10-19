@@ -55,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-dvh">
         <Providers>{children}</Providers>
-        <Analytics />
+        {/* The analytics script is served by Vercel, so elsewhere it would only 404. */}
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );

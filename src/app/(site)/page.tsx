@@ -26,6 +26,7 @@ import { cn } from "@/lib/cn";
 import { seedCampuses } from "@/services/mock/seed/campuses";
 import { focusCampusId } from "@/config/brand";
 import { CampusBadge } from "@/components/landing/campus-badge";
+import { WALKING_MINUTES } from "@/domain/distance";
 
 export const metadata: Metadata = {
   title: { absolute: `${brand.name} · Your campus plug` },
@@ -34,41 +35,49 @@ export const metadata: Metadata = {
 };
 
 const campuses = seedCampuses();
+const unilag = campuses.find((c) => c.id === focusCampusId);
+const halls = unilag?.zones.filter((z) => z.kind === "hostel").length ?? 0;
+const faculties = unilag?.zones.filter((z) => z.kind === "faculty").length ?? 0;
+const pickupSpots = unilag?.pickupPoints.length ?? 0;
 
 const steps = [
   {
     n: "1",
-    title: "Create your account",
-    body: "Use your email or Google, then pick your campus.",
+    title: "Pick your spot",
+    body: "Sign up with email or Google, then choose your hall or faculty at UNILAG.",
   },
   {
     n: "2",
-    title: "Shop or open a shop",
-    body: "Browse student shops near you, or set up your own.",
+    title: "Shop nearest first",
+    body: "See how far each shop is and how long it takes. Your hall and faculty come first.",
   },
   {
     n: "3",
-    title: "Order, deliver, repeat",
-    body: "Both sides see every step from placed to delivered.",
+    title: "Chat, pay, collect",
+    body: "Message the seller, then pay on delivery or at a pickup spot. Track every step.",
   },
 ];
 
 const faqs = [
   {
     q: "What is Kamplug?",
-    a: "Kamplug is a marketplace for Nigerian campuses. Students sell food, thrift, beauty, tech, books and more, and other students order from them for delivery to their hall or pickup.",
+    a: "Kamplug is a marketplace for UNILAG students. Students sell food, thrift, beauty, tech, books and more, and other students order from them for delivery to their hall or pickup on campus.",
   },
   {
     q: "Does it cost anything?",
     a: "No. Creating an account, shopping and opening a shop are all free.",
   },
   {
+    q: "How do I know which shop is closest?",
+    a: `Pick your hall or faculty and every shop shows how far it is and the walk time. Shops in your own faculty or hall come first, and the walking-distance filter keeps it to about ${WALKING_MINUTES} minutes on foot. Kamplug knows ${halls} halls and ${faculties} faculties so far.`,
+  },
+  {
     q: "How do I pay?",
-    a: "On delivery or at pickup, straight to the seller. Online payments are coming later.",
+    a: `On delivery or at pickup, straight to the seller. There are ${pickupSpots} pickup spots on campus, from the Main Gate stand to the Main Library steps. Online payments are coming later.`,
   },
   {
     q: "How do I open a shop?",
-    a: "Create an account, tap Open a shop and follow five short steps: name, handle, category, how you deliver, and your first product.",
+    a: "Create an account, tap Open a shop and follow five short steps: name, handle, category, where you deliver from, and your first product. It's free.",
   },
   {
     q: "Which campuses are on Kamplug?",
@@ -89,13 +98,13 @@ const INK = "#1b1f3b";
 const h2 =
   "text-[clamp(38px,5.6vw,68px)] leading-[0.98] font-extrabold tracking-[-0.055em] text-balance";
 
-/** Buttons with a solid "edge" underneath, so they look pressable. */
+/** Flat buttons: colour does the work, no shadows. */
 const btn = {
   cobalt:
-    "inline-flex h-14 items-center gap-2 rounded-xl bg-[#3a5bff] px-7 text-[16px] font-bold text-white shadow-[0_5px_0_#1f37b8] transition-[transform,box-shadow] hover:translate-y-[2px] hover:shadow-[0_3px_0_#1f37b8] active:translate-y-[5px] active:shadow-none",
-  ink: "inline-flex h-14 items-center gap-2 rounded-xl bg-[#1b1f3b] px-7 text-[16px] font-bold text-white shadow-[0_5px_0_#000] transition-[transform,box-shadow] hover:translate-y-[2px] hover:shadow-[0_3px_0_#000] active:translate-y-[5px] active:shadow-none",
+    "inline-flex h-14 items-center gap-2 rounded-xl bg-[#3a5bff] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#2a45d6]",
+  ink: "inline-flex h-14 items-center gap-2 rounded-xl bg-[#1b1f3b] px-7 text-[16px] font-bold text-white transition-colors hover:bg-black",
   white:
-    "inline-flex h-14 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-bold text-[#1b1f3b] shadow-[0_5px_0_rgba(27,31,59,0.25)] transition-[transform,box-shadow] hover:translate-y-[2px] hover:shadow-[0_3px_0_rgba(27,31,59,0.25)] active:translate-y-[5px] active:shadow-none",
+    "inline-flex h-14 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-bold text-[#1b1f3b] transition-colors hover:bg-[#eef1ff]",
 };
 
 /** "SEE MORE →" link under each feature card. */
@@ -139,8 +148,9 @@ export default function LandingPage() {
           <div className="relative mx-auto max-w-4xl px-5 text-center">
             <CampusBadge />
             <HeroHeadline />
-            <p className="mx-auto mt-5 max-w-lg text-[18px] leading-snug md:text-[20px]">
-              Your campus, one plug away. Food, thrift, beauty and more from students near you.
+            <p className="mx-auto mt-5 max-w-xl text-[18px] leading-snug md:text-[20px]">
+              Food, thrift, beauty and more from UNILAG students near you. See how far each shop is
+              and how soon it gets to you.
             </p>
             <div className="mt-8 flex justify-center">
               <SpotPicker />
@@ -163,7 +173,7 @@ export default function LandingPage() {
                 on campus
               </h2>
               <p className="max-w-sm text-[18px] leading-snug">
-                Whatever you need between lectures, someone in your school is selling it.
+                Whatever you need between lectures, someone in your hall or faculty is selling it.
               </p>
             </Reveal>
             <CategoryStrip />
@@ -183,8 +193,8 @@ export default function LandingPage() {
                 Open a shop for <span className="text-[#2a3fc4]">₦0</span>
               </h2>
               <p className="mt-5 max-w-md text-[18px] leading-snug md:text-[20px]">
-                No setup fee and no monthly fee. List what you sell, take orders with pay on
-                delivery and watch your sales grow.
+                No setup fee and no monthly fee. Set where you sell from, list your products and
+                buyers nearby see you first.
               </p>
               <Link href="/open-shop" className={cn(btn.cobalt, "mt-8")}>
                 Open your shop <ArrowRight className="size-5" />
@@ -210,7 +220,7 @@ export default function LandingPage() {
               {
                 mark: <span className="block h-7 w-14 rounded-t-full bg-[#3ddc97]" aria-hidden />,
                 title: "Shop your campus",
-                body: "Follow the shops you love, order in a few taps and track it all the way to your hall.",
+                body: "Shops nearest you come first, with the walk time. Order in a few taps and track it to your hall.",
                 href: "/signup",
                 panel: <ShopPanel className="h-full w-full" />,
               },
@@ -276,8 +286,8 @@ export default function LandingPage() {
                 Delivered to <span className="text-[#a8321b]">your hall</span>
               </h2>
               <p className="mt-5 max-w-lg text-[18px] leading-snug md:text-[20px]">
-                Shops deliver across campus or set a pickup spot. Follow your order from placed to
-                at your door, live.
+                Shops deliver to your hall or faculty, or meet you at a pickup spot like the Main
+                Gate stand or the Library steps. Every order shows when it should reach you.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link href="/signup" className={btn.ink}>
@@ -300,8 +310,8 @@ export default function LandingPage() {
             <Reveal from="top" className="px-5 pt-20 pb-8 md:px-12 md:py-28">
               <h2 className={h2}>Order, chat and track in one place</h2>
               <p className="mt-5 max-w-md text-[18px] leading-snug md:text-[20px]">
-                Ask about sizes, agree a pickup time, and get a ping the moment your order is on the
-                way. All without leaving your room.
+                Message the seller about your order, agree a pickup time and see each update as it
+                happens. All without leaving your room.
               </p>
               <Link href="/signup" className={cn(btn.white, "mt-8")}>
                 Create your account
@@ -328,10 +338,7 @@ export default function LandingPage() {
                 >
                   <span
                     className="grid size-14 place-items-center rounded-2xl text-[26px] font-extrabold text-white"
-                    style={{
-                      background: ["#3a5bff", "#ff6a4d", "#1b1f3b"][i],
-                      boxShadow: `0 5px 0 ${["#1f37b8", "#c4452b", "#000"][i]}`,
-                    }}
+                    style={{ background: ["#3a5bff", "#ff6a4d", "#1b1f3b"][i] }}
                   >
                     {s.n}
                   </span>
@@ -350,7 +357,7 @@ export default function LandingPage() {
           <Reveal from="top" className="relative mx-auto max-w-3xl">
             <h2 className={h2}>Be the plug</h2>
             <p className="mx-auto mt-4 max-w-lg text-[18px] leading-snug md:text-[20px]">
-              Your campus is already buying. One free account for buying and selling.
+              UNILAG is already buying. One free account for buying and selling.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link href="/signup" className={btn.white}>

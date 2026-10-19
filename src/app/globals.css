@@ -1051,6 +1051,40 @@ html {
 .lp-stripes {
   animation: lp-stripes 16s linear infinite;
 }
+.lp-spin-slow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lp-spin 40s linear infinite;
+}
+.lp-glow {
+  animation: lp-glow 3.2s ease-in-out infinite;
+  animation-delay: var(--lp-delay, 0s);
+}
+.lp-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lp-halo 6s ease-in-out infinite;
+}
+@keyframes lp-glow {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+@keyframes lp-halo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.14);
+    opacity: 0.55;
+  }
+}
 
 @keyframes lp-drift {
   from {
@@ -1160,7 +1194,10 @@ html {
   .lp-wave,
   .lp-pop,
   .lp-twinkle,
-  .lp-stripes {
+  .lp-stripes,
+  .lp-spin-slow,
+  .lp-glow,
+  .lp-halo {
     animation: none !important;
   }
   .lp-pop {
