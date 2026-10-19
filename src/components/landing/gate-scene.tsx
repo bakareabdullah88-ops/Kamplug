@@ -738,7 +738,6 @@ export function GateScene({ className }: { className?: string }) {
           <path d={band(R + 34, R + 104)} fill="#2a2d3e" />
           <path d={band(R + 34, R + 40)} fill="#4a4e66" />
           <path
-            className="lp-dash"
             d={arc(R + 70, -160, 1600)}
             stroke="#f6f6f4"
             strokeWidth="4"
