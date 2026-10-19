@@ -165,18 +165,20 @@ function Fashion() {
     <>
       <Shadow cx={252} rx={56} />
       <g className="lp-sway" style={inPlace("50% 0%")}>
-        <path
-          d="M200 52 V44 Q200 38 205 35 Q212 30 208 23 Q204 17 197 20"
-          fill="none"
-          {...S}
-        />
+        <path d="M200 52 V44 Q200 38 205 35 Q212 30 208 23 Q204 17 197 20" fill="none" {...S} />
         <path d="M200 52 L150 80 H250 Z" fill="none" {...S} />
         <path d={shirt} fill={C.cobalt} />
         <path d="M240 72 L262 82 L252 108 L236 102 Z" fill={C.cobaltDk} />
         <path d="M222 102 H236 V150 H222 Z" fill={C.cobaltDk} />
         <path d="M160 74 L182 62 Q200 78 218 62 L226 66 Q200 88 168 70 Z" fill={C.cobaltLt} />
         <path d={shirt} fill="none" {...S} />
-        <path d="M186 65 L200 80 L214 65" fill="none" stroke={C.white} strokeWidth={4} strokeLinecap="round" />
+        <path
+          d="M186 65 L200 80 L214 65"
+          fill="none"
+          stroke={C.white}
+          strokeWidth={4}
+          strokeLinecap="round"
+        />
         <rect x="172" y="106" width="18" height="16" rx="3" fill={C.yellow} {...T} />
       </g>
       {/* Sneaker, toe to the left */}
@@ -187,7 +189,13 @@ function Fashion() {
       />
       <path d="M286 131 L292 132 Q300 134 300 144 V172 H288 Z" fill={C.coralDk} {...T} />
       <path d="M200 172 Q198 158 212 154 L224 151 Q218 162 224 172 Z" fill={C.white} {...T} />
-      <path d="M234 170 Q254 156 272 138" fill="none" stroke={C.yellow} strokeWidth={7} strokeLinecap="round" />
+      <path
+        d="M234 170 Q254 156 272 138"
+        fill="none"
+        stroke={C.yellow}
+        strokeWidth={7}
+        strokeLinecap="round"
+      />
       <path d="M240 147 l7 6 M248 141 l7 6 M256 135 l7 6" {...T} />
       <path d="M254 131 Q272 124 290 133" fill="none" {...T} />
       <rect x="196" y="172" width="108" height="9" rx="3" fill={C.white} {...S} />
@@ -205,8 +213,20 @@ function Thrift() {
       <Shadow cx={228} rx={82} />
       <rect x="160" y="176" width="12" height="8" rx="2" fill={K} />
       <rect x="262" y="176" width="12" height="8" rx="2" fill={K} />
-      <path d="M208 98 Q208 80 224 80 Q240 80 240 98" fill="none" stroke={K} strokeWidth={10} strokeLinecap="round" />
-      <path d="M208 98 Q208 80 224 80 Q240 80 240 98" fill="none" stroke={C.coralDk} strokeWidth={4} strokeLinecap="round" />
+      <path
+        d="M208 98 Q208 80 224 80 Q240 80 240 98"
+        fill="none"
+        stroke={K}
+        strokeWidth={10}
+        strokeLinecap="round"
+      />
+      <path
+        d="M208 98 Q208 80 224 80 Q240 80 240 98"
+        fill="none"
+        stroke={C.coralDk}
+        strokeWidth={4}
+        strokeLinecap="round"
+      />
       <Box x={150} y={104} w={132} h={74} d={16} front={C.coral} lit={C.coralLt} dark={C.coralDk}>
         <path d="M176 104 L192 93 H204 L188 104 Z" fill={C.cobaltDk} {...T} />
         <path d="M244 104 L260 93 H272 L256 104 Z" fill={C.cobaltDk} {...T} />
@@ -214,10 +234,23 @@ function Thrift() {
         <rect x="244" y="104" width="12" height="74" fill={C.cobalt} {...T} />
         <rect x="173" y="130" width="18" height="12" rx="2" fill={C.yellow} {...T} />
         <rect x="241" y="130" width="18" height="12" rx="2" fill={C.yellow} {...T} />
-        <path d="M150 164 V178 H164 Z M282 164 V178 H268 Z M150 118 V104 H164 Z M268 104 H282 V118 Z" fill={C.yellow} {...T} />
+        <path
+          d="M150 164 V178 H164 Z M282 164 V178 H268 Z M150 118 V104 H164 Z M268 104 H282 V118 Z"
+          fill={C.yellow}
+          {...T}
+        />
         <circle cx="216" cy="152" r="12" fill={C.mint} {...T} />
         <circle cx="216" cy="152" r="5" fill={C.white} />
-        <rect x="203" y="114" width="26" height="14" rx="4" fill={C.sky} {...T} transform="rotate(-8 216 121)" />
+        <rect
+          x="203"
+          y="114"
+          width="26"
+          height="14"
+          rx="4"
+          fill={C.sky}
+          {...T}
+          transform="rotate(-8 216 121)"
+        />
       </Box>
       {/* Price tag hanging off the handle */}
       <g className="lp-sway" style={around(209, 94)}>
@@ -239,8 +272,18 @@ function Thrift() {
 function Food() {
   const body = "M164 122 Q166 176 234 178 Q302 176 304 122 Z";
   const grains: [number, number][] = [
-    [190, 114], [204, 104], [218, 112], [230, 100], [244, 110], [256, 102],
-    [270, 116], [212, 122], [196, 122], [240, 122], [226, 116], [282, 118],
+    [190, 114],
+    [204, 104],
+    [218, 112],
+    [230, 100],
+    [244, 110],
+    [256, 102],
+    [270, 116],
+    [212, 122],
+    [196, 122],
+    [240, 122],
+    [226, 116],
+    [282, 118],
   ];
   const wisps = [
     [212, "0s"],
@@ -268,12 +311,34 @@ function Food() {
       <path d="M196 108 L172 74" stroke={K} strokeWidth={10} strokeLinecap="round" />
       <path d="M196 108 L172 74" stroke={C.sky} strokeWidth={4.5} strokeLinecap="round" />
       <path d="M172 122 Q178 92 234 88 Q290 92 296 122 Q234 136 172 122 Z" fill="#f0502f" {...S} />
-      <path d="M192 104 Q210 94 236 93" fill="none" stroke={C.coralLt} strokeWidth={5} strokeLinecap="round" />
+      <path
+        d="M192 104 Q210 94 236 93"
+        fill="none"
+        stroke={C.coralLt}
+        strokeWidth={5}
+        strokeLinecap="round"
+      />
       {grains.map(([x, y]) => (
         <circle key={`${x}-${y}`} cx={x} cy={y} r="2.5" fill="#ffb27a" />
       ))}
-      <ellipse cx="266" cy="104" rx="12" ry="7" fill={C.yellow} {...T} transform="rotate(-18 266 104)" />
-      <ellipse cx="280" cy="114" rx="11" ry="6.5" fill={C.yellowDk} {...T} transform="rotate(14 280 114)" />
+      <ellipse
+        cx="266"
+        cy="104"
+        rx="12"
+        ry="7"
+        fill={C.yellow}
+        {...T}
+        transform="rotate(-18 266 104)"
+      />
+      <ellipse
+        cx="280"
+        cy="114"
+        rx="11"
+        ry="6.5"
+        fill={C.yellowDk}
+        {...T}
+        transform="rotate(14 280 114)"
+      />
       <circle cx="222" cy="96" r="3.5" fill={C.mint} {...T} />
       <circle cx="250" cy="96" r="3.5" fill={C.mint} {...T} />
     </>
@@ -287,8 +352,26 @@ function Beauty() {
     <>
       <Shadow cx={230} rx={76} />
       {/* Lipstick */}
-      <Cyl cx={172} y={128} h={56} rx={15} ry={5} body={C.cobalt} dark={C.cobaltDk} lit={C.cobaltLt} />
-      <Cyl cx={172} y={110} h={18} rx={11} ry={4} body={C.yellow} dark={C.yellowDk} lit={C.yellowLt} />
+      <Cyl
+        cx={172}
+        y={128}
+        h={56}
+        rx={15}
+        ry={5}
+        body={C.cobalt}
+        dark={C.cobaltDk}
+        lit={C.cobaltLt}
+      />
+      <Cyl
+        cx={172}
+        y={110}
+        h={18}
+        rx={11}
+        ry={4}
+        body={C.yellow}
+        dark={C.yellowDk}
+        lit={C.yellowLt}
+      />
       <path d="M161 112 V92 Q161 86 166 84 L183 76 V112 Z" fill={C.coral} />
       <path d="M177 79 L183 76 V112 H177 Z" fill={C.coralDk} />
       <path d="M161 112 V92 Q161 86 166 84 L183 76 V112" fill="none" {...S} />
@@ -297,7 +380,16 @@ function Beauty() {
       <Cyl cx={270} y={138} h={40} rx={30} ry={9} body={C.white} dark={C.shade} lit={C.white} />
       <path d="M240 152 Q270 160 300 152 V164 Q270 172 240 164 Z" fill={C.mint} {...T} />
       <g className="lp-float">
-        <Cyl cx={270} y={122} h={14} rx={32} ry={9} body={C.yellow} dark={C.yellowDk} lit={C.yellowLt} />
+        <Cyl
+          cx={270}
+          y={122}
+          h={14}
+          rx={32}
+          ry={9}
+          body={C.yellow}
+          dark={C.yellowDk}
+          lit={C.yellowLt}
+        />
       </g>
       {/* Compact */}
       <Cyl cx={214} y={172} h={8} rx={30} ry={10} body={C.lilac} dark={C.lilacDk} lit={C.lilacLt} />
@@ -334,15 +426,45 @@ function Accessories() {
       <rect x="286" y="108" width="10" height="12" rx="3" fill={C.yellowDk} {...T} />
       <circle cx="257" cy="118" r="34" fill={C.yellowDk} {...S} />
       <circle cx="253" cy="114" r="34" fill={C.yellow} {...S} />
-      <path d="M228 102 A28 28 0 0 1 250 87" fill="none" stroke={C.yellowLt} strokeWidth={5} strokeLinecap="round" />
+      <path
+        d="M228 102 A28 28 0 0 1 250 87"
+        fill="none"
+        stroke={C.yellowLt}
+        strokeWidth={5}
+        strokeLinecap="round"
+      />
       <circle cx="253" cy="114" r="25" fill={C.white} {...T} />
-      <path d="M253 93 V98 M253 130 V135 M232 114 H237 M269 114 H274" stroke={K} strokeWidth={3} strokeLinecap="round" />
+      <path
+        d="M253 93 V98 M253 130 V135 M232 114 H237 M269 114 H274"
+        stroke={K}
+        strokeWidth={3}
+        strokeLinecap="round"
+      />
       <path d="M253 114 L264 106" stroke={K} strokeWidth={4} strokeLinecap="round" />
-      <path className="lp-tick" style={around(253, 114)} d="M253 120 V93" stroke={C.coral} strokeWidth={2.5} strokeLinecap="round" />
+      <path
+        className="lp-tick"
+        style={around(253, 114)}
+        d="M253 120 V93"
+        stroke={C.coral}
+        strokeWidth={2.5}
+        strokeLinecap="round"
+      />
       <circle cx="253" cy="114" r="3.5" fill={K} />
       {/* Sunglasses, folded in front */}
-      <path d="M178 164 Q190 155 202 164" fill="none" stroke={K} strokeWidth={8} strokeLinecap="round" />
-      <path d="M178 164 Q190 155 202 164" fill="none" stroke={C.coral} strokeWidth={3} strokeLinecap="round" />
+      <path
+        d="M178 164 Q190 155 202 164"
+        fill="none"
+        stroke={K}
+        strokeWidth={8}
+        strokeLinecap="round"
+      />
+      <path
+        d="M178 164 Q190 155 202 164"
+        fill="none"
+        stroke={C.coral}
+        strokeWidth={3}
+        strokeLinecap="round"
+      />
       {[134, 202].map(frame)}
       <Spark x={150} y={154} r={9} fill={C.white} />
       <Spark x={298} y={56} r={11} delay="-1.2s" />
@@ -360,7 +482,12 @@ function Print() {
         <rect x="186" y="54" width="68" height="80" fill={C.white} {...S} />
         <rect x="196" y="64" width="26" height="18" rx="2" fill={C.cobalt} />
         <circle cx="238" cy="73" r="7" fill={C.coral} />
-        <path d="M196 92 H244 M196 100 H244 M196 108 H230" stroke={C.shade} strokeWidth={4} strokeLinecap="round" />
+        <path
+          d="M196 92 H244 M196 100 H244 M196 108 H230"
+          stroke={C.shade}
+          strokeWidth={4}
+          strokeLinecap="round"
+        />
       </g>
       <rect x="160" y="172" width="14" height="8" rx="2" fill={K} />
       <rect x="266" y="172" width="14" height="8" rx="2" fill={K} />
@@ -373,7 +500,15 @@ function Print() {
         <circle cx="254" cy="144" r="4" fill={C.coral} {...T} />
         <circle cx="267" cy="144" r="4" fill={C.yellow} {...T} />
       </Box>
-      <circle className="lp-twinkle" style={lpDelay("-0.8s")} cx="280" cy="144" r="4" fill={C.mint} {...T} />
+      <circle
+        className="lp-twinkle"
+        style={lpDelay("-0.8s")}
+        cx="280"
+        cy="144"
+        r="4"
+        fill={C.mint}
+        {...T}
+      />
       <Spark x={292} y={58} r={10} delay="-1.6s" />
     </>
   );
@@ -395,9 +530,27 @@ function Tech() {
       <Shadow cx={180} rx={44} />
       <Shadow cx={268} rx={38} />
       <g className="lp-bob">
-        <path d="M146 112 Q146 54 180 54 Q214 54 214 112" fill="none" stroke={K} strokeWidth={12} strokeLinecap="round" />
-        <path d="M146 112 Q146 54 180 54 Q214 54 214 112" fill="none" stroke={C.cobalt} strokeWidth={6} strokeLinecap="round" />
-        <path d="M156 76 Q164 62 180 60" fill="none" stroke={C.cobaltLt} strokeWidth={2.5} strokeLinecap="round" />
+        <path
+          d="M146 112 Q146 54 180 54 Q214 54 214 112"
+          fill="none"
+          stroke={K}
+          strokeWidth={12}
+          strokeLinecap="round"
+        />
+        <path
+          d="M146 112 Q146 54 180 54 Q214 54 214 112"
+          fill="none"
+          stroke={C.cobalt}
+          strokeWidth={6}
+          strokeLinecap="round"
+        />
+        <path
+          d="M156 76 Q164 62 180 60"
+          fill="none"
+          stroke={C.cobaltLt}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+        />
         {cup(134, 154)}
         {cup(202, 198)}
       </g>
@@ -490,7 +643,13 @@ export const categoryTint: Record<CategoryId, { bg: string; bgDark: string }> = 
 };
 
 /** A decorative, gently animated illustration for a category tile. */
-export function CategoryArt({ id, className }: { id: CategoryId; className?: string }): JSX.Element {
+export function CategoryArt({
+  id,
+  className,
+}: {
+  id: CategoryId;
+  className?: string;
+}): JSX.Element {
   const Art = ART[id];
   return (
     <svg

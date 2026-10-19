@@ -1,4 +1,5 @@
 import { ServiceError } from "../errors";
+import { atName } from "@/domain/username";
 import type { Brand, UserRecord, User } from "../types";
 import { getDb, getSessionUserId } from "./db";
 import type { DbSnapshot } from "./seed";
@@ -43,4 +44,15 @@ export function nowIso() {
 
 export function notFound(what: string): never {
   throw new ServiceError("NOT_FOUND", `${what} not found.`);
+}
+
+/** A buyer as a shop sees them: their username, never their real name. */
+export function buyerLabel(db: DbSnapshot, buyerId: string, fallback: string): string {
+  const u = db.users.find((x) => x.id === buyerId);
+  return u ? atName(u) : fallback.startsWith("@") ? fallback : "@buyer";
+}
+
+/** An order or thread with the buyer shown by username, for the shop's side. */
+export function forShop<T extends { buyerId: string; buyerName: string }>(db: DbSnapshot, x: T): T {
+  return { ...x, buyerName: buyerLabel(db, x.buyerId, x.buyerName) };
 }

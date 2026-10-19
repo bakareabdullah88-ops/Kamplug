@@ -3,15 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { safeNext } from "@/lib/safe-next";
 import { useRef, useState } from "react";
-import {
-  BellRing,
-  Camera,
-  Globe,
-  LogOut,
-  ShieldAlert,
-  Trash2,
-  UserRound,
-} from "lucide-react";
+import { BellRing, Camera, Globe, LogOut, ShieldAlert, Trash2, UserRound } from "lucide-react";
 import { AddressPicker } from "@/components/address/address-picker";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/controls";
@@ -29,6 +21,7 @@ import {
   useUpdateProfile,
 } from "@/queries/session";
 import { useUploadImage } from "@/queries/studio";
+import { usernameOf } from "@/domain/username";
 import { profileSchema } from "@/services/inputs";
 import { errorMessage, isServiceError } from "@/services/errors";
 import type { User } from "@/services/types";
@@ -88,6 +81,7 @@ function ProfileForm({ user, returnTo }: { user: User; returnTo: string | null }
   const upload = useUploadImage();
   const fileRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(user.name);
+  const [username, setUsername] = useState(() => usernameOf(user));
   const [phone, setPhone] = useState(user.phone);
   const [campusId, setCampusId] = useState(user.campusId ?? "");
   const [hall, setHall] = useState(user.hallZoneId ?? "");
@@ -107,7 +101,13 @@ function ProfileForm({ user, returnTo }: { user: User; returnTo: string | null }
   };
 
   const save = () => {
-    const parsed = profileSchema.safeParse({ name, phone, campusId, avatarImageId: avatarId });
+    const parsed = profileSchema.safeParse({
+      name,
+      username,
+      phone,
+      campusId,
+      avatarImageId: avatarId,
+    });
     if (!parsed.success) {
       const e: Record<string, string> = {};
       for (const i of parsed.error.issues) e[String(i.path[0])] ??= i.message;
@@ -118,6 +118,7 @@ function ProfileForm({ user, returnTo }: { user: User; returnTo: string | null }
     update.mutate(
       {
         name,
+        username,
         phone,
         campusId,
         // Empty clears them.
@@ -257,6 +258,21 @@ function ProfileForm({ user, returnTo }: { user: User; returnTo: string | null }
       </fieldset>
       <Field label="Name" error={errors.name}>
         <Input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+      </Field>
+      <Field
+        label="Username"
+        hint="Shops see this instead of your name, in chats and on orders."
+        error={errors.username}
+      >
+        <Input
+          value={username}
+          onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s+/g, ""))}
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
+          maxLength={20}
+          leading={<span className="text-muted">@</span>}
+        />
       </Field>
       <Field
         label="Email"

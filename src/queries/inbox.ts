@@ -54,8 +54,12 @@ export function useThread(id: string | null, as: "buyer" | "brand") {
   return useQuery({
     queryKey: qk.thread(id ?? "", as),
     queryFn: async () => {
+      const listed = qc.getQueryData<Thread[]>(qk.threads(as))?.find((x) => x.id === id);
       const t = await services.messages.getThread(id!, as);
       void qc.invalidateQueries({ queryKey: qk.threads(as) });
+      // It was unread: the server just marked it seen, alerts included.
+      if (!listed || (as === "buyer" ? listed.unreadForBuyer : listed.unreadForBrand) > 0)
+        void qc.invalidateQueries({ queryKey: qk.notifications });
       return t;
     },
     enabled: !!id,

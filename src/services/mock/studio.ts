@@ -9,7 +9,7 @@ import { ServiceError } from "../errors";
 import { schemas, type Schemas } from "./schemas";
 import type { Brand, Campus, Fulfilment, ImageRef, Product, Promo } from "../types";
 import { commit, getDb } from "./db";
-import { clone, requireBrand, requireUser } from "./context";
+import { buyerLabel, clone, forShop, requireBrand, requireUser } from "./context";
 import { latency, quick } from "./latency";
 import { applySellerTransition } from "./orders";
 import { pushNotification } from "./notify";
@@ -451,7 +451,8 @@ export const mockStudio: StudioService = {
     return clone(
       db.orders
         .filter((o) => o.brandId === brand.id)
-        .sort((a, b) => Date.parse(b.placedAt) - Date.parse(a.placedAt)),
+        .sort((a, b) => Date.parse(b.placedAt) - Date.parse(a.placedAt))
+        .map((o) => forShop(db, o)),
     );
   },
 
@@ -470,7 +471,7 @@ export const mockStudio: StudioService = {
     if (!order) throw new ServiceError("NOT_FOUND", "Order not found.");
     const next = applySellerTransition(db, id, status, reason);
     await commit("orders", "products", "notifications");
-    return clone(next);
+    return clone(forShop(db, next));
   },
 
   async listCustomers() {
@@ -484,7 +485,7 @@ export const mockStudio: StudioService = {
       const campus = db.campuses.find((c) => c.id === (buyer?.campusId ?? o.fulfilment.campusId));
       const c = map.get(o.buyerId) ?? {
         userId: o.buyerId,
-        name: o.buyerName,
+        name: buyerLabel(db, o.buyerId, o.buyerName),
         campusName: campus?.shortName ?? "",
         orders: 0,
         spentKobo: 0,

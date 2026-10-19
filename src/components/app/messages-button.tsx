@@ -7,22 +7,15 @@ import { cn } from "@/lib/cn";
 import { useNavBadges } from "./nav-badges";
 
 /**
- * Messages, with the number of unread conversations. Counts both inboxes (as
- * a buyer and as a shop), so a new message is never missed in either mode,
- * and opens whichever inbox has something new.
+ * Messages, with the number of unread conversations. One inbox holds chats as a
+ * buyer and as a shop, so the count covers both and nothing is missed.
  */
 export function MessagesButton({ className }: { className?: string }) {
   const mode = useMode();
   const { messages, shopMessages } = useNavBadges();
   const total = messages + shopMessages;
-  const href =
-    mode === "selling"
-      ? shopMessages || !messages
-        ? "/studio/messages"
-        : "/messages"
-      : messages || !shopMessages
-        ? "/messages"
-        : "/studio/messages";
+  // One inbox holds both sides; stay in the mode you're in.
+  const href = mode === "selling" ? "/studio/messages" : "/messages";
   return (
     <Link
       href={href}

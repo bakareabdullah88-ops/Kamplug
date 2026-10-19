@@ -15,6 +15,7 @@ import { schemas, type Schemas } from "./schemas";
 import type { Order, Product, UserRecord } from "../types";
 import { commit, getDb } from "./db";
 import { clone, requireUser } from "./context";
+import { atName } from "@/domain/username";
 import { latency } from "./latency";
 import { notifyBuyerOfStatus, pushNotification } from "./notify";
 import type { DbSnapshot } from "./seed";
@@ -217,7 +218,7 @@ export const mockOrders: OrderService = {
         code: orderCode(appBrand.orderPrefix),
         checkoutId,
         buyerId: user.id,
-        buyerName: user.name,
+        buyerName: atName(user),
         buyerPhone: parsed.phone,
         brandId: brand.id,
         brandName: brand.name,
@@ -278,7 +279,7 @@ export const mockOrders: OrderService = {
           userId: owner.id,
           kind: "order",
           title: `New order ${order.code}`,
-          body: `${user.name} ordered ${order.items.length} item${order.items.length > 1 ? "s" : ""}. Accept it to let them know you're on it.`,
+          body: `${atName(user)} ordered ${order.items.length} item${order.items.length > 1 ? "s" : ""}. Accept it to let them know you're on it.`,
           href: "/studio/orders",
         });
       }
@@ -355,7 +356,7 @@ export const mockOrders: OrderService = {
         userId: brand.ownerId,
         kind: "order",
         title: `${next.code} was cancelled`,
-        body: `${user.name} cancelled before you accepted it. The stock is back on your shelf.`,
+        body: `${atName(user)} cancelled before you accepted it. The stock is back on your shelf.`,
         href: `/studio/orders?order=${next.id}`,
       });
     }

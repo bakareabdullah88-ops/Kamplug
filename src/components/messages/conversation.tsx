@@ -326,7 +326,7 @@ export function Conversation({
       </AnimatePresence>
 
       <form
-        className="mt-3 flex items-end gap-1.5 rounded-2xl bg-surface px-2 py-1.5 ring-1 ring-line focus-within:ring-2 focus-within:ring-accent/40"
+        className="mt-3 flex items-end gap-1.5 rounded-2xl bg-surface px-2 py-1.5 ring-1 ring-line ring-inset focus-within:ring-2 focus-within:ring-accent/40"
         onSubmit={(e) => {
           e.preventDefault();
           submit();

@@ -35,8 +35,8 @@ export function ShopTrends({ range }: { range: DayRange }) {
             <WeekdayDots days={d.weekdays} peak={d.peakDay} />
             <p className="text-small text-muted">
               {d.peakDay === null
-                ? "No orders in this range yet"
-                : `Most orders on ${weekdayName(d.peakDay)}`}
+                ? "No sales in this range yet"
+                : `Most items sold on ${weekdayName(d.peakDay)}`}
             </p>
           </div>
         </DashCard>

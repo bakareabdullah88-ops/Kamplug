@@ -3,6 +3,7 @@
  * the service layer, so validation rules exist exactly once.
  */
 import { z } from "zod";
+import { USERNAME_RE } from "@/domain/username";
 import { BUDDY_COLORS, BUDDY_SHAPES } from "@/domain/buddy";
 
 const nigerianPhone = z
@@ -42,8 +43,16 @@ export type SignInInput = z.infer<typeof signInSchema>;
 export const resetSchema = z.object({ email: emailSchema });
 export type ResetInput = z.infer<typeof resetSchema>;
 
+export const usernameSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .regex(USERNAME_RE, "3 to 20 letters, numbers or underscores");
+
 export const profileSchema = z.object({
   name: z.string().trim().min(2, "Tell us your name").max(60),
+  /** Leaving it out keeps what's saved. */
+  username: usernameSchema.optional(),
   campusId: z.string().min(1, "Pick your campus"),
   phone: nigerianPhone,
   avatarImageId: z.string().optional(),

@@ -1,4 +1,5 @@
 import { hashPassword, randomSalt, verifyPassword } from "@/lib/hash";
+import { usernameOf } from "@/domain/username";
 import { newId } from "@/lib/ids";
 import type { AuthService } from "../contracts";
 import { ServiceError } from "../errors";
@@ -206,6 +207,14 @@ export const mockAuth: AuthService = {
     };
     const hall = pick(input.hallZoneId, "hostel");
     const faculty = pick(input.facultyZoneId, "faculty");
+    if (input.username !== undefined && input.username !== usernameOf(user)) {
+      const taken = db.users.some((u) => u.id !== user.id && usernameOf(u) === input.username);
+      if (taken)
+        throw new ServiceError("CONFLICT", "That username is taken", {
+          username: "Someone already has this one",
+        });
+      user.username = input.username;
+    }
     user.name = input.name;
     user.campusId = input.campusId;
     user.phone = input.phone;

@@ -33,7 +33,10 @@ import { usePrefs } from "@/stores/ui";
 import { Conversation } from "./conversation";
 import { buyerReplies, shopReplies } from "./quick-replies";
 
-type Filter = "all" | "unread" | "starred";
+type Filter = "all" | "unread" | "starred" | "buying" | "shop";
+type Role = "buyer" | "brand";
+/** A conversation and which side of it you're on. */
+type Item = { thread: Thread; role: Role };
 
 function StarButton({ id, label }: { id: string; label: string }) {
   const starred = usePrefs((s) => s.starredThreads.includes(id));
@@ -63,6 +66,13 @@ function StarButton({ id, label }: { id: string; label: string }) {
 }
 
 /** The open conversation, with quick replies built from the shop's real details. */
+function unreadOf(i: Item) {
+  return i.role === "buyer" ? i.thread.unreadForBuyer : i.thread.unreadForBrand;
+}
+function nameOf(i: Item) {
+  return i.role === "buyer" ? i.thread.brandName : i.thread.buyerName;
+}
+
 function ThreadPane({
   thread,
   as,
@@ -145,15 +155,23 @@ function ThreadPane({
 }
 
 /** Two-pane inbox from the video: conversation left, "All messages" right. Phones show one pane. */
-export function InboxView({
-  as,
-  emptyBody,
-}: {
-  as: "buyer" | "brand";
-  title?: string;
-  emptyBody: string;
-}) {
-  const { data, isPending } = useThreads(as);
+/**
+ * Every conversation in one place: chats with shops you buy from, and chats with
+ * your shop's customers. You can only start chats with shops, and a shop can
+ * only write to people who ordered from it; each side replies in the same thread.
+ */
+export function InboxView({ emptyBody }: { emptyBody: string }) {
+  const buying = useThreads("buyer");
+  const selling = useThreads("brand");
+  const isPending = buying.isPending || selling.isPending;
+  const data = useMemo<Item[] | undefined>(() => {
+    if (!buying.data && !selling.data) return undefined;
+    return [
+      ...(buying.data ?? []).map((thread) => ({ thread, role: "buyer" as const })),
+      ...(selling.data ?? []).map((thread) => ({ thread, role: "brand" as const })),
+    ].sort((a, b) => Date.parse(b.thread.updatedAt) - Date.parse(a.thread.updatedAt));
+  }, [buying.data, selling.data]);
+  const both = !!buying.data?.length && !!selling.data?.length;
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname() ?? "/messages";
@@ -165,20 +183,25 @@ export function InboxView({
   const selectedId = params.get("thread");
   // Wide screens open the latest conversation straight away, like a mail client.
   const wide = useMediaQuery("(min-width: 1024px)");
-  const selected = data?.find((t) => t.id === selectedId) ?? (wide ? (data?.[0] ?? null) : null);
-  const unreadOf = (t: Thread) => (as === "buyer" ? t.unreadForBuyer : t.unreadForBrand);
-  const nameOf = (t: Thread) => (as === "buyer" ? t.brandName : t.buyerName);
+  const selected =
+    data?.find((i) => i.thread.id === selectedId) ?? (wide ? (data?.[0] ?? null) : null);
 
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
+    const keep = (i: Item) => {
+      if (filter === "unread") return unreadOf(i) > 0;
+      if (filter === "starred") return starred.includes(i.thread.id);
+      if (filter === "buying") return i.role === "buyer";
+      if (filter === "shop") return i.role === "brand";
+      return true;
+    };
     return (data ?? []).filter(
-      (t) =>
-        (filter === "all" || (filter === "unread" ? unreadOf(t) > 0 : starred.includes(t.id))) &&
+      (i) =>
+        keep(i) &&
         (!term ||
-          nameOf(t).toLowerCase().includes(term) ||
-          t.messages.some((m) => m.body.toLowerCase().includes(term))),
+          nameOf(i).toLowerCase().includes(term) ||
+          i.thread.messages.some((m) => m.body.toLowerCase().includes(term))),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, filter, q, starred]);
 
   if (!isPending && !data?.length) {
@@ -188,11 +211,9 @@ export function InboxView({
         title="No messages yet"
         body={emptyBody}
         action={
-          as === "buyer" ? (
-            <ButtonLink href="/explore" leadingIcon={<Compass className="size-4" />}>
-              Discover shops
-            </ButtonLink>
-          ) : undefined
+          <ButtonLink href="/explore" leadingIcon={<Compass className="size-4" />}>
+            Discover shops
+          </ButtonLink>
         }
       />
     );
@@ -202,6 +223,12 @@ export function InboxView({
     { value: "all", label: "All messages" },
     { value: "unread", label: "Unread" },
     { value: "starred", label: "Starred" },
+    ...(both
+      ? ([
+          { value: "buying", label: "Shops you buy from" },
+          { value: "shop", label: "Your shop's customers" },
+        ] as const)
+      : []),
   ];
 
   return (
@@ -215,8 +242,9 @@ export function InboxView({
       >
         {selected ? (
           <ThreadPane
-            thread={selected}
-            as={as}
+            key={selected.thread.id}
+            thread={selected.thread}
+            as={selected.role}
             onBack={() => router.replace(pathname, { scroll: false })}
           />
         ) : (
@@ -315,16 +343,18 @@ export function InboxView({
                   </div>
                 </li>
               ))
-            : list.map((t, i) => {
+            : list.map((item, i) => {
+                const t = item.thread;
+                const as = item.role;
                 const last = t.messages.at(-1);
-                const unread = unreadOf(t);
-                const name = nameOf(t);
-                const on = t.id === selected?.id;
+                const unread = unreadOf(item);
+                const name = nameOf(item);
+                const on = t.id === selected?.thread.id;
                 return (
                   <motion.li
                     key={t.id}
-                    initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ ...spring.smooth, delay: Math.min(i * 0.04, 0.4) }}
                   >
                     <Link
@@ -368,7 +398,12 @@ export function InboxView({
                           >
                             {name}
                           </span>
-                          <span className="shrink-0 text-[11px] text-muted">
+                          {both && as === "brand" && (
+                            <span className="shrink-0 rounded-sm bg-accent-soft px-1.5 py-px text-[10.5px] font-semibold text-accent-ink">
+                              Your shop
+                            </span>
+                          )}
+                          <span className="ml-auto shrink-0 text-[11px] text-muted">
                             {now ? formatRelative(t.updatedAt, now) : ""}
                           </span>
                         </span>

@@ -286,8 +286,47 @@ describe("buying and selling", () => {
     await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
     const t = await s.messages.startThreadWithBuyer({ orderId: orders[0]!.id });
     expect(t.id).toBe(mine.id);
-    expect(t.buyerName).toBe("Bisi Ade");
+    // Shops see a username, never the buyer's real name.
+    expect(t.buyerName).toMatch(/^@bisi_[a-z0-9]{4}$/);
     expect((await s.messages.listThreads("brand")).map((x) => x.id)).toContain(t.id);
+    expect((await s.studio.listOrders())[0]!.buyerName).toBe(t.buyerName);
+    expect((await s.studio.listCustomers())[0]!.name).toBe(t.buyerName);
+  });
+
+  it("shows the buyer's chosen username to shops, and keeps usernames unique", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const base = { name: "Bisi Ade", campusId: "c_unilag", phone: "08030000000" };
+    await s.auth.updateProfile({ ...base, username: "BisiCooks" });
+    await s.orders.createOrders(checkout(brand.id, product.id));
+    await s.messages.startThread({ brandId: brand.id });
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    expect((await s.messages.listThreads("brand"))[0]!.buyerName).toBe("@bisicooks");
+    await expectCode(
+      s.auth.updateProfile({
+        name: "Kemi Bakes",
+        campusId: "c_unilag",
+        phone: "08031234567",
+        username: "bisicooks",
+      }),
+      "CONFLICT",
+    );
+  });
+
+  it("marks a message's alert as seen once the chat is opened", async () => {
+    const { brand } = await openShop();
+    await signUpBuyer();
+    const t = await s.messages.startThread({ brandId: brand.id });
+    await s.messages.send({ threadId: t.id, body: "Do you have it in red?", as: "buyer" });
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    const unread = async () =>
+      (await s.notifications.list()).filter((n) => n.kind === "message" && !n.read);
+    expect(await unread()).toHaveLength(1);
+    await s.messages.getThread(t.id, "brand");
+    expect(await unread()).toHaveLength(0);
+    expect((await s.messages.listThreads("brand"))[0]!.unreadForBrand).toBe(0);
   });
 
   it("refuses online payments until they are switched on", async () => {

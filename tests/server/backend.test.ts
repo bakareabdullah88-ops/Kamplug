@@ -236,7 +236,8 @@ describe.skipIf(!url)("backend on Postgres", () => {
     const thread = await seller.call("messages", "startThreadWithBuyer", {
       orderId: orders[0]!.id,
     });
-    expect(thread.buyerName).toBe("Bisi Ade");
+    // Shops see a username, not the real name.
+    expect(thread.buyerName).toMatch(/^@bisi_[a-z0-9]{4}$/);
     expect((await buyer.call("catalog", "getProduct", product.slug)).variants[0]!.stock).toBe(8);
 
     // Every record is a row in Postgres.

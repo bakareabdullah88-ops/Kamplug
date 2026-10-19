@@ -103,7 +103,7 @@ export function TableSearch({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder.replace(/…$/, "")}
-        className="min-w-0 flex-1 bg-transparent text-[16px] outline-none md:text-[13.5px] placeholder:text-faint [&::-webkit-search-cancel-button]:hidden"
+        className="min-w-0 flex-1 bg-transparent text-[16px] outline-none placeholder:text-faint md:text-[13.5px] [&::-webkit-search-cancel-button]:hidden"
       />
       {value && (
         <button

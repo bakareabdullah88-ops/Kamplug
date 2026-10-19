@@ -78,6 +78,8 @@ export type User = {
   id: ID;
   email: string;
   name: string;
+  /** What shops see instead of their name. Missing means the default made from their name and id. */
+  username?: string;
   phone: string;
   campusId: ID | null;
   avatar: ImageRef | null;
@@ -371,13 +373,7 @@ export type SavedPlace = {
 /* ---------------------------------- Lists --------------------------------- */
 
 export type SortKey =
-  | "relevance"
-  | "popular"
-  | "newest"
-  | "nearest"
-  | "price_asc"
-  | "price_desc"
-  | "rating";
+  "relevance" | "popular" | "newest" | "nearest" | "price_asc" | "price_desc" | "rating";
 
 export type ProductQuery = {
   q?: string;
