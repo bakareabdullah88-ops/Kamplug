@@ -1051,6 +1051,19 @@ html {
 .lp-stripes {
   animation: lp-stripes 16s linear infinite;
 }
+.lp-glow {
+  animation: lp-glow 3.2s ease-in-out infinite;
+  animation-delay: var(--lp-delay, 0s);
+}
+@keyframes lp-glow {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 
 @keyframes lp-drift {
   from {
@@ -1160,7 +1173,8 @@ html {
   .lp-wave,
   .lp-pop,
   .lp-twinkle,
-  .lp-stripes {
+  .lp-stripes,
+  .lp-glow {
     animation: none !important;
   }
   .lp-pop {

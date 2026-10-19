@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { BuddyAvatar } from "@/components/app/buddy";
 import { CategoryStrip } from "@/components/landing/category-strip";
 import { FaqPanel } from "@/components/landing/faq-panel";
-import { Clouds3D, GateScene, RoadStrip } from "@/components/landing/gate-scene";
+import { Clouds3D, GateScene } from "@/components/landing/gate-scene";
 import { SpotPicker } from "@/components/landing/spot-picker";
 import {
   Burst,
@@ -157,7 +157,6 @@ export default function LandingPage() {
             </div>
           </div>
           <GateScene className="relative mt-6 h-[260px] w-full sm:h-[340px] md:mt-2 md:h-[420px] xl:h-[460px]" />
-          <RoadStrip />
         </section>
 
         {/* Categories */}
