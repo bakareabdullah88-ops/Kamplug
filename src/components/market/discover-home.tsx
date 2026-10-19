@@ -1,8 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useReorder } from "@/components/orders/use-reorder";
 import Link from "next/link";
 import {
   ArrowRight,
+  RotateCcw,
+  Sparkles,
   ArrowUpRight,
   BadgeCheck,
   Bike,
@@ -56,7 +60,7 @@ import { useUi } from "@/stores/ui";
 import { Clouds3D } from "@/components/landing/gate-scene";
 import { LagoonScene, SceneEdge } from "@/components/scenes/campus-scenes";
 import { RelationBadge, etaText } from "./nearby";
-import { CategoryArt, categoryTint } from "./category-art";
+import { CategoryArt } from "./category-art";
 import { ProductCard, ProductCardSkeleton } from "./product-card";
 import { QuickAdd } from "./quick-add";
 
@@ -202,37 +206,102 @@ function OnTheWay({ order }: { order: Order }) {
   );
 }
 
-/** Wide illustrated tiles, one per category, packed close together; they scroll sideways on phones. */
+/**
+ * Two shortcuts under the search: order your last delivery again, or jump to
+ * something random from the market. Each only shows when it can work.
+ */
+function QuickActions({ lastOrder }: { lastOrder: Order | undefined }) {
+  const router = useRouter();
+  const { reorder, pendingId } = useReorder();
+  const pool = useProducts({ pageSize: 24 }).data?.items;
+  const surprise = () => {
+    if (!pool?.length) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)]!;
+    router.push(`/products/${pick.slug}`);
+  };
+  const row =
+    "flex h-14 w-full items-center gap-3 px-1 text-left text-[15px] font-semibold transition-colors hover:text-accent-ink disabled:opacity-50";
+  return (
+    <ul className="grid divide-y divide-line-thin border-y border-line-thin sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+      {lastOrder && (
+        <li>
+          <button
+            type="button"
+            className={row}
+            disabled={pendingId === lastOrder.id}
+            onClick={() => void reorder(lastOrder)}
+          >
+            <RotateCcw className="size-5 text-accent" aria-hidden />
+            <span className="min-w-0 flex-1 truncate">
+              Repeat last order
+              <span className="ml-2 font-normal text-muted">from {lastOrder.brandName}</span>
+            </span>
+          </button>
+        </li>
+      )}
+      <li className={cn(lastOrder && "sm:pl-4")}>
+        <button type="button" className={row} disabled={!pool?.length} onClick={surprise}>
+          <Sparkles className="size-5 text-warning" aria-hidden />
+          <span className="flex-1">Surprise me</span>
+        </button>
+      </li>
+    </ul>
+  );
+}
+
+/** A few words under each category's name. */
+const subtitle: Record<CategoryId, string> = {
+  fashion: "Made on campus",
+  thrift: "One of one",
+  food: "Hot and fresh",
+  beauty: "Glow and care",
+  accessories: "Little extras",
+  print: "Custom prints",
+  tech: "Gadgets and gear",
+  books: "Study packs",
+};
+
+/**
+ * Category cards in a row: name and a short line at the top, the drawing in
+ * the corner, then "See all" at the end. The row scrolls sideways.
+ */
 function Categories() {
   return (
     <section aria-labelledby="home-categories">
       <h2 id="home-categories" className="sr-only">
         Categories
       </h2>
-      <ul className="-mx-(--gutter) scrollbar-none flex gap-2 overflow-x-auto px-(--gutter) md:mx-0 md:grid md:grid-cols-4 md:gap-2.5 md:px-0">
+      <ul className="-mx-(--gutter) scrollbar-none flex snap-x gap-3 overflow-x-auto px-(--gutter) py-1 md:mx-0 md:px-0">
         {categories.map((c) => (
-          <li key={c.id} className="shrink-0">
-            <Link href={`/explore?category=${c.id}`} className="group block w-[168px] md:w-full">
-              <span
-                className="relative block aspect-[16/10] w-full overflow-hidden rounded-2xl bg-(--tint) transition-transform duration-300 group-hover:-translate-y-0.5 dark:bg-(--tint-dark)"
-                style={
-                  {
-                    "--tint": categoryTint[c.id].bg,
-                    "--tint-dark": categoryTint[c.id].bgDark,
-                  } as React.CSSProperties
-                }
-              >
-                <CategoryArt
-                  id={c.id}
-                  className="absolute inset-0 size-full p-1.5 transition-transform duration-500 group-hover:scale-105"
-                />
-                <span className="absolute bottom-2.5 left-3 text-[15px] font-bold tracking-[-0.01em] text-ink md:text-[16px]">
-                  {short[c.id]}
-                </span>
+          <li key={c.id} className="shrink-0 snap-start">
+            <Link
+              href={`/explore?category=${c.id}`}
+              className="group relative block h-[148px] w-[196px] overflow-hidden rounded-2xl bg-surface p-4 ring-1 ring-line transition-colors hover:ring-line-strong md:h-[164px] md:w-[220px]"
+            >
+              <span className="relative z-10 block text-[17px] leading-tight font-semibold tracking-[-0.02em] text-ink md:text-[18px]">
+                {short[c.id]}
               </span>
+              <span className="relative z-10 mt-1 block text-[13px] text-muted">
+                {subtitle[c.id]}
+              </span>
+              <CategoryArt
+                id={c.id}
+                className="absolute right-0 bottom-0 h-[68%] w-[78%] transition-transform duration-500 group-hover:scale-105"
+              />
             </Link>
           </li>
         ))}
+        <li className="shrink-0 snap-start">
+          <Link
+            href="/explore"
+            className="group flex h-[148px] w-[132px] flex-col items-center justify-center gap-3 rounded-2xl bg-accent-soft text-accent-ink transition-colors hover:bg-accent/15 md:h-[164px] md:w-[150px]"
+          >
+            <span className="grid size-12 place-items-center rounded-full bg-surface text-ink transition-transform group-hover:translate-x-0.5">
+              <ArrowRight className="size-5" aria-hidden />
+            </span>
+            <span className="text-[16px] font-semibold">See all</span>
+          </Link>
+        </li>
       </ul>
     </section>
   );
@@ -668,6 +737,7 @@ export function DiscoverHome() {
         activeFilters={view.active}
       />
       <FilterSheet open={filtersOpen} onOpenChange={setFiltersOpen} view={view} />
+      <QuickActions lastOrder={orders?.find((o) => o.status === "delivered")} />
       {onTheWay && <OnTheWay order={onTheWay} />}
       <Categories />
 

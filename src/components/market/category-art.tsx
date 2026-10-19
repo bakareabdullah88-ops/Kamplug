@@ -630,18 +630,6 @@ const ART: Record<CategoryId, () => JSX.Element> = {
   books: Books,
 };
 
-/** Soft tile backgrounds per category: pastel in light mode, deep and muted in dark. */
-export const categoryTint: Record<CategoryId, { bg: string; bgDark: string }> = {
-  fashion: { bg: "#fff1c9", bgDark: "#2e2a46" },
-  thrift: { bg: "#dff5ea", bgDark: "#1e3340" },
-  food: { bg: "#ffe1d9", bgDark: "#3a2638" },
-  beauty: { bg: "#f1e9ff", bgDark: "#2c2552" },
-  accessories: { bg: "#e6f4ff", bgDark: "#1e2f4c" },
-  print: { bg: "#e4e9ff", bgDark: "#232a56" },
-  tech: { bg: "#ffe6f0", bgDark: "#352545" },
-  books: { bg: "#ecf7da", bgDark: "#23363a" },
-};
-
 /** A decorative, gently animated illustration for a category tile. */
 export function CategoryArt({
   id,

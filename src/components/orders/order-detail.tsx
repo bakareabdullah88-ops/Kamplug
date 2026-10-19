@@ -16,13 +16,14 @@ import { canBuyerCancel, etaSeconds, isActive, statusLabel } from "@/domain/orde
 import { formatNaira } from "@/domain/money";
 import { formatDate, formatTime } from "@/lib/format";
 import { useDocumentTitle, useNow } from "@/lib/hooks";
-import { useCampus } from "@/queries/catalog";
+import { useBrand, useCampus } from "@/queries/catalog";
 import { useCancelOrder, useOrder } from "@/queries/orders";
 import { useSession } from "@/queries/session";
 import { errorMessage, isServiceError } from "@/services/errors";
 import { toast } from "@/stores/toast";
 import { etaLine } from "./orders-list";
 import { OrderTimeline } from "./order-timeline";
+import { OrderTracking } from "./order-tracking";
 import { ReviewDialog } from "./review-dialog";
 import { StatusPill } from "./status-pill";
 import type { PaymentMethod } from "@/services/types";
@@ -53,6 +54,7 @@ export function OrderDetail() {
   const { data: order, isPending, error } = useOrder(id);
   const { user } = useSession();
   const campus = useCampus(order?.fulfilment.campusId);
+  const brand = useBrand(order?.brandHandle ?? "").data;
   const now = useNow(1000);
   const cancel = useCancelOrder();
   const { reorder, pendingId: reorderingId } = useReorder();
@@ -159,18 +161,14 @@ export function OrderDetail() {
 
       <div className="mt-8 grid grid-cols-1 gap-x-12 lg:grid-cols-12">
         <div className="flex min-w-0 flex-col lg:col-span-7">
-          {order.fulfilment.method === "delivery" ? (
-            <section className="card py-6">
-              <p className="eyebrow text-muted">Delivery</p>
-              <p className="mt-2 text-title font-semibold">
-                {zone?.name ?? "Your address"}
-                {order.fulfilment.addressLine ? ` · ${order.fulfilment.addressLine}` : ""}
-              </p>
-              <p className="mt-1 text-small text-muted">
-                {order.brandName} delivers it to you. Message them if you need to change anything.
-              </p>
-            </section>
-          ) : (
+          <OrderTracking
+            order={order}
+            campus={campus}
+            brand={brand ?? undefined}
+            arrivesAt={now && eta !== null ? new Date(now + eta * 1000).toISOString() : null}
+            onChat={isBuyer ? () => setChat(true) : undefined}
+          />
+          {order.fulfilment.method === "pickup" && (
             <section className="card py-6">
               <p className="eyebrow text-muted">Pickup code</p>
               <p className="mt-3 font-mono text-display-md tracking-[0.12em]">{order.code}</p>
@@ -195,7 +193,7 @@ export function OrderDetail() {
 
           <section aria-labelledby="progress-title" className="card py-6">
             <h2 id="progress-title" className="mb-5 text-title font-semibold">
-              Progress
+              Every update
             </h2>
             <OrderTimeline order={order} />
           </section>

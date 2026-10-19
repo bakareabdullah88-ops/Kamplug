@@ -17,12 +17,13 @@ import {
 import { AppImage } from "@/components/ui/app-image";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Price, QuantityStepper, Stars } from "@/components/ui/misc";
+import { QuantityStepper } from "@/components/ui/misc";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { ChatSheet } from "@/components/messages/chat-sheet";
 import { spring } from "@/design/motion";
 import { purchaseBlock, MAX_LINE_QUANTITY } from "@/domain/bag";
-import { formatWhen } from "@/domain/distance";
+import { formatEta, formatWhen } from "@/domain/distance";
+import { categories, categoryName } from "@/config/categories";
 import { discountPercent, formatNaira } from "@/domain/money";
 import {
   findVariant,
@@ -179,6 +180,7 @@ export function ProductView() {
   const own = block.blocked && block.reason === "own_product";
   const canAdd = !block.blocked && !!key;
   const fulfilment = brand?.fulfilment;
+  const CategoryIcon = categories.find((c) => c.id === p.category)?.icon;
   const points =
     campus?.pickupPoints.filter((pp) => fulfilment?.pickupPointIds.includes(pp.id)) ?? [];
 
@@ -212,10 +214,9 @@ export function ProductView() {
     ) : (
       <Button
         size="lg"
-        className={className}
+        className={cn("justify-between gap-4 px-6", className)}
         disabled={!canAdd}
         onClick={onAdd}
-        leadingIcon={<ShoppingBag className="size-4.5" />}
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
@@ -224,16 +225,19 @@ export function ProductView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={spring.snappy}
+            className="inline-flex items-center gap-2"
           >
+            <ShoppingBag className="size-4.5" aria-hidden />
             {added
               ? "Added"
               : stockInfo === "sold_out"
                 ? "Sold out"
                 : p.brand.vacation
                   ? "Shop on break"
-                  : `Add to bag · ${formatNaira(price * qty)}`}
+                  : "Add to bag"}
           </motion.span>
         </AnimatePresence>
+        {canAdd && <span className="font-mono tabular">{formatNaira(price * qty)}</span>}
       </Button>
     );
 
@@ -281,38 +285,77 @@ export function ProductView() {
             )}
           </Link>
           <h1 className="mt-4 font-display text-display-md text-balance">{p.name}</h1>
-          <div className="mt-3 flex items-center gap-3">
-            {p.ratingCount > 0 ? (
-              <a
-                href="#reviews"
-                className="inline-flex items-center gap-2 text-small hover:underline"
+          <ul className="mt-4 flex flex-wrap gap-2" aria-label="At a glance">
+            <li>
+              <Link
+                href={`/explore?category=${p.category}`}
+                className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line hover:ring-line-strong"
               >
-                <Stars value={p.rating} size={14} className="text-ink" />
-                <span className="text-muted">
-                  {p.rating.toFixed(1)} · {p.ratingCount} reviews
-                </span>
-              </a>
-            ) : (
-              <span className="text-small text-muted">No reviews yet</span>
+                {CategoryIcon && <CategoryIcon className="size-4 text-accent" aria-hidden />}
+                {categoryName(p.category)}
+              </Link>
+            </li>
+            {fulfilment?.pickup && (
+              <li className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line">
+                <MapPin className="size-4 text-success" aria-hidden />
+                Free pickup
+              </li>
             )}
-            <span className="text-small text-muted">· {p.salesCount} sold</span>
-          </div>
-          <div className="mt-6 flex items-center gap-3">
-            <Price
-              kobo={price}
-              compareAt={
-                p.compareAtKobo ? p.compareAtKobo + (variant?.priceDeltaKobo ?? 0) : undefined
-              }
-              size="display"
-            />
-            {off && (
-              <span className="rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-semibold text-on-accent">
-                −{off}%
-              </span>
+            {fulfilment?.delivery && (
+              <li className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line">
+                <Bike className="size-4 text-warning" aria-hidden />
+                {fulfilment.deliveryFeeKobo
+                  ? `Delivery ${formatNaira(fulfilment.deliveryFeeKobo)}`
+                  : "Free delivery"}
+              </li>
             )}
-          </div>
+          </ul>
 
-          <p className="mt-6 text-body-lg text-ink-2">{p.description}</p>
+          <dl className="mt-6 grid grid-cols-4 border-y border-line-thin py-4">
+            <div className="min-w-0">
+              <dd className="truncate font-mono text-[20px] font-semibold tabular">
+                {formatNaira(price)}
+              </dd>
+              <dt className="text-[12.5px] text-muted">
+                {p.compareAtKobo && off ? (
+                  <s>{formatNaira(p.compareAtKobo + (variant?.priceDeltaKobo ?? 0))}</s>
+                ) : (
+                  "price"
+                )}
+              </dt>
+            </div>
+            <div className="min-w-0 pl-3">
+              <dd className="text-[20px] font-semibold tabular">{p.salesCount}</dd>
+              <dt className="text-[12.5px] text-muted">sold</dt>
+            </div>
+            <div className="min-w-0 pl-3">
+              <dd className="text-[20px] font-semibold tabular">
+                {p.ratingCount > 0 ? p.rating.toFixed(1) : "–"}
+              </dd>
+              <dt className="text-[12.5px] text-muted">
+                {p.ratingCount > 0 ? `${p.ratingCount} reviews` : "no reviews yet"}
+              </dt>
+            </div>
+            <div className="min-w-0 pl-3">
+              <dd className="text-[20px] font-semibold tabular">
+                {fulfilment ? formatEta(fulfilment.prepMinutes) : "–"}
+              </dd>
+              <dt className="text-[12.5px] text-muted">to get ready</dt>
+            </div>
+          </dl>
+
+          {off && (
+            <p className="mt-4 inline-flex rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-semibold text-on-accent">
+              −{off}% today
+            </p>
+          )}
+
+          <section aria-labelledby="about-title" className="mt-6">
+            <h2 id="about-title" className="text-[16px] font-semibold">
+              About this
+            </h2>
+            <p className="mt-2 text-body text-muted">{p.description}</p>
+          </section>
 
           {p.options.length > 0 && (
             <div className="mt-8">
@@ -373,14 +416,6 @@ export function ProductView() {
             />
           </div>
           <div className="mt-6 flex items-center gap-3 lg:hidden">
-            {!own && (
-              <QuantityStepper
-                value={qty}
-                onChange={setQty}
-                max={Math.max(1, Math.min(stock, MAX_LINE_QUANTITY))}
-                label="Quantity"
-              />
-            )}
             <WishlistButton
               productId={p.id}
               productName={p.name}
@@ -510,11 +545,15 @@ export function ProductView() {
         )}
       >
         <div className="mx-auto flex max-w-2xl items-center gap-3">
-          <div className="min-w-0">
-            <p className="truncate text-small text-muted">{p.name}</p>
-            <p className="font-mono text-body font-medium tabular">{formatNaira(price * qty)}</p>
-          </div>
-          {addButton("ml-auto flex-1 max-w-64")}
+          {!own && (
+            <QuantityStepper
+              value={qty}
+              onChange={setQty}
+              max={Math.max(1, Math.min(stock, MAX_LINE_QUANTITY))}
+              label="Quantity"
+            />
+          )}
+          {addButton("flex-1")}
         </div>
       </div>
 
