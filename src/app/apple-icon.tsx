@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { BrandMarkSvg } from "@/lib/brand-mark";
 
-export const size = { width: 180, height: 180 };
+export const size = { width: 180, height: 1800 };
 export const contentType = "image/png";
 
 /** iOS rounds the corners itself, so the tile is drawn square. */
