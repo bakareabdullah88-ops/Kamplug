@@ -9,7 +9,7 @@ import { ServiceError } from "../errors";
 import { schemas, type Schemas } from "./schemas";
 import type { Brand, Campus, Fulfilment, ImageRef, Product, Promo } from "../types";
 import { commit, getDb } from "./db";
-import { buyerLabel, clone, forShop, requireBrand, requireUser } from "./context";
+import { buyerLabel, clone, forShop, requireBrand, requireUser, withAuthor } from "./context";
 import { latency, quick } from "./latency";
 import { applySellerTransition } from "./orders";
 import { pushNotification } from "./notify";
@@ -506,7 +506,8 @@ export const mockStudio: StudioService = {
     return clone(
       db.reviews
         .filter((r) => r.brandId === brand.id)
-        .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
+        .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+        .map((r) => withAuthor(db, r)),
     );
   },
 
@@ -529,7 +530,7 @@ export const mockStudio: StudioService = {
       href: `/brands/${brand.handle}`,
     });
     await commit("reviews", "notifications");
-    return clone(r);
+    return clone(withAuthor(db, r));
   },
 
   async listPromos() {

@@ -56,3 +56,11 @@ export function buyerLabel(db: DbSnapshot, buyerId: string, fallback: string): s
 export function forShop<T extends { buyerId: string; buyerName: string }>(db: DbSnapshot, x: T): T {
   return { ...x, buyerName: buyerLabel(db, x.buyerId, x.buyerName) };
 }
+
+/** A review with its author shown by username, wherever it's read. */
+export function withAuthor<T extends { userId: string; authorName: string }>(
+  db: DbSnapshot,
+  r: T,
+): T {
+  return { ...r, authorName: buyerLabel(db, r.userId, r.authorName) };
+}

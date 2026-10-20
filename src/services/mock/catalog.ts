@@ -5,7 +5,7 @@ import { ServiceError } from "../errors";
 import type { Brand, Product, ProductWithBrand, RatingBreakdown, Review } from "../types";
 import { newId } from "@/lib/ids";
 import { commit, getDb } from "./db";
-import { clone, currentUser } from "./context";
+import { clone, currentUser, withAuthor } from "./context";
 import { latency, quick } from "./latency";
 import type { DbSnapshot } from "./seed";
 
@@ -242,7 +242,8 @@ export const mockCatalog: CatalogService = {
     const db = await getDb();
     const reviews = db.reviews
       .filter((r) => r.productId === productId)
-      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+      .map((r) => withAuthor(db, r));
     return { reviews: clone(reviews), breakdown: breakdown(reviews) };
   },
 
@@ -251,7 +252,8 @@ export const mockCatalog: CatalogService = {
     const db = await getDb();
     const reviews = db.reviews
       .filter((r) => r.brandId === brandId)
-      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+      .map((r) => withAuthor(db, r));
     return { reviews: clone(reviews), breakdown: breakdown(reviews) };
   },
 

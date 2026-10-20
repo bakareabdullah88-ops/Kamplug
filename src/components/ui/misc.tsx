@@ -111,7 +111,9 @@ export function Avatar({
   tone?: number;
 }) {
   const hue = tone ?? hashHue(name);
+  // "@bisi_x7k2" shows "B", not "@".
   const letters = name
+    .replace(/^@/, "")
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)

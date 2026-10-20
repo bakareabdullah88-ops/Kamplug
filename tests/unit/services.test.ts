@@ -5,6 +5,7 @@ import { __resetMemory, getDb, purgeSampleData, resetDb } from "@/services/mock/
 import { generateSeed } from "@/services/mock/seed";
 import { isServiceError } from "@/services/errors";
 import { presetRange } from "@/domain/analytics";
+import { stepsFor } from "@/domain/orders";
 import type { CheckoutInput } from "@/services/inputs";
 
 beforeEach(async () => {
@@ -312,6 +313,29 @@ describe("buying and selling", () => {
       }),
       "CONFLICT",
     );
+  });
+
+  it("shows reviewers by username, never their real name", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const { orders } = await s.orders.createOrders(checkout(brand.id, product.id));
+    const order = orders[0]!;
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    for (const step of stepsFor(order.fulfilment.method).slice(1))
+      await s.studio.updateOrderStatus(order.id, step);
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "bisi@example.com", password: PASSWORD });
+    const review = await s.orders.reviewOrderItem({
+      orderId: order.id,
+      productId: product.id,
+      rating: 5,
+      body: "Lovely",
+    });
+    expect(review.authorName).toMatch(/^@bisi_[a-z0-9]{4}$/);
+    const { reviews } = await s.catalog.getProductReviews(product.id);
+    expect(reviews[0]!.authorName).toBe(review.authorName);
+    expect(JSON.stringify(reviews)).not.toContain("Bisi Ade");
   });
 
   it("marks a message's alert as seen once the chat is opened", async () => {

@@ -384,7 +384,7 @@ export const mockOrders: OrderService = {
       productId: input.productId,
       brandId: order.brandId,
       userId: user.id,
-      authorName: shortName(user.name),
+      authorName: atName(user),
       rating: input.rating,
       body: input.body,
       ...(item.variantLabel ? { variantLabel: item.variantLabel } : {}),
@@ -448,11 +448,6 @@ export const mockOrders: OrderService = {
     );
   },
 };
-
-function shortName(full: string) {
-  const [first, last] = full.trim().split(/\s+/);
-  return last ? `${first} ${last[0]}.` : (first ?? full);
-}
 
 /** Seller-side transition with notification (used by Studio). */
 /** `note`: the seller's reason, kept on the timeline and passed to the buyer (decline / cancel). */
