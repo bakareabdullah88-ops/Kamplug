@@ -125,6 +125,10 @@ export const mockCatalog: CatalogService = {
       list = list.filter((p) => p.priceKobo <= query.maxPriceKobo!);
     if (query.minRating) list = list.filter((p) => p.rating >= query.minRating!);
     if (query.inStock) list = list.filter((p) => totalStock(p) > 0);
+    if (query.method === "delivery" || query.method === "pickup") {
+      const m = query.method;
+      list = list.filter((p) => !!brandsById.get(p.brandId)?.fulfilment[m]);
+    }
 
     // Distance from the buyer, worked out once per shop.
     const near = query.near ?? {};

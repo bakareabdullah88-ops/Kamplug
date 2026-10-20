@@ -315,6 +315,19 @@ describe("buying and selling", () => {
     );
   });
 
+  it("filters products to shops that deliver, or that offer pickup", async () => {
+    const { brand, product } = await openShop();
+    const ids = async (method: "pickup" | "delivery") =>
+      (await s.catalog.getProducts({ method })).items.map((p) => p.id);
+    expect(await ids("pickup")).toContain(product.id);
+    expect(await ids("delivery")).toContain(product.id);
+    // Stop delivering: it drops out of "bring it to me" but stays for pickup.
+    const db = await getDb();
+    db.brands.find((b) => b.id === brand.id)!.fulfilment.delivery = false;
+    expect(await ids("delivery")).not.toContain(product.id);
+    expect(await ids("pickup")).toContain(product.id);
+  });
+
   it("shows reviewers by username, never their real name", async () => {
     const { brand, product } = await openShop();
     await signUpBuyer();

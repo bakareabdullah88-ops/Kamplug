@@ -385,6 +385,8 @@ export type ProductQuery = {
   maxPriceKobo?: Kobo;
   minRating?: number;
   inStock?: boolean;
+  /** Only shops that deliver, or that offer pickup. */
+  method?: FulfilmentMethod;
   /** The buyer's spot, hall and faculty: used by "nearest" and the walking filter. */
   near?: { zoneId?: ID | null; hallZoneId?: ID | null; facultyZoneId?: ID | null };
   /** Only shops within walking distance of `near.zoneId`. */

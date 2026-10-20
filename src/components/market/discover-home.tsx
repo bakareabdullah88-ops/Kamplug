@@ -5,6 +5,7 @@ import { useReorder } from "@/components/orders/use-reorder";
 import Link from "next/link";
 import {
   ArrowRight,
+  CircleHelp,
   RotateCcw,
   Sparkles,
   ArrowUpRight,
@@ -207,8 +208,9 @@ function OnTheWay({ order }: { order: Order }) {
 }
 
 /**
- * Two shortcuts under the search: order your last delivery again, or jump to
- * something random from the market. Each only shows when it can work.
+ * Shortcuts under the search: order your last delivery again, answer a few
+ * questions to find something, or jump to something random from the market.
+ * Repeat only shows once there's a delivered order to repeat.
  */
 function QuickActions({ lastOrder }: { lastOrder: Order | undefined }) {
   const router = useRouter();
@@ -222,7 +224,7 @@ function QuickActions({ lastOrder }: { lastOrder: Order | undefined }) {
   const row =
     "flex h-14 w-full items-center gap-3 px-1 text-left text-[15px] font-semibold transition-colors hover:text-accent-ink disabled:opacity-50";
   return (
-    <ul className="grid divide-y divide-line-thin border-y border-line-thin sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+    <ul className="grid auto-cols-fr divide-y divide-line-thin border-y border-line-thin sm:grid-flow-col sm:divide-x sm:divide-y-0">
       {lastOrder && (
         <li>
           <button
@@ -240,6 +242,12 @@ function QuickActions({ lastOrder }: { lastOrder: Order | undefined }) {
         </li>
       )}
       <li className={cn(lastOrder && "sm:pl-4")}>
+        <Link href="/help-me-choose" className={row}>
+          <CircleHelp className="size-5 text-success" aria-hidden />
+          <span className="flex-1">Help me choose</span>
+        </Link>
+      </li>
+      <li className="sm:pl-4">
         <button type="button" className={row} disabled={!pool?.length} onClick={surprise}>
           <Sparkles className="size-5 text-warning" aria-hidden />
           <span className="flex-1">Surprise me</span>
