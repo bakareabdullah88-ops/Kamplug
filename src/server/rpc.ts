@@ -69,15 +69,22 @@ export function scrub(v: unknown): unknown {
 }
 
 /*
- * Per-address limits, kept in each server's memory: enough to slow down
- * password guessing and junk analytics, not a substitute for a firewall.
+ * Rate limits, kept in each server's memory: enough to slow down password
+ * guessing, spam and junk, not a substitute for a firewall. Signed-in calls
+ * are counted per account, so a hostel sharing one Wi-Fi address isn't
+ * blocked by one busy neighbour; signed-out calls are counted per address.
  */
 const hits = new Map<string, number[]>();
-function limited(req: Request, bucket: string, max: number): boolean {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  const key = `${bucket}:${ip}`;
+export function clientIp(req: Request): string {
+  return (
+    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "local"
+  );
+}
+export function limited(key: string, max: number, windowMs = 60_000): boolean {
   const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < 60_000);
+  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
   recent.push(now);
   hits.set(key, recent);
   if (hits.size > 20_000) hits.clear();
@@ -89,14 +96,32 @@ export function __resetAttempts() {
   hits.clear();
 }
 
-/** Calls a minute per address. */
+/** Calls a minute, per account (or per address when signed out). */
 const LIMITS: Record<string, number> = {
-  "auth.signIn": 10,
+  "auth.signIn": 30,
   "auth.signUp": 10,
-  "auth.deleteAccount": 10,
+  "auth.deleteAccount": 5,
+  "auth.updateProfile": 20,
   "catalog.recordEvent": 60,
+  "messages.send": 30,
+  "messages.startThread": 20,
+  "messages.startThreadWithBuyer": 20,
+  "orders.createOrders": 10,
+  "orders.reviewOrderItem": 10,
+  "studio.createBrand": 5,
+  "studio.createProduct": 30,
+  "studio.createPromo": 20,
 };
+/** Password guesses against one email, from anywhere, per 15 minutes. */
+const SIGN_IN_PER_EMAIL = 10;
 const ANY_CALL = 600;
+
+function emailArg(args: unknown[]): string | null {
+  const first = args[0];
+  if (!first || typeof first !== "object") return null;
+  const email = (first as Record<string, unknown>).email;
+  return typeof email === "string" ? email.trim().toLowerCase().slice(0, 200) : null;
+}
 
 type Body = { service: string; method: string; args: unknown[] };
 
@@ -130,11 +155,16 @@ export async function handleRpc(req: Request): Promise<Response> {
   if (typeof fn !== "function") return errorResponse("NOT_FOUND", "No such operation.");
   const name = `${body.service}.${body.method}`;
   const max = LIMITS[name];
-  if ((max !== undefined && limited(req, name, max)) || limited(req, "any", ANY_CALL))
-    return errorResponse("UNAVAILABLE", "Too many attempts. Wait a minute and try again.");
+  const tooMany = () =>
+    errorResponse("UNAVAILABLE", "Too many attempts. Wait a minute and try again.");
 
   try {
     const session = await sessionUser(req);
+    const who = session ? `u:${session.userId}` : `ip:${clientIp(req)}`;
+    if ((max !== undefined && limited(`${name}:${who}`, max)) || limited(`any:${who}`, ANY_CALL))
+      return tooMany();
+    const email = name === "auth.signIn" ? emailArg(body.args) : null;
+    if (email && limited(`signin-email:${email}`, SIGN_IN_PER_EMAIL, 15 * 60_000)) return tooMany();
     const args = body.args.map((a) => (a === null ? undefined : a));
     const result = await runCall(session?.userId ?? null, () =>
       (fn as (...a: unknown[]) => Promise<unknown>).apply(service, args),

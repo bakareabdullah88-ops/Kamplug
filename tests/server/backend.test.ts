@@ -515,7 +515,8 @@ describe.skipIf(!url)("backend on Postgres", () => {
     forgetR2();
     try {
       const { seller } = await openShop();
-      const res = await seller.upload(new Uint8Array([1, 2, 3]), "image/webp");
+      const webp = new TextEncoder().encode("RIFF\0\0\0\0WEBPVP8 ");
+      const res = await seller.upload(webp, "image/webp");
       const { data } = await res.json();
       expect(calls[0]).toMatchObject({
         method: "PUT",
@@ -561,6 +562,32 @@ describe.skipIf(!url)("backend on Postgres", () => {
     expect(res.status).toBe(403);
   });
 
+  it("slows down password guessing on one account and message spam", async () => {
+    const guess = async () => {
+      const res = await browser().raw("auth", "signIn", {
+        email: "kemi@shop.com",
+        password: "wrong-pass",
+      });
+      return (await res.json()).error?.message as string;
+    };
+    for (let i = 0; i < 10; i++) expect(await guess()).not.toMatch(/Too many/);
+    expect(await guess()).toMatch(/Too many/);
+
+    const { seller } = await openShop();
+    const buyer = browser();
+    await buyer.call("auth", "signUp", {
+      name: "Bisi Ade",
+      email: "bisi@ex.com",
+      password: "campus123",
+    });
+    const brandId = (await seller.call("studio", "getMyBrand"))!.id;
+    const t = await buyer.call("messages", "startThread", { brandId });
+    const send = () =>
+      buyer.raw("messages", "send", { threadId: t.id, body: "hello", as: "buyer" });
+    for (let i = 0; i < 30; i++) expect((await send()).status).toBe(200);
+    expect((await send()).status).not.toBe(200);
+  });
+
   it("stores and serves uploaded photos for signed-in people only", async () => {
     const png = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3]);
     expect((await browser().upload(png)).status).toBe(401);
@@ -573,6 +600,10 @@ describe.skipIf(!url)("backend on Postgres", () => {
     expect(img.headers.get("content-type")).toBe("image/png");
     expect(new Uint8Array(await img.arrayBuffer())).toEqual(png);
     expect((await seller.upload(png, "text/html")).status).toBe(422);
+    // A page dressed up as a photo is turned away by its contents, not its label.
+    const html = new TextEncoder().encode("<script>alert(1)</script>");
+    expect((await seller.upload(html, "image/png")).status).toBe(422);
+    expect((await seller.upload(png, "image/jpeg")).status).toBe(422);
   });
   it("takes old sample data out of a database that still has it, keeping real accounts", async () => {
     const real = browser();

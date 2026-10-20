@@ -14,7 +14,7 @@ import type { CheckoutInput } from "../inputs";
 import { schemas, type Schemas } from "./schemas";
 import type { Order, Product, UserRecord } from "../types";
 import { commit, getDb } from "./db";
-import { clone, requireUser } from "./context";
+import { clone, forShop, requireUser } from "./context";
 import { atName } from "@/domain/username";
 import { latency } from "./latency";
 import { notifyBuyerOfStatus, pushNotification } from "./notify";
@@ -318,7 +318,8 @@ export const mockOrders: OrderService = {
     if (order.buyerId !== user.id && !user.brandIds.includes(order.brandId)) {
       throw new ServiceError("NOT_FOUND", "We couldn't find that order.");
     }
-    return clone(order);
+    // The shop sees the buyer by username; the buyer sees their own order as is.
+    return clone(order.buyerId === user.id ? order : forShop(db, order));
   },
 
   async cancelOrder(id) {
