@@ -26,6 +26,7 @@ import { cn } from "@/lib/cn";
 import { seedCampuses } from "@/services/mock/seed/campuses";
 import { focusCampusId } from "@/config/brand";
 import { CampusBadge } from "@/components/landing/campus-badge";
+import { KamplugLogo } from "@/components/app/kamplug-mark";
 import { WALKING_MINUTES } from "@/domain/distance";
 
 export const metadata: Metadata = {
@@ -381,8 +382,8 @@ export default function LandingPage() {
       <footer className="bg-[#1b1f3b] text-white">
         <div className="mx-auto grid max-w-[1240px] gap-10 px-5 py-16 md:grid-cols-[1.6fr_1fr_1fr_1fr] md:px-8">
           <div>
-            <p className="text-[30px] font-extrabold tracking-[-0.055em]">
-              kam<span className="text-[#9fb0ff]">plug</span>
+            <p className="text-[30px]">
+              <KamplugLogo wordClassName="text-white" />
             </p>
             <p className="mt-3 max-w-xs text-[15px] leading-relaxed text-white/85">
               {brand.description}

@@ -1,36 +1,49 @@
 /**
- * The Kamplug mark: a K whose arm ends in a plug (body and two prongs).
- * One geometry, used by the in-app mark, the favicon, app icons and share images.
- * Pure SVG so it also renders inside ImageResponse.
+ * The Kamplug mark: the face of a Nigerian wall socket, one tall slot over two
+ * short ones, cut out of a cobalt tile. Three shapes, so it stays clear from a
+ * 16px browser tab up to a share image. One geometry for the in-app mark, the
+ * favicon, the app icons and the share image. Pure SVG so it also renders
+ * inside ImageResponse.
  */
 export const brandColors = {
-  /** Cobalt: the brand colour on light backgrounds and on the icon tile. */
-  green: "#3A5BFF",
+  /** The brand colour on light backgrounds and on the icon tile. */
+  cobalt: "#3A5BFF",
   /** The same cobalt, lifted for dark backgrounds. */
-  greenBright: "#9FB0FF",
+  cobaltBright: "#9FB0FF",
   ink: "#1B1F3B",
   paper: "#F4F5F8",
 } as const;
 
-/** Strokes of the K on a 64×64 grid. `w` is the main stroke width. */
-export function MarkStrokes({ color, w = 7.5 }: { color: string; w?: number }) {
+/** The three socket slots on a 64×64 grid. */
+export function SocketSlots({ color }: { color: string }) {
   return (
-    <g stroke={color} strokeLinecap="round" strokeLinejoin="round" fill="none">
-      <path d="M21 13 V51" strokeWidth={w} />
-      <path d="M27.5 31.5 L43 51" strokeWidth={w} />
-      <path d="M21 36.5 L33.5 24" strokeWidth={w} />
-      <path d="M29.8 20.3 L37.2 27.7" strokeWidth={w} strokeLinecap="butt" />
-      <path d="M34.6 19.4 L39.2 14.8 M38.6 23.4 L43.2 18.8" strokeWidth={w * 0.48} />
+    <g fill={color}>
+      <rect x="27.5" y="15" width="9" height="19" rx="4.5" />
+      <rect x="12" y="40" width="17" height="9" rx="4.5" />
+      <rect x="35" y="40" width="17" height="9" rx="4.5" />
     </g>
   );
 }
 
-/** The app-icon tile: green rounded square, white K. */
-export function BrandMarkSvg({ size, radius = 15 }: { size: number; radius?: number }) {
+/**
+ * The app-icon tile: cobalt rounded square, white slots. `scale` shrinks the
+ * slots towards the middle, for Android icons that get cropped to a circle.
+ */
+export function BrandMarkSvg({
+  size,
+  radius = 16,
+  scale = 1,
+}: {
+  size: number;
+  radius?: number;
+  scale?: number;
+}) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64">
-      <rect width="64" height="64" rx={radius} fill={brandColors.green} />
-      <MarkStrokes color="#ffffff" />
+      <rect width="64" height="64" rx={radius} fill={brandColors.cobalt} />
+      <g transform={`translate(${32 - 32 * scale} ${32 - 32 * scale}) scale(${scale})`}>
+        <SocketSlots color="#ffffff" />
+      </g>
     </svg>
   );
 }

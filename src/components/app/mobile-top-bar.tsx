@@ -8,7 +8,7 @@ import { AccountMenu } from "./account-menu";
 import { MessagesButton } from "./messages-button";
 import { MobileSidebar } from "./mobile-sidebar";
 import { useNavBadges } from "./nav-badges";
-import { KamplugWordmark } from "./kamplug-mark";
+import { KamplugLogo } from "./kamplug-mark";
 
 const iconButton =
   "pressable relative grid size-10 shrink-0 place-items-center rounded-xl text-ink-2 transition-colors hover:bg-ink/[0.05] hover:text-ink max-[380px]:size-9";
@@ -53,7 +53,7 @@ export function MobileTopBar() {
           aria-label="Kamplug home"
           className="ml-1 flex shrink-0 items-center"
         >
-          <KamplugWordmark className="text-[22px]" />
+          <KamplugLogo className="text-[21px]" />
         </Link>
         <span className="min-w-0 flex-1" />
         <MessagesButton />

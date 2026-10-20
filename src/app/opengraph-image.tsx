@@ -38,55 +38,24 @@ export default async function OpengraphImage() {
         width: "100%",
         height: "100%",
         display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         background: brandColors.paper,
-        padding: 72,
-        position: "relative",
-        overflow: "hidden",
+        fontFamily: serif,
+        color: brandColors.ink,
       }}
     >
-      {/* A large mark bleeding off the right edge: the brand, not decoration. */}
-      <div style={{ position: "absolute", right: -90, top: 70, display: "flex" }}>
-        <BrandMarkSvg size={520} radius={120} />
+      {/* Just the mark, the name and one line: room to breathe at any preview size. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+        <BrandMarkSvg size={132} />
+        <div style={{ display: "flex", fontSize: 128, letterSpacing: -6, lineHeight: 1 }}>
+          kamplug
+        </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          width: "62%",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <BrandMarkSvg size={64} />
-          <div
-            style={{
-              display: "flex",
-              fontFamily: serif,
-              fontSize: 54,
-              letterSpacing: -2.5,
-              color: brandColors.ink,
-            }}
-          >
-            kam<span style={{ color: brandColors.green }}>plug</span>
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontFamily: serif,
-            fontSize: 92,
-            lineHeight: 0.98,
-            color: brandColors.ink,
-            letterSpacing: -3,
-          }}
-        >
-          <span>Your campus plug.</span>
-          <span style={{ color: brandColors.green }}>Buy and sell on campus.</span>
-        </div>
-        <div style={{ fontFamily: serif, fontSize: 30, color: "#545862" }}>
-          Food, fashion, thrift and more, from students near you
-        </div>
+      <div style={{ display: "flex", marginTop: 40, fontSize: 46, letterSpacing: -1.5 }}>
+        Your campus plug. Buy and sell at&nbsp;
+        <span style={{ color: brandColors.cobalt }}>UNILAG.</span>
       </div>
     </div>,
     {

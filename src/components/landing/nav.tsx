@@ -1,5 +1,6 @@
 "use client";
 
+import { KamplugLogo } from "@/components/app/kamplug-mark";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, Menu as MenuIcon, X } from "lucide-react";
@@ -18,12 +19,8 @@ const links = [
 /** The Kamplug wordmark as plain text: "kam" in ink, "plug" in cobalt. */
 function LogoText() {
   return (
-    <Link
-      href="/"
-      aria-label={`${brand.name} home`}
-      className="text-[26px] leading-none font-extrabold tracking-[-0.055em] text-[#1b1f3b] md:text-[30px]"
-    >
-      kam<span className="text-[#3a5bff]">plug</span>
+    <Link href="/" aria-label={`${brand.name} home`} className="text-[25px] md:text-[28px]">
+      <KamplugLogo />
     </Link>
   );
 }
