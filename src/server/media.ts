@@ -59,12 +59,27 @@ export async function handleUpload(req: Request): Promise<Response> {
 /**
  * GET /api/media/:id → the image: a redirect to Cloudflare R2, or the bytes
  * from the database. Ids are random and never reused, so it caches forever.
+ * `?inline` sends the bytes from here even when they live on R2, so the page
+ * can draw them on a canvas (the poster maker) without a cross-site request.
  */
-export async function handleGet(id: string): Promise<Response> {
+export async function handleGet(id: string, inline = false): Promise<Response> {
   if (!/^[A-Za-z0-9_-]{1,80}$/.test(id)) return new Response(null, { status: 404 });
   const found = await readMedia(id);
   if (!found) return new Response(null, { status: 404, headers: { "cache-control": "no-store" } });
   const forever = "public, max-age=31536000, immutable";
+  if (found.kind === "url" && inline) {
+    const res = await fetch(found.url);
+    const type = res.headers.get("content-type") ?? "";
+    if (!res.ok || !type.startsWith("image/"))
+      return new Response(null, { status: 404, headers: { "cache-control": "no-store" } });
+    return new Response(res.body, {
+      headers: {
+        "content-type": type,
+        "cache-control": forever,
+        "x-content-type-options": "nosniff",
+      },
+    });
+  }
   if (found.kind === "url")
     return new Response(null, {
       status: 302,

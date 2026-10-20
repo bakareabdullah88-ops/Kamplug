@@ -28,10 +28,19 @@ import {
   useState,
   type ComponentProps,
 } from "react";
-import { ArrowLeft, Copy, GripVertical, ImagePlus, Plus, Trash2, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Copy,
+  GripVertical,
+  Image as ImageIcon,
+  ImagePlus,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { AppImage } from "@/components/ui/app-image";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { Select } from "@/components/ui/overlay";
@@ -949,6 +958,17 @@ function EditorForm({
       <NavPageHeader
         eyebrow={product ? "Edit product" : "New product"}
         title={product ? product.name : "Add a product"}
+        actions={
+          product?.status === "published" ? (
+            <ButtonLink
+              href={`/studio/posters?product=${product.id}`}
+              variant="secondary"
+              leadingIcon={<ImageIcon className="size-4.5" />}
+            >
+              Make a poster
+            </ButtonLink>
+          ) : undefined
+        }
       />
       <AnimatePresence initial={false}>
         {leftUnsaved && dirty && (

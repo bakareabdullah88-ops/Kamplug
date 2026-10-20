@@ -1,5 +1,6 @@
 "use client";
 
+import { CategoryPoster } from "../category-poster";
 import { pagePad } from "@/components/app/layout";
 import { NavPageHeader } from "@/components/app/nav-header";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
@@ -226,6 +227,9 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
         </aside>
 
         <div className="min-w-0">
+          {category && mode !== "search" && (
+            <CategoryPoster category={category.id} blurb={category.blurb} />
+          )}
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 lg:min-h-[52px]">
             <div className="hidden min-w-0 lg:block">
               <h1 className="text-[26px] leading-tight font-semibold tracking-[-0.03em]">

@@ -27,6 +27,8 @@ import { seedCampuses } from "@/services/mock/seed/campuses";
 import { focusCampusId } from "@/config/brand";
 import { CampusBadge } from "@/components/landing/campus-badge";
 import { KamplugLogo } from "@/components/app/kamplug-mark";
+import { PosterWords } from "@/components/brand/poster-words";
+import { CategoryArt } from "@/components/market/category-art";
 import { WALKING_MINUTES } from "@/domain/distance";
 
 export const metadata: Metadata = {
@@ -177,6 +179,40 @@ export default function LandingPage() {
               </p>
             </Reveal>
             <CategoryStrip />
+          </div>
+        </section>
+
+        {/* Hungry? A food-poster band: the word stacked as type, the food drawn in front */}
+        <section
+          aria-labelledby="hungry-title"
+          className="relative overflow-hidden bg-[#c81e16] px-4 pt-12 pb-16 text-[#ffe3b3] md:px-8 md:pt-14 md:pb-20"
+        >
+          <h2 id="hungry-title" className="sr-only">
+            Hungry? Order food on campus
+          </h2>
+          {/* The words are the headline; the food sits on top of them. */}
+          <div className="relative mx-auto max-w-[1240px]">
+            <PosterWords
+              word="Hungry?"
+              rows={4}
+              stroke={3}
+              className="text-center text-[length:clamp(76px,15vw,220px)]"
+            />
+            <CategoryArt
+              id="food"
+              className="absolute top-1/2 left-1/2 w-[min(560px,78%)] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_26px_30px_rgba(0,0,0,0.32)]"
+            />
+          </div>
+          <div className="relative mx-auto mt-8 flex max-w-[1240px] flex-col items-center text-center">
+            <p className="max-w-md text-[18px] leading-snug font-semibold md:text-[20px]">
+              Jollof, small chops and late-night bites from students in your hall.
+            </p>
+            <Link
+              href="/explore?category=food"
+              className="mt-6 inline-flex h-14 items-center gap-2 rounded-xl bg-[#ffe3b3] px-7 text-[16px] font-bold text-[#8c1d18] transition-colors hover:bg-white"
+            >
+              Order food <ArrowRight className="size-5" />
+            </Link>
           </div>
         </section>
 

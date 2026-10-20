@@ -15,6 +15,7 @@ import {
   Settings,
   Star,
   Store,
+  Image as ImageIcon,
   Tag,
   Users,
   Wallet,
@@ -178,6 +179,7 @@ export const shopNav: NavSection[] = [
     title: "Grow",
     items: [
       { href: "/studio/promotions", label: "Promotions", icon: Tag, tone: T.rose },
+      { href: "/studio/posters", label: "Posters", icon: ImageIcon, tone: T.orange },
       { href: "/studio/reviews", label: "Reviews", icon: Star, tone: T.amber },
       {
         href: "/notifications",

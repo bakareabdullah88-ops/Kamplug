@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Logo } from "@/components/shell/logo";
+import { PosterWords } from "@/components/brand/poster-words";
 
 export const metadata: Metadata = { title: "Page not found", robots: { index: false } };
 
@@ -13,10 +14,17 @@ export default function NotFound() {
       </header>
       <main
         id="main"
-        className="flex flex-1 flex-col items-center justify-center px-(--gutter) pb-16"
+        className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-(--gutter) pb-16"
       >
-        <p className="eyebrow text-muted">Error 404</p>
+        <PosterWords
+          word="Oops"
+          rows={3}
+          solid={1}
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[length:clamp(120px,22vw,320px)] text-accent/10"
+        />
+        <p className="relative eyebrow text-muted">Error 404</p>
         <EmptyState
+          className="relative"
           illustration="lost"
           title="This page took a wrong turn"
           body="The link may be old, or the brand may have moved. Let's get you back to campus."

@@ -100,7 +100,8 @@ const media: MediaService = {
     return ((await res.json()) as { data: Awaited<ReturnType<MediaService["putImage"]>> }).data;
   },
   async getImage(id) {
-    const res = await send(`/api/media/${encodeURIComponent(id)}`, { method: "GET" });
+    // Inline: the bytes come from this site, never a redirect to the image host.
+    const res = await send(`/api/media/${encodeURIComponent(id)}?inline`, { method: "GET" });
     if (res.status === 404) return null;
     if (!res.ok) return fail(res);
     return res.blob();
