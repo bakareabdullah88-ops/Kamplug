@@ -52,9 +52,11 @@ export function LandingNav() {
 
   return (
     <header
-      className={cn("pointer-events-none fixed inset-x-0 top-0 z-(--z-header) px-4 py-3 md:px-8")}
+      // The whole bar takes the pointer: if gaps let it fall through to the hero,
+      // the scene's pointer parallax starts and stops under the links and flickers.
+      className="fixed inset-x-0 top-0 z-(--z-header) px-4 py-3 md:px-8"
     >
-      {/* Once you scroll, a frosted bar slides in behind the pills so page content
+      {/* Once you scroll, a frosted bar fades in behind the links so page content
           passing underneath never fights with the logo and buttons. */}
       <div
         aria-hidden
@@ -78,25 +80,25 @@ export function LandingNav() {
         )}
       </AnimatePresence>
       <div className="relative mx-auto flex max-w-[1240px] items-center gap-3">
-        <div className="pointer-events-auto flex h-11 items-center">
+        <div className="flex h-11 items-center">
           <LogoText />
         </div>
         {/* A plain row of links next to the wordmark. */}
         <nav
           aria-label="Main"
-          className="pointer-events-auto ml-8 hidden items-center gap-1 lg:flex"
+          className="ml-8 hidden items-center gap-1 lg:flex"
         >
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="flex h-10 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1b1f3b]/80 transition-colors hover:text-[#3a5bff]"
+              className="flex h-11 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1b1f3b]/80 transition-colors hover:bg-[#3a5bff]/[0.08] hover:text-[#3a5bff]"
             >
               {l.label}
             </Link>
           ))}
         </nav>
-        <div className="pointer-events-auto ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           {isReady && user ? (
             <Link href="/home" className={cta}>
               Open Kamplug <ArrowRight className="size-4" />
@@ -105,7 +107,7 @@ export function LandingNav() {
             <>
               <Link
                 href="/login"
-                className="hidden h-11 items-center px-4 text-[15px] font-semibold text-[#1b1f3b] transition-colors hover:text-[#3a5bff] sm:flex"
+                className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1b1f3b] transition-colors hover:bg-[#3a5bff]/[0.08] hover:text-[#3a5bff] sm:flex"
               >
                 Log in
               </Link>
