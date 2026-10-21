@@ -34,6 +34,7 @@ const floatingPanel =
  */
 type HoverProps = {
   onPointerEnter: (e: PointerEvent) => void;
+  onPointerMove: (e: PointerEvent) => void;
   onPointerLeave: (e: PointerEvent) => void;
 };
 type Hover = { props: HoverProps; pin: (e: PointerEvent) => void };
@@ -45,6 +46,7 @@ function useHoverOpen(open: boolean | undefined, onOpenChange?: (open: boolean) 
   const [inner, setInner] = useState(false);
   const isOpen = open ?? inner;
   const byHover = useRef(false);
+  const opening = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   const set = useCallback(
@@ -57,28 +59,39 @@ function useHoverOpen(open: boolean | undefined, onOpenChange?: (open: boolean) 
   );
   const later = (next: boolean, ms: number) => {
     clearTimeout(timer.current);
+    opening.current = next;
     timer.current = setTimeout(() => {
+      opening.current = false;
       if (next) byHover.current = true;
       set(next);
     }, ms);
   };
   const hover: Hover = {
     props: {
+      // Back over it before it closes: keep it open.
       onPointerEnter: (e) => {
-        if (e.pointerType !== "mouse") return;
-        if (isOpen) clearTimeout(timer.current);
-        else later(true, OPEN_DELAY);
+        if (e.pointerType === "mouse" && isOpen) clearTimeout(timer.current);
+      },
+      // Opens on an actual mouse move, not when something under a still
+      // pointer goes away (closing a side panel over the account button).
+      onPointerMove: (e) => {
+        if (e.pointerType !== "mouse" || isOpen || opening.current) return;
+        later(true, OPEN_DELAY);
       },
       onPointerLeave: (e) => {
         if (e.pointerType !== "mouse") return;
         if (isOpen && byHover.current) later(false, CLOSE_DELAY);
-        else if (!isOpen) clearTimeout(timer.current);
+        else if (!isOpen) {
+          clearTimeout(timer.current);
+          opening.current = false;
+        }
       },
     },
     // A click on a trigger that hover opened keeps it open instead of toggling it shut.
     pin: (e) => {
       // A click decides now; drop any pending hover open or close.
       clearTimeout(timer.current);
+      opening.current = false;
       if (e.pointerType === "mouse" && isOpen && byHover.current) {
         e.preventDefault();
         byHover.current = false;
