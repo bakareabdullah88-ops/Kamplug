@@ -56,7 +56,7 @@ function PriceFilter({
   if (range.isPending) return <Skeleton className="h-16 w-full" />;
   return (
     <div>
-      <div className="flex justify-between font-mono text-small tabular">
+      <div className="flex justify-between text-small font-medium tabular">
         <span>{formatNaira(value[0] * 100)}</span>
         <span>
           {value[1] >= hi ? `${formatNaira(value[1] * 100)}+` : formatNaira(value[1] * 100)}
@@ -72,7 +72,7 @@ function PriceFilter({
         onValueCommit={([a, b]) => update({ min: a <= lo ? null : a, max: b >= hi ? null : b })}
         formatValue={(n) => formatNaira(n * 100)}
       />
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-2 grid grid-cols-2 gap-2">
         {[
           ["Under ₦2k", null, 2000],
           ["₦2k–₦5k", 2000, 5000],
@@ -83,7 +83,7 @@ function PriceFilter({
           return (
             <Chip
               key={label as string}
-              className="h-8 px-3"
+              className="h-9 w-full justify-center px-2"
               selected={selected}
               onClick={() =>
                 update(
