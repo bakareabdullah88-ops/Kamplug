@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, MessageCircle, RotateCcw, Star, X } from "lucide-react";
+import { ArrowLeft, Check, MessageCircle, RotateCcw, Star, X } from "lucide-react";
 import { AppImage } from "@/components/ui/app-image";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -12,12 +12,18 @@ import { Dialog } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChatSheet } from "@/components/messages/chat-sheet";
 import { spring } from "@/design/motion";
-import { canBuyerCancel, etaSeconds, isActive, statusLabel } from "@/domain/orders";
+import {
+  awaitingHandover,
+  canBuyerCancel,
+  etaSeconds,
+  isActive,
+  statusLabel,
+} from "@/domain/orders";
 import { formatNaira } from "@/domain/money";
 import { formatDate, formatTime } from "@/lib/format";
 import { useDocumentTitle, useNow } from "@/lib/hooks";
 import { useBrand, useCampus } from "@/queries/catalog";
-import { useCancelOrder, useOrder } from "@/queries/orders";
+import { useCancelOrder, useConfirmReceived, useOrder } from "@/queries/orders";
 import { useSession } from "@/queries/session";
 import { errorMessage, isServiceError } from "@/services/errors";
 import { toast } from "@/stores/toast";
@@ -57,6 +63,8 @@ export function OrderDetail() {
   const brand = useBrand(order?.brandHandle ?? "").data;
   const now = useNow(1000);
   const cancel = useCancelOrder();
+  const received = useConfirmReceived();
+  const [confirmReceived, setConfirmReceived] = useState(false);
   const { reorder, pendingId: reorderingId } = useReorder();
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -168,7 +176,50 @@ export function OrderDetail() {
             arrivesAt={now && eta !== null ? new Date(now + eta * 1000).toISOString() : null}
             onChat={isBuyer ? () => setChat(true) : undefined}
           />
-          {order.fulfilment.method === "pickup" && (
+          {isBuyer && order.handoverCode && active && (
+            <section aria-labelledby="handover-title" className="card py-6">
+              <h2 id="handover-title" className="eyebrow text-muted">
+                Your handover code
+              </h2>
+              <p
+                aria-label={`Handover code ${order.handoverCode.split("").join(" ")}`}
+                className="mt-3 font-mono text-display-md tracking-[0.3em] tabular"
+              >
+                {order.handoverCode}
+              </p>
+              <p className="mt-3 max-w-prose text-small text-muted">
+                {order.fulfilment.method === "pickup" ? (
+                  <>
+                    Collect it at{" "}
+                    <strong className="font-semibold text-ink">
+                      {point?.name ?? "the pickup point"}
+                    </strong>
+                    {point?.hint && ` (${point.hint})`}. Once it&apos;s in your hands, read this
+                    code to the seller to finish the order.
+                  </>
+                ) : (
+                  "When your order reaches you, read this code to the seller to finish the order."
+                )}{" "}
+                <strong className="font-semibold text-ink">
+                  Only give it once you have everything.
+                </strong>
+              </p>
+              {awaitingHandover(order) && (
+                <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line-thin pt-4">
+                  <p className="text-small text-muted">Seller can&apos;t take the code?</p>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leadingIcon={<Check className="size-4" />}
+                    onClick={() => setConfirmReceived(true)}
+                  >
+                    I&apos;ve got my order
+                  </Button>
+                </div>
+              )}
+            </section>
+          )}
+          {order.fulfilment.method === "pickup" && !order.handoverCode && (
             <section className="card py-6">
               <p className="eyebrow text-muted">Pickup code</p>
               <p className="mt-3 font-mono text-display-md tracking-[0.12em]">{order.code}</p>
@@ -339,6 +390,42 @@ export function OrderDetail() {
         }
       >
         <p className="text-body text-muted">Items go back on the shelf for other students.</p>
+      </Dialog>
+      <Dialog
+        open={confirmReceived}
+        onOpenChange={setConfirmReceived}
+        title="Got your order?"
+        description="This finishes the order, the same as giving the seller your code."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setConfirmReceived(false)}>
+              Not yet
+            </Button>
+            <Button
+              loading={received.isPending}
+              onClick={() =>
+                received.mutate(order.id, {
+                  onSuccess: () => {
+                    setConfirmReceived(false);
+                    toast.success("Order complete", {
+                      description: `We've told ${order.brandName}.`,
+                    });
+                  },
+                  onError: (e) => {
+                    setConfirmReceived(false);
+                    toast.error("Couldn't finish the order", { description: errorMessage(e) });
+                  },
+                })
+              }
+            >
+              Yes, I have it
+            </Button>
+          </>
+        }
+      >
+        <p className="text-body text-muted">
+          Only do this once you have everything you ordered. It can&apos;t be undone.
+        </p>
       </Dialog>
       {order.status === "delivered" && (
         <ReviewDialog order={order} open={reviewOpen} onOpenChange={setReviewOpen} />

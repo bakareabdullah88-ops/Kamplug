@@ -107,6 +107,8 @@ const LIMITS: Record<string, number> = {
   "messages.startThread": 20,
   "messages.startThreadWithBuyer": 20,
   "orders.createOrders": 10,
+  "orders.confirmReceived": 20,
+  "studio.completeOrder": 20,
   "orders.reviewOrderItem": 10,
   "studio.createBrand": 5,
   "studio.createProduct": 30,

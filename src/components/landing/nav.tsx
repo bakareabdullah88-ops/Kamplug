@@ -84,10 +84,7 @@ export function LandingNav() {
           <LogoText />
         </div>
         {/* A plain row of links next to the wordmark. */}
-        <nav
-          aria-label="Main"
-          className="ml-8 hidden items-center gap-1 lg:flex"
-        >
+        <nav aria-label="Main" className="ml-8 hidden items-center gap-1 lg:flex">
           {links.map((l) => (
             <Link
               key={l.href}

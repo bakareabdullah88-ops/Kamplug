@@ -99,6 +99,8 @@ export interface OrderService {
   listMyOrders(): Promise<Order[]>;
   getOrder(id: ID): Promise<Order>;
   cancelOrder(id: ID): Promise<Order>;
+  /** The buyer says they've got it (when the seller couldn't take their code). */
+  confirmReceived(id: ID): Promise<Order>;
   reviewOrderItem(input: ReviewInput): Promise<Review>;
   myReviews(): Promise<Review[]>;
   /** Spending dashboard for the signed-in buyer. */
@@ -178,6 +180,8 @@ export interface StudioService {
   listOrders(): Promise<Order[]>;
   /** `note`: optional reason when declining or cancelling; the buyer sees it. */
   updateOrderStatus(id: ID, status: OrderStatus, note?: string): Promise<Order>;
+  /** Finishes an order with the buyer's 4-digit handover code. */
+  completeOrder(id: ID, code: string): Promise<Order>;
 
   listCustomers(): Promise<Customer[]>;
   listReviews(): Promise<Review[]>;

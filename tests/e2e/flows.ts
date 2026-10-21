@@ -98,16 +98,36 @@ export async function buy(page: Page, productName: string) {
   });
 }
 
-/** Click the next-step button on the first order until it's done. */
-export async function fulfilFirstOrder(page: Page) {
+/** The buyer's handover code, read from their newest order's page. */
+export async function readHandoverCode(page: Page): Promise<string> {
+  await page.goto("/orders");
+  await page
+    .getByRole("button", { name: /Actions for order/ })
+    .filter({ visible: true })
+    .first()
+    .click();
+  await page.getByRole("menuitem", { name: "Track order" }).click();
+  const code = page.getByLabel(/^Handover code/);
+  await expect(code).toBeVisible();
+  const text = (await code.textContent())?.trim() ?? "";
+  expect(text).toMatch(/^\d{4}$/);
+  return text;
+}
+
+/** Click the next-step button on the first order, then finish it with the buyer's code. */
+export async function fulfilFirstOrder(page: Page, code: string) {
   await page.goto("/studio/orders");
-  for (const label of ["Accept", "Start preparing", "Mark ready", "Mark picked up"]) {
+  for (const label of ["Accept", "Start preparing", "Mark ready", "Enter buyer's code"]) {
     await page
       .getByRole("button", { name: label, exact: true })
       .filter({ visible: true })
       .first()
       .click();
   }
+  const dialog = page.getByRole("dialog", { name: "Enter the buyer's code" });
+  await dialog.getByLabel("Buyer's code", { exact: true }).fill(code);
+  await dialog.getByRole("button", { name: "Finish pickup" }).click();
+  await expect(dialog).toBeHidden();
   // Saved, not just optimistic: the server marks pay-at-pickup orders paid on completion.
   await expect(
     page

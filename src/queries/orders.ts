@@ -78,6 +78,18 @@ export function useCancelOrder() {
   });
 }
 
+/** The buyer confirms they got the order, when the seller couldn't take their code. */
+export function useConfirmReceived() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => services.orders.confirmReceived(id),
+    onSuccess: (o) => {
+      qc.setQueryData(qk.order(o.id), o);
+      void qc.invalidateQueries({ queryKey: qk.orders });
+    },
+  });
+}
+
 export function useReviewItem() {
   const qc = useQueryClient();
   return useMutation({

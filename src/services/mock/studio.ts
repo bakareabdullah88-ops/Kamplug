@@ -9,9 +9,10 @@ import { ServiceError } from "../errors";
 import { schemas, type Schemas } from "./schemas";
 import type { Brand, Campus, Fulfilment, ImageRef, Product, Promo } from "../types";
 import { commit, getDb } from "./db";
-import { buyerLabel, clone, forShop, requireBrand, requireUser, withAuthor } from "./context";
+import { buyerLabel, clone, orderForShop, requireBrand, requireUser, withAuthor } from "./context";
 import { latency, quick } from "./latency";
 import { applySellerTransition } from "./orders";
+import { HANDOVER_LOCK_MS, HANDOVER_MAX_WRONG, awaitingHandover } from "@/domain/orders";
 import { pushNotification } from "./notify";
 import type { DbSnapshot } from "./seed";
 
@@ -452,7 +453,7 @@ export const mockStudio: StudioService = {
       db.orders
         .filter((o) => o.brandId === brand.id)
         .sort((a, b) => Date.parse(b.placedAt) - Date.parse(a.placedAt))
-        .map((o) => forShop(db, o)),
+        .map((o) => orderForShop(db, o)),
     );
   },
 
@@ -469,9 +470,64 @@ export const mockStudio: StudioService = {
     const { brand } = await requireBrand(db);
     const order = db.orders.find((o) => o.id === id && o.brandId === brand.id);
     if (!order) throw new ServiceError("NOT_FOUND", "Order not found.");
+    // Finishing needs the buyer's code (completeOrder); orders from before codes don't have one.
+    if (status === "delivered" && order.handoverCode)
+      throw new ServiceError("VALIDATION", "Enter the buyer's 4-digit code to finish this order.");
     const next = applySellerTransition(db, id, status, reason);
     await commit("orders", "products", "notifications");
-    return clone(forShop(db, next));
+    return clone(orderForShop(db, next));
+  },
+
+  async completeOrder(id, code) {
+    if (typeof id !== "string") throw new ServiceError("VALIDATION", "Choose an order.");
+    const entered = typeof code === "string" ? code.replace(/\s/g, "") : "";
+    if (!/^\d{4}$/.test(entered))
+      throw new ServiceError("VALIDATION", "The code is 4 digits.", { code: "Enter 4 digits" });
+    await latency(0.6);
+    const db = await getDb();
+    const { brand } = await requireBrand(db);
+    const idx = db.orders.findIndex((o) => o.id === id && o.brandId === brand.id);
+    const order = db.orders[idx];
+    if (!order) throw new ServiceError("NOT_FOUND", "Order not found.");
+    if (!awaitingHandover(order))
+      throw new ServiceError(
+        "CONFLICT",
+        order.status === "delivered"
+          ? "This order is already done."
+          : "Mark it out for delivery or ready first.",
+      );
+    const now = Date.now();
+    const tries = order.handoverTries ?? { wrong: 0 };
+    if (tries.lockedUntil && Date.parse(tries.lockedUntil) > now) {
+      const mins = Math.ceil((Date.parse(tries.lockedUntil) - now) / 60_000);
+      throw new ServiceError(
+        "UNAVAILABLE",
+        `Too many wrong codes. Try again in ${mins} min, or ask the buyer to tap "I've got it" in their order.`,
+      );
+    }
+    if (order.handoverCode && entered !== order.handoverCode) {
+      const wrong = tries.wrong + 1;
+      const locked = wrong >= HANDOVER_MAX_WRONG;
+      db.orders[idx] = {
+        ...order,
+        handoverTries: locked
+          ? { wrong: 0, lockedUntil: new Date(now + HANDOVER_LOCK_MS).toISOString() }
+          : { wrong },
+      };
+      await commit("orders");
+      throw new ServiceError(
+        "VALIDATION",
+        locked
+          ? "That code doesn't match. Entry is paused for 10 minutes."
+          : `That code doesn't match. Ask the buyer to check their order (${HANDOVER_MAX_WRONG - wrong} ${HANDOVER_MAX_WRONG - wrong === 1 ? "try" : "tries"} left).`,
+        { code: "Wrong code" },
+      );
+    }
+    const next = applySellerTransition(db, id, "delivered");
+    const { handoverTries: _cleared, ...done } = { ...next, handedOver: "code" as const };
+    db.orders[idx] = done;
+    await commit("orders", "products", "notifications");
+    return clone(orderForShop(db, done));
   },
 
   async listCustomers() {

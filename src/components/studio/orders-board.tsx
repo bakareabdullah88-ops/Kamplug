@@ -24,7 +24,7 @@ import {
 } from "@/components/table/data-table";
 import { TableEmpty } from "@/components/table/empty";
 import { Button, buttonStyles } from "@/components/ui/button";
-import { Field, Textarea } from "@/components/ui/input";
+import { Field, Input, Textarea } from "@/components/ui/input";
 import { Dialog, ResponsiveSheet } from "@/components/ui/sheet";
 import { AppImage } from "@/components/ui/app-image";
 import { StatusPill } from "@/components/orders/status-pill";
@@ -36,7 +36,7 @@ import { formatDate, formatRelative, formatTime } from "@/lib/format";
 import { useMounted, useNow } from "@/lib/hooks";
 import { useCampuses } from "@/queries/catalog";
 import { useMessageBuyer } from "@/queries/inbox";
-import { useStudioOrders, useUpdateOrderStatus } from "@/queries/studio";
+import { useCompleteOrder, useStudioOrders, useUpdateOrderStatus } from "@/queries/studio";
 import { errorMessage } from "@/services/errors";
 import type { Order, OrderStatus } from "@/services/types";
 import { toast } from "@/stores/toast";
@@ -52,6 +52,7 @@ function actionLabel(o: Order, s: OrderStatus) {
     case "out_for_delivery":
       return "Send out";
     case "delivered":
+      if (o.needsHandoverCode) return "Enter buyer's code";
       return o.fulfilment.method === "pickup" ? "Mark picked up" : "Mark delivered";
     default:
       return statusLabel(s);
@@ -105,6 +106,94 @@ function useAdvance() {
       );
   };
   return { advance, acceptAll, pending: update.isPending };
+}
+
+/** The last step of an order with a handover code goes through the code dialog. */
+function needsCode(o: Order, next: OrderStatus) {
+  return next === "delivered" && !!o.needsHandoverCode;
+}
+
+/**
+ * Finishing an order: the buyer reads out the 4-digit code from their order
+ * and the seller types it here. Wrong codes count down to a 10-minute pause.
+ */
+function HandoverDialog({ order, onClose }: { order: Order | null; onClose: () => void }) {
+  const complete = useCompleteOrder();
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const close = () => {
+    setCode("");
+    setError(null);
+    complete.reset();
+    onClose();
+  };
+  const submit = async () => {
+    if (!order) return;
+    if (!/^\d{4}$/.test(code)) {
+      setError("Enter the 4 digits the buyer gives you.");
+      return;
+    }
+    try {
+      const done = await complete.mutateAsync({ id: order.id, code });
+      toast.success(`${done.code} · ${statusLabel("delivered", done.fulfilment.method)}`, {
+        description: "Order complete.",
+      });
+      close();
+    } catch (e) {
+      setError(errorMessage(e));
+      setCode("");
+    }
+  };
+  const pickup = order?.fulfilment.method === "pickup";
+  return (
+    <Dialog
+      open={!!order}
+      onOpenChange={(open) => !open && close()}
+      title="Enter the buyer's code"
+      description={
+        order
+          ? `Ask ${order.buyerName} for the 4-digit code in their order once they have it in hand.`
+          : undefined
+      }
+      footer={
+        <>
+          <Button variant="secondary" onClick={close}>
+            Not yet
+          </Button>
+          <Button loading={complete.isPending} onClick={() => void submit()}>
+            {pickup ? "Finish pickup" : "Finish delivery"}
+          </Button>
+        </>
+      }
+    >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit();
+        }}
+      >
+        <Field
+          label="Buyer's code"
+          error={error ?? undefined}
+          hint="It's on their order page. It's different from the order number."
+        >
+          <Input
+            value={code}
+            onChange={(e) => {
+              setCode(e.target.value.replace(/\D/g, "").slice(0, 4));
+              setError(null);
+            }}
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={4}
+            inputSize="lg"
+            placeholder="0000"
+            className="text-center font-mono text-[length:28px] tracking-[0.5em] tabular"
+          />
+        </Field>
+      </form>
+    </Dialog>
+  );
 }
 
 type Closing = { order: Order; status: "declined" | "cancelled" };
@@ -295,10 +384,12 @@ function OrderDrawer({
   order,
   onClose,
   onAskClose,
+  onFinish,
 }: {
   order: Order | null;
   onClose: () => void;
   onAskClose: (c: Closing) => void;
+  onFinish: (o: Order) => void;
 }) {
   const campuses = useCampuses();
   const { advance, pending } = useAdvance();
@@ -350,7 +441,9 @@ function OrderDrawer({
                 <Button
                   className="ml-auto"
                   loading={pending}
-                  onClick={() => void advance(order, [next])}
+                  onClick={() =>
+                    needsCode(order, next) ? onFinish(order) : void advance(order, [next])
+                  }
                 >
                   {actionLabel(order, next)}
                 </Button>
@@ -493,6 +586,7 @@ export function OrdersBoard() {
   const pathname = usePathname() ?? "/studio/orders";
   const { advance, acceptAll, pending } = useAdvance();
   const [closing, setClosing] = useState<Closing | null>(null);
+  const [finishing, setFinishing] = useState<Order | null>(null);
   const raw = params.get("status");
   const status = (raw && raw in statusGroups ? raw : "all") as StatusFilter;
   const [method, setMethod] = useState<MethodFilter>("all");
@@ -636,7 +730,8 @@ export function OrdersBoard() {
             disabled={pending}
             onClick={(e) => {
               e.stopPropagation();
-              void advance(o, [next]);
+              if (needsCode(o, next)) setFinishing(o);
+              else void advance(o, [next]);
             }}
           >
             {actionLabel(o, next)}
@@ -775,7 +870,8 @@ export function OrdersBoard() {
                   disabled={pending}
                   onClick={(e) => {
                     e.stopPropagation();
-                    void advance(o, [next]);
+                    if (needsCode(o, next)) setFinishing(o);
+                    else void advance(o, [next]);
                   }}
                 >
                   {actionLabel(o, next)}
@@ -800,7 +896,13 @@ export function OrdersBoard() {
           )
         }
       />
-      <OrderDrawer order={open} onClose={() => setQuery({ order: null })} onAskClose={setClosing} />
+      <OrderDrawer
+        order={open}
+        onClose={() => setQuery({ order: null })}
+        onAskClose={setClosing}
+        onFinish={setFinishing}
+      />
+      <HandoverDialog order={finishing} onClose={() => setFinishing(null)} />
       <CloseOrderDialog
         closing={closing}
         pending={pending}

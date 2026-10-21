@@ -28,8 +28,12 @@ export function notifyBuyerOfStatus(
   const body: Partial<Record<OrderStatus, string>> = {
     confirmed: `${order.brandName} accepted your order.`,
     preparing: `${order.brandName} is packing your order.`,
-    ready: `Your order is ready. Show code ${order.code} at the pickup point.`,
-    out_for_delivery: "It's on the way. Keep your phone close.",
+    ready: order.handoverCode
+      ? `Your order is ready. When you collect it, give the seller your code ${order.handoverCode}.`
+      : `Your order is ready. Show code ${order.code} at the pickup point.`,
+    out_for_delivery: order.handoverCode
+      ? `It's on the way. When it reaches you, give the seller your code ${order.handoverCode}.`
+      : "It's on the way. Keep your phone close.",
     delivered:
       order.fulfilment.method === "pickup"
         ? "Picked up. Tap to leave a review."

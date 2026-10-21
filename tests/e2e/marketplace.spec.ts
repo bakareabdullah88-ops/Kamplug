@@ -4,6 +4,7 @@ import {
   addProduct,
   buy,
   fulfilFirstOrder,
+  readHandoverCode,
   logIn,
   openShop,
   signOut,
@@ -51,12 +52,14 @@ test("two real accounts: open a shop, buy, fulfil, message", async ({ page }) =>
       .filter({ visible: true })
       .first(),
   ).toBeVisible();
+  // Only the buyer sees the handover code; they give it to the seller at pickup.
+  const code = await readHandoverCode(page);
   await signOut(page);
 
   // Seller sees the order and moves it to completed.
   await logIn(page, seller, "/studio");
   await expect(page.getByRole("heading", { level: 1, name: shop })).toBeVisible();
-  await fulfilFirstOrder(page);
+  await fulfilFirstOrder(page, code);
   await page.goto("/studio");
   // The sale now shows up under top products, next to the revenue figure.
   await expect(page.getByText(/^Revenue, /)).toBeVisible();

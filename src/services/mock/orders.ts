@@ -1,7 +1,7 @@
 import { brand as appBrand } from "@/config/brand";
 import { purchaseBlock } from "@/domain/bag";
 import { groupTotal, sumQuote, type CheckoutQuote, type GroupQuote } from "@/domain/checkout";
-import { canBuyerCancel, transition } from "@/domain/orders";
+import { awaitingHandover, canBuyerCancel, newHandoverCode, transition } from "@/domain/orders";
 import { buyerDashboard } from "@/domain/analytics";
 import { categories, categoryById } from "@/config/categories";
 import { features } from "@/config/features";
@@ -14,7 +14,7 @@ import type { CheckoutInput } from "../inputs";
 import { schemas, type Schemas } from "./schemas";
 import type { Order, Product, UserRecord } from "../types";
 import { commit, getDb } from "./db";
-import { clone, forShop, requireUser } from "./context";
+import { clone, orderForShop, requireUser } from "./context";
 import { atName } from "@/domain/username";
 import { latency } from "./latency";
 import { notifyBuyerOfStatus, pushNotification } from "./notify";
@@ -216,6 +216,7 @@ export const mockOrders: OrderService = {
       const order: Order = {
         id: newId("o"),
         code: orderCode(appBrand.orderPrefix),
+        handoverCode: newHandoverCode(),
         checkoutId,
         buyerId: user.id,
         buyerName: atName(user),
@@ -319,7 +320,7 @@ export const mockOrders: OrderService = {
       throw new ServiceError("NOT_FOUND", "We couldn't find that order.");
     }
     // The shop sees the buyer by username; the buyer sees their own order as is.
-    return clone(order.buyerId === user.id ? order : forShop(db, order));
+    return clone(order.buyerId === user.id ? order : orderForShop(db, order));
   },
 
   async cancelOrder(id) {
@@ -363,6 +364,36 @@ export const mockOrders: OrderService = {
     }
     await commit("orders", "products", "notifications");
     return clone(next);
+  },
+
+  async confirmReceived(id) {
+    if (typeof id !== "string") throw new ServiceError("VALIDATION", "Choose an order.");
+    await latency(0.6);
+    const db = await getDb();
+    const user = await requireUser(db);
+    const order = db.orders.find((o) => o.id === id && o.buyerId === user.id);
+    if (!order) throw new ServiceError("NOT_FOUND", "We couldn't find that order.");
+    if (!awaitingHandover(order))
+      throw new ServiceError(
+        "CONFLICT",
+        order.status === "delivered"
+          ? "This order is already done."
+          : "You can confirm once it's on its way or ready to collect.",
+      );
+    const next = applySellerTransition(db, id, "delivered");
+    const done = { ...next, handedOver: "buyer" as const };
+    db.orders[db.orders.findIndex((o) => o.id === id)] = done;
+    const brand = db.brands.find((b) => b.id === done.brandId);
+    if (brand)
+      pushNotification(db, {
+        userId: brand.ownerId,
+        kind: "order",
+        title: `${done.code} received`,
+        body: `${atName(user)} confirmed they got their order.`,
+        href: `/studio/orders?order=${done.id}`,
+      });
+    await commit("orders", "notifications");
+    return clone(done);
   },
 
   async reviewOrderItem(raw) {

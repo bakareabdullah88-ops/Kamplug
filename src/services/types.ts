@@ -285,6 +285,18 @@ export type Order = {
   timeline: TimelineEntry[];
   /** Sellers move orders along by hand. Kept for a future courier integration. */
   autoProgress: boolean;
+  /**
+   * The secret 4-digit handover code. Only the buyer ever sees it: they read it
+   * out when they get their order and the seller types it in to finish the
+   * order. Older orders have none and finish as before.
+   */
+  handoverCode?: string;
+  /** Wrong codes in a row, and when entering more is allowed again. */
+  handoverTries?: { wrong: number; lockedUntil?: ISODate };
+  /** How it was finished: the seller entered the buyer's code, or the buyer confirmed. */
+  handedOver?: "code" | "buyer";
+  /** On the shop's copy only (which never carries the code): finishing needs the buyer's code. */
+  needsHandoverCode?: boolean;
   placedAt: ISODate;
   reviewed: boolean;
 };

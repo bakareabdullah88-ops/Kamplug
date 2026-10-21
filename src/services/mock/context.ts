@@ -1,6 +1,6 @@
 import { ServiceError } from "../errors";
 import { atName } from "@/domain/username";
-import type { Brand, UserRecord, User } from "../types";
+import type { Brand, Order, UserRecord, User } from "../types";
 import { getDb, getSessionUserId } from "./db";
 import type { DbSnapshot } from "./seed";
 
@@ -63,4 +63,13 @@ export function withAuthor<T extends { userId: string; authorName: string }>(
   r: T,
 ): T {
   return { ...r, authorName: buyerLabel(db, r.userId, r.authorName) };
+}
+
+/**
+ * An order as its shop sees it: buyer by username, and never the handover
+ * code, only whether one is needed to finish it.
+ */
+export function orderForShop(db: DbSnapshot, o: Order): Order {
+  const { handoverCode, ...rest } = forShop(db, o);
+  return handoverCode ? { ...rest, needsHandoverCode: true } : rest;
 }

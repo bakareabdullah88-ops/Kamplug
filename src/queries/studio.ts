@@ -175,6 +175,28 @@ export function useUpdateOrderStatus() {
   });
 }
 
+/** Finishes an order with the buyer's handover code. Not optimistic: the code may be wrong. */
+export function useCompleteOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, code }: { id: string; code: string }) =>
+      services.studio.completeOrder(id, code),
+    onSuccess: (o) => {
+      qc.setQueryData<Order[]>(qk.studio.orders, (list) =>
+        list?.map((x) => (x.id === o.id ? o : x)),
+      );
+      qc.setQueryData(qk.order(o.id), o);
+      void qc.invalidateQueries({
+        queryKey: qk.studio.all,
+        predicate: (q) =>
+          ["dashboard", "product-analytics", "finance", "customers", "products"].includes(
+            String(q.queryKey[1]),
+          ),
+      });
+    },
+  });
+}
+
 export function useCustomers() {
   return useQuery({
     queryKey: qk.studio.customers,

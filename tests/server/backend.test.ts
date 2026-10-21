@@ -227,8 +227,11 @@ describe.skipIf(!url)("backend on Postgres", () => {
     // The seller sees the order and moves it along.
     const inbox = await seller.call("studio", "listOrders");
     expect(inbox.map((o) => o.id)).toEqual([orders[0]!.id]);
-    for (const st of ["confirmed", "preparing", "out_for_delivery", "delivered"] as const)
+    for (const st of ["confirmed", "preparing", "out_for_delivery"] as const)
       await seller.call("studio", "updateOrderStatus", orders[0]!.id, st);
+    // The buyer's handover code finishes it; the shop's copy of the order never has it.
+    expect((await seller.call("studio", "listOrders"))[0]!.handoverCode).toBeUndefined();
+    await seller.call("studio", "completeOrder", orders[0]!.id, orders[0]!.handoverCode!);
 
     expect((await buyer.call("orders", "getOrder", orders[0]!.id)).status).toBe("delivered");
 

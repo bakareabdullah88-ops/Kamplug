@@ -10,6 +10,21 @@ export function isActive(status: OrderStatus) {
   return !isTerminal(status);
 }
 
+/** A fresh 4-digit handover code, from the secure random source. */
+export function newHandoverCode(): string {
+  const n = crypto.getRandomValues(new Uint32Array(1))[0]! % 10_000;
+  return String(n).padStart(4, "0");
+}
+
+/** Wrong handover codes allowed before entry is paused, and for how long. */
+export const HANDOVER_MAX_WRONG = 5;
+export const HANDOVER_LOCK_MS = 10 * 60_000;
+
+/** True once the order is with the buyer's side of the handover: on its way, or ready to collect. */
+export function awaitingHandover(o: { status: OrderStatus }): boolean {
+  return o.status === "out_for_delivery" || o.status === "ready";
+}
+
 /** The happy path for each fulfilment method. */
 export function stepsFor(method: FulfilmentMethod): OrderStatus[] {
   return method === "pickup"
