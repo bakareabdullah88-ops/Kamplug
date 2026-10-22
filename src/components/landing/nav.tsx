@@ -48,7 +48,7 @@ export function LandingNav() {
   }, [open]);
 
   const cta =
-    "flex h-11 items-center gap-1.5 rounded-full bg-[#3a5bff] px-5 text-[15px] font-bold text-white transition-colors hover:bg-[#2a45d6]";
+    "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[#3a5bff] px-4 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#2a45d6] sm:px-5";
 
   return (
     <header
@@ -97,8 +97,10 @@ export function LandingNav() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {isReady && user ? (
-            <Link href="/home" className={cta}>
-              Open Kamplug <ArrowRight className="size-4" />
+            <Link href="/home" className={cta} aria-label="Open Kamplug">
+              {/* Small phones get the short label so it stays on one line. */}
+              Open<span className="hidden min-[400px]:inline"> Kamplug</span>
+              <ArrowRight className="size-4" aria-hidden />
             </Link>
           ) : (
             <>

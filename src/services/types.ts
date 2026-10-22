@@ -397,6 +397,8 @@ export type ProductQuery = {
   maxPriceKobo?: Kobo;
   minRating?: number;
   inStock?: boolean;
+  /** Only items marked down from a higher price. */
+  onSale?: boolean;
   /** Only shops that deliver, or that offer pickup. */
   method?: FulfilmentMethod;
   /** The buyer's spot, hall and faculty: used by "nearest" and the walking filter. */

@@ -634,16 +634,22 @@ const ART: Record<CategoryId, () => JSX.Element> = {
 export function CategoryArt({
   id,
   className,
+  centered = false,
+  still = false,
 }: {
   id: CategoryId;
   className?: string;
+  /** Crop to the drawing and centre it, for small square tiles. */
+  centered?: boolean;
+  /** No moving parts. */
+  still?: boolean;
 }): JSX.Element {
   const Art = ART[id];
   return (
     <svg
-      viewBox="0 0 320 200"
-      preserveAspectRatio="xMaxYMax meet"
-      className={className}
+      viewBox={centered ? "125 4 196 192" : "0 0 320 200"}
+      preserveAspectRatio={centered ? "xMidYMid meet" : "xMaxYMax meet"}
+      className={still ? `${className ?? ""} [&_*]:[animation:none!important]` : className}
       aria-hidden
       focusable="false"
     >

@@ -15,6 +15,8 @@ export type ExploreParams = {
   zone: string | null;
   rating: number | null;
   stock: boolean;
+  /** Only marked-down items. */
+  sale: boolean;
   /** Only shops within walking distance of you. */
   walk: boolean;
 };
@@ -59,6 +61,7 @@ export function parseExplore(sp: URLSearchParams): ExploreParams {
     zone: sp.get("zone") || null,
     rating: num(sp.get("rating")),
     stock: sp.get("stock") === "1",
+    sale: sp.get("sale") === "1",
     walk: sp.get("walk") === "1",
   };
 }
@@ -74,6 +77,7 @@ export function toQuery(p: ExploreParams): Omit<ProductQuery, "page"> {
     ...(p.zone ? { zoneId: p.zone } : {}),
     ...(p.rating ? { minRating: p.rating } : {}),
     ...(p.stock ? { inStock: true } : {}),
+    ...(p.sale ? { onSale: true } : {}),
     ...(p.walk ? { walking: true } : {}),
     pageSize: 24,
   };
@@ -86,6 +90,7 @@ export function activeFilterCount(p: ExploreParams) {
     !!p.zone,
     !!p.rating,
     p.stock,
+    p.sale,
     p.walk,
   ].filter(Boolean).length;
 }
@@ -113,6 +118,7 @@ export function useExploreParams() {
       if (next.zone) out.set("zone", next.zone);
       if (next.rating) out.set("rating", String(next.rating));
       if (next.stock) out.set("stock", "1");
+      if (next.sale) out.set("sale", "1");
       if (next.walk) out.set("walk", "1");
       const qs = out.toString();
       startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
@@ -129,6 +135,7 @@ export function useExploreParams() {
         zone: null,
         rating: null,
         stock: false,
+        sale: false,
         walk: false,
       }),
     [update],

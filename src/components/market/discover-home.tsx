@@ -8,9 +8,9 @@ import {
   CircleHelp,
   RotateCcw,
   Sparkles,
-  ArrowUpRight,
   BadgeCheck,
   Bike,
+  ChevronDown,
   ChevronRight,
   Footprints,
   Gauge,
@@ -25,7 +25,6 @@ import { categoryName } from "@/config/categories";
 import { pagePad } from "@/components/app/layout";
 import { AppImage } from "@/components/ui/app-image";
 import { Skeleton } from "@/components/ui/skeleton";
-import { categories } from "@/config/categories";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
@@ -48,51 +47,17 @@ import { useBuyerSpot, useNearQuery } from "@/queries/nearby";
 import { useMyOrders } from "@/queries/orders";
 import { useSession } from "@/queries/session";
 import { useToggleFollow } from "@/queries/social";
-import type {
-  Brand,
-  CategoryId,
-  Order,
-  ProductQuery,
-  ProductWithBrand,
-  SortKey,
-} from "@/services/types";
+import type { Brand, Order, ProductQuery, ProductWithBrand, SortKey } from "@/services/types";
 import { useHomeFilters, type HomeSort } from "@/stores/home-filters";
 import { useUi } from "@/stores/ui";
-import { Clouds3D } from "@/components/landing/gate-scene";
-import { LagoonScene, SceneEdge } from "@/components/scenes/campus-scenes";
 import { RelationBadge, etaText } from "./nearby";
-import { CategoryArt } from "./category-art";
-import { ProductCard, ProductCardSkeleton } from "./product-card";
-import { QuickAdd } from "./quick-add";
-
-/** Short names for the round category buttons. */
-const short: Record<CategoryId, string> = {
-  fashion: "Fashion",
-  thrift: "Thrift",
-  food: "Food",
-  beauty: "Beauty",
-  accessories: "Accessories",
-  print: "Print",
-  tech: "Tech",
-  books: "Books",
-};
-
-function SectionHead({ title, href }: { title: string; href?: string }) {
-  return (
-    <div className="mb-3.5 flex items-center justify-between gap-3">
-      <h2 className="text-[19px] font-semibold tracking-[-0.02em] md:text-[22px]">{title}</h2>
-      {href && (
-        <Link
-          href={href}
-          aria-label={`See all: ${title}`}
-          className="grid size-10 place-items-center rounded-full text-accent-ink ring-1 ring-line transition-colors hover:bg-accent-soft"
-        >
-          <ArrowUpRight className="size-5" />
-        </Link>
-      )}
-    </div>
-  );
-}
+import {
+  CategoryGrid,
+  DealBanners,
+  HomeSectionHead,
+  PriceTiles,
+  ProductRail,
+} from "./home-sections";
 
 /** Search everywhere; the round button beside it sorts and filters this feed in place. */
 function SearchBar({ onFilters, active }: { onFilters: () => void; active: number }) {
@@ -105,7 +70,7 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
         className="flex h-14 min-w-0 flex-1 items-center gap-3 rounded-full bg-surface px-5 text-left text-[15px] text-muted ring-1 ring-line transition-colors hover:ring-line-strong"
       >
         <Search className="size-5 shrink-0 text-accent" aria-hidden />
-        <span className="truncate">Search food, thrift, shops…</span>
+        <span className="truncate">What do you need today?</span>
       </button>
       <button
         type="button"
@@ -126,58 +91,41 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
 }
 
 /**
- * The big header: where you are, how many shops are on your campus, and search.
- * Full-bleed under the top bar on phones; a wide rounded banner on bigger screens.
+ * The top of home: where you're getting things to, a dashboard link on big
+ * screens, and search. Plain and still: no scene, no animation.
  */
-function Hero({
+function HomeHeader({
   spotName,
-  shopCount,
   onFilters,
   activeFilters,
 }: {
   spotName: string | undefined;
-  shopCount: number | undefined;
   onFilters: () => void;
   activeFilters: number;
 }) {
   return (
-    <section className="relative isolate -mt-5 ml-[calc(50%-50vw)] w-screen overflow-hidden bg-[#eef1fb] text-ink md:-mt-7 dark:bg-[#161936]">
-      <Clouds3D inApp />
-      <Link
-        href="/account"
-        className="absolute top-4 right-4 z-20 hidden h-10 items-center gap-2 rounded-full bg-surface px-4 text-[14px] font-semibold ring-1 ring-line transition-colors hover:bg-surface-2 md:inline-flex"
-      >
-        <Gauge className="size-4" aria-hidden /> Your dashboard
-      </Link>
-      <div className="relative z-10 flex flex-col items-center px-5 pt-7 text-center md:px-10 md:pt-10">
+    <section className="flex flex-col gap-3.5">
+      <div className="flex items-center justify-between gap-3">
         <Link
           href="/account/places"
-          className="flex flex-col items-center gap-0.5 rounded-lg px-2 py-1 transition-colors hover:bg-ink/[0.05]"
+          className="-mx-2 flex min-w-0 flex-col rounded-lg px-2 py-1 transition-colors hover:bg-ink/[0.05]"
         >
-          <span className="text-[13px] text-muted">Delivering to</span>
-          <span className="inline-flex max-w-[80vw] items-center gap-1.5 text-[15px] font-bold">
+          <span className="text-[12.5px] text-muted">Delivering to</span>
+          <span className="inline-flex min-w-0 items-center gap-1.5 text-[16px] font-bold">
             <MapPin className="size-4 shrink-0 text-accent" aria-hidden />
             <span className="truncate">{spotName ?? "Choose your spot"}</span>
+            <ChevronDown className="size-4 shrink-0 text-muted" aria-hidden />
           </span>
         </Link>
-        <h1 className="mt-4 text-[clamp(30px,8.4vw,72px)] leading-none font-extrabold tracking-[-0.05em] whitespace-nowrap md:mt-5">
-          {shopCount ? (
-            <>
-              <span className="text-accent tabular">{shopCount}</span>{" "}
-              {shopCount === 1 ? "shop" : "shops"} at UNILAG
-            </>
-          ) : (
-            <>
-              Wetin you <span className="text-accent">need?</span>
-            </>
-          )}
-        </h1>
-        <div className="mt-6 w-full max-w-2xl md:mt-7">
-          <SearchBar onFilters={onFilters} active={activeFilters} />
-        </div>
+        <Link
+          href="/account"
+          className="hidden h-10 shrink-0 items-center gap-2 rounded-full bg-surface px-4 text-[14px] font-semibold ring-1 ring-line transition-colors hover:bg-surface-2 md:inline-flex"
+        >
+          <Gauge className="size-4" aria-hidden /> Your dashboard
+        </Link>
       </div>
-      <LagoonScene className="relative z-[1] mt-2 h-[190px] w-full sm:h-[240px] md:h-[24vw] md:max-h-[380px]" />
-      <SceneEdge />
+      <h1 className="sr-only">Kamplug home</h1>
+      <SearchBar onFilters={onFilters} active={activeFilters} />
     </section>
   );
 }
@@ -254,64 +202,6 @@ function QuickActions({ lastOrder }: { lastOrder: Order | undefined }) {
         </button>
       </li>
     </ul>
-  );
-}
-
-/** A few words under each category's name. */
-const subtitle: Record<CategoryId, string> = {
-  fashion: "Made on campus",
-  thrift: "One of one",
-  food: "Hot and fresh",
-  beauty: "Glow and care",
-  accessories: "Little extras",
-  print: "Custom prints",
-  tech: "Gadgets and gear",
-  books: "Study packs",
-};
-
-/**
- * Category cards in a row: name and a short line at the top, the drawing in
- * the corner, then "See all" at the end. The row scrolls sideways.
- */
-function Categories() {
-  return (
-    <section aria-labelledby="home-categories">
-      <h2 id="home-categories" className="sr-only">
-        Categories
-      </h2>
-      <ul className="-mx-(--gutter) scrollbar-none flex snap-x gap-3 overflow-x-auto px-(--gutter) py-1 md:mx-0 md:px-0">
-        {categories.map((c) => (
-          <li key={c.id} className="shrink-0 snap-start">
-            <Link
-              href={`/explore?category=${c.id}`}
-              className="group relative block h-[148px] w-[196px] overflow-hidden rounded-2xl bg-surface p-4 ring-1 ring-line transition-colors hover:ring-line-strong md:h-[164px] md:w-[220px]"
-            >
-              <span className="relative z-10 block text-[17px] leading-tight font-semibold tracking-[-0.02em] text-ink md:text-[18px]">
-                {short[c.id]}
-              </span>
-              <span className="relative z-10 mt-1 block text-[13px] text-muted">
-                {subtitle[c.id]}
-              </span>
-              <CategoryArt
-                id={c.id}
-                className="absolute right-0 bottom-0 h-[68%] w-[78%] transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </li>
-        ))}
-        <li className="shrink-0 snap-start">
-          <Link
-            href="/explore"
-            className="group flex h-[148px] w-[132px] flex-col items-center justify-center gap-3 rounded-2xl bg-accent-soft text-accent-ink transition-colors hover:bg-accent/15 md:h-[164px] md:w-[150px]"
-          >
-            <span className="grid size-12 place-items-center rounded-full bg-surface text-ink transition-transform group-hover:translate-x-0.5">
-              <ArrowRight className="size-5" aria-hidden />
-            </span>
-            <span className="text-[16px] font-semibold">See all</span>
-          </Link>
-        </li>
-      </ul>
-    </section>
   );
 }
 
@@ -470,7 +360,7 @@ function Shops({
   if (pool && pool.length === 0) return null;
   return (
     <section className="border-t border-line-thin pt-5 md:pt-6">
-      <SectionHead title={sortTitles[view.sort]} href="/explore" />
+      <HomeSectionHead eyebrow="Shops on campus" title={sortTitles[view.sort]} href="/explore" />
       {view.located && (
         <p className="-mt-2 mb-3.5 text-[13px] text-muted">
           Measured from <b className="font-semibold text-ink">{view.buyer.label}</b>
@@ -499,43 +389,6 @@ function Shops({
               ))}
         </ul>
       )}
-    </section>
-  );
-}
-
-function ProductGrid({
-  title,
-  query,
-  href,
-  skip = [],
-  keep,
-}: {
-  title: string;
-  query: ProductQuery;
-  href: string;
-  /** Products already shown above, so the same ones don't appear twice. */
-  skip?: string[];
-  /** Only show products that pass this (e.g. from your faculty). */
-  keep?: (p: ProductWithBrand) => boolean;
-}) {
-  const { data } = useProducts(query);
-  const items = data?.items.filter((p) => !skip.includes(p.id) && (!keep || keep(p))).slice(0, 10);
-  if (items && items.length === 0) return null;
-  return (
-    <section className="border-t border-line-thin pt-5 md:pt-6">
-      <SectionHead title={title} href={href} />
-      <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {items
-          ? items.map((p, i) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                priority={i < 2}
-                action={<QuickAdd product={p} />}
-              />
-            ))
-          : Array.from({ length: 4 }, (_, i) => <ProductCardSkeleton key={i} />)}
-      </div>
     </section>
   );
 }
@@ -689,7 +542,8 @@ export function DiscoverHome() {
   const spotName = view.buyer.label
     ? `${view.buyer.label}${spotCampus ? `, ${spotCampus.shortName}` : ""}`
     : campus?.name;
-  const campusShops = useBrands(user?.campusId ? { campusId: user.campusId } : {}).data;
+  // One wide sample of what's in stock, for the banners and price tiles.
+  const pool = useProducts({ pageSize: 48, inStock: true }).data?.items;
 
   // The feed follows the chosen sort; walking distance narrows every section.
   const base: ProductQuery = {
@@ -738,23 +592,20 @@ export function DiscoverHome() {
 
   return (
     <div className={cn(pagePad, "flex flex-col gap-7 md:gap-9")}>
-      <Hero
-        spotName={spotName}
-        shopCount={campusShops?.length}
-        onFilters={openFilters}
-        activeFilters={view.active}
-      />
+      <HomeHeader spotName={spotName} onFilters={openFilters} activeFilters={view.active} />
       <FilterSheet open={filtersOpen} onOpenChange={setFiltersOpen} view={view} />
       <QuickActions lastOrder={orders?.find((o) => o.status === "delivered")} />
       {onTheWay && <OnTheWay order={onTheWay} />}
-      <Categories />
+      <CategoryGrid />
+      <DealBanners pool={pool} />
 
       {empty ? (
         <EmptyMarket />
       ) : (
         <>
           {mine && (
-            <ProductGrid
+            <ProductRail
+              eyebrow="Near you"
               title={mineTitle}
               query={mineQuery}
               href="/explore?sort=nearest"
@@ -762,13 +613,22 @@ export function DiscoverHome() {
             />
           )}
           <Shops campusId={user?.campusId ?? undefined} view={view} onFilters={openFilters} />
-          <ProductGrid
+          <ProductRail
+            eyebrow="On campus now"
             title={firstTitle[view.sort]}
             query={first}
             skip={mineIds}
             href={`/explore?sort=${view.sort}${view.walking ? "&walk=1" : ""}`}
           />
-          <ProductGrid
+          <PriceTiles pool={pool} located={view.located} />
+          <ProductRail
+            eyebrow="Easy on the pocket"
+            title="Under ₦2,000"
+            query={{ ...base, sort: "popular", maxPriceKobo: 200_000 }}
+            href="/explore?max=2000&sort=price_asc"
+          />
+          <ProductRail
+            eyebrow="Fresh on the market"
             title={secondSort === "newest" ? "New on Kamplug" : "Popular right now"}
             query={{ ...base, sort: secondSort }}
             href={`/explore?sort=${secondSort}${view.walking ? "&walk=1" : ""}`}

@@ -61,6 +61,7 @@ function ActivePills({
   if (params.rating)
     pills.push({ key: "rating", label: `${params.rating}★ & up`, clear: { rating: null } });
   if (params.stock) pills.push({ key: "stock", label: "In stock", clear: { stock: false } });
+  if (params.sale) pills.push({ key: "sale", label: "On sale", clear: { sale: false } });
   if (params.walk) pills.push({ key: "walk", label: "Walking distance", clear: { walk: false } });
   if (!pills.length) return null;
   return (

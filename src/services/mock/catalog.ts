@@ -125,6 +125,7 @@ export const mockCatalog: CatalogService = {
       list = list.filter((p) => p.priceKobo <= query.maxPriceKobo!);
     if (query.minRating) list = list.filter((p) => p.rating >= query.minRating!);
     if (query.inStock) list = list.filter((p) => totalStock(p) > 0);
+    if (query.onSale) list = list.filter((p) => !!p.compareAtKobo && p.compareAtKobo > p.priceKobo);
     if (query.method === "delivery" || query.method === "pickup") {
       const m = query.method;
       list = list.filter((p) => !!brandsById.get(p.brandId)?.fulfilment[m]);
