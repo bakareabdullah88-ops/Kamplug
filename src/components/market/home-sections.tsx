@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
-import { BadgeCheck, Footprints, Star } from "lucide-react";
+import { BadgeCheck, Star } from "lucide-react";
 import { AppImage } from "@/components/ui/app-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { categories, categoryName } from "@/config/categories";
@@ -74,7 +74,7 @@ export function CategoryGrid() {
           <li key={c.id}>
             <Link
               href={`/explore?category=${c.id}`}
-              className="flex aspect-square flex-col items-center justify-center gap-1.5 overflow-hidden rounded-2xl bg-surface px-1 ring-1 ring-line-thin transition-colors hover:ring-line-strong md:aspect-auto md:h-[112px]"
+              className="flex aspect-square flex-col items-center justify-center gap-1.5 overflow-hidden rounded-2xl bg-ink/[0.05] px-1 transition-colors hover:bg-ink/[0.08] md:aspect-auto md:h-[112px]"
             >
               <CategoryArt id={c.id} centered still className="h-[56%] w-full" />
               <span className="truncate text-[12px] font-medium md:text-[13px]">{short[c.id]}</span>
@@ -237,8 +237,22 @@ export function DealBanners({ pool }: { pool: ProductWithBrand[] | undefined }) 
   );
 }
 
-/** Square poster tiles for quick price bands and "walk to it", only where there's something to show. */
-export function PriceTiles({
+type Tile = {
+  key: string;
+  p: PosterPalette;
+  top: string;
+  big: string;
+  href: string;
+  label: string;
+  image: ImageRef | undefined;
+};
+
+/**
+ * Tall poster tiles (a line of text, a big figure, a photo at the bottom) for
+ * quick ways in: cheap eats, deals, top rated, a short walk. Each one only
+ * shows when there are real items behind it.
+ */
+export function PosterTiles({
   pool,
   located,
 }: {
@@ -247,34 +261,35 @@ export function PriceTiles({
 }) {
   const tiles = useMemo(() => {
     if (!pool?.length) return [];
-    const out: {
-      key: string;
-      p: PosterPalette;
-      top: string;
-      big: string;
-      href: string;
-      label: string;
-    }[] = [];
-    let last = -1;
-    const bands: [number, PosterPalette][] = [
-      [1000, palette("butter")],
-      [2500, palette("tomato")],
-      [5000, palette("cobalt")],
-    ];
-    for (const [naira, p] of bands) {
-      const n = pool.filter((x) => x.priceKobo <= naira * 100).length;
-      if (n === 0 || n === last) continue;
-      last = n;
+    const out: Tile[] = [];
+    const cheap = pool
+      .filter((x) => x.priceKobo <= 250_000)
+      .sort((a, b) => a.priceKobo - b.priceKobo);
+    if (cheap[0])
       out.push({
-        key: `under-${naira}`,
-        p,
+        key: "cheap",
+        p: palette("tomato"),
         top: "under",
-        big: naira >= 1000 ? `₦${naira / 1000}k` : `₦${naira}`,
-        href: `/explore?max=${naira}&sort=price_asc`,
-        label: `Under ${formatNaira(naira * 100)}`,
+        big: "₦2.5k",
+        href: "/explore?max=2500&sort=price_asc",
+        label: "Under ₦2,500",
+        image: cheap[0].images[0],
       });
-    }
-    if (pool.some((x) => x.ratingCount > 0 && x.rating >= 4.5))
+    const sale = pool.filter((x) => (discountPercent(x.priceKobo, x.compareAtKobo) ?? 0) > 0);
+    if (sale[0])
+      out.push({
+        key: "sale",
+        p: palette("butter"),
+        top: "marked",
+        big: "down",
+        href: "/explore?sale=1",
+        label: "On sale",
+        image: sale[0].images[0],
+      });
+    const rated = pool
+      .filter((x) => x.ratingCount > 0 && x.rating >= 4.5)
+      .sort((a, b) => b.ratingCount - a.ratingCount);
+    if (rated[0])
       out.push({
         key: "rated",
         p: palette("night"),
@@ -282,6 +297,7 @@ export function PriceTiles({
         big: "4.5★",
         href: "/explore?rating=4&sort=rating",
         label: "Top rated",
+        image: rated[0].images[0],
       });
     if (located)
       out.push({
@@ -291,6 +307,7 @@ export function PriceTiles({
         big: "walk",
         href: "/explore?walk=1&sort=nearest",
         label: "Within walking distance",
+        image: pool[0]?.images[0],
       });
     return out;
   }, [pool, located]);
@@ -303,25 +320,123 @@ export function PriceTiles({
             <Link
               href={t.href}
               aria-label={t.label}
-              className="relative flex size-[132px] flex-col justify-end overflow-hidden rounded-2xl p-3.5 transition-transform hover:-translate-y-0.5 md:size-[150px]"
+              className="relative flex h-[176px] w-[136px] flex-col overflow-hidden rounded-2xl md:h-[196px] md:w-[152px]"
               style={{ background: t.p.bg, color: t.p.ink }}
             >
-              {t.key === "walk" && (
-                <Footprints className="absolute top-3.5 right-3.5 size-7 opacity-80" aria-hidden />
-              )}
-              {t.key === "rated" && (
-                <Star
-                  className="absolute top-3.5 right-3.5 size-7 fill-current opacity-80"
-                  aria-hidden
-                />
-              )}
-              <span className="text-[13px] leading-none font-bold">{t.top}</span>
-              <span className="font-display text-[34px] leading-[0.95] font-extrabold tracking-[-0.04em] md:text-[38px]">
+              <span className="px-3 pt-3 text-center text-[14px] leading-none font-bold">
+                {t.top}
+              </span>
+              <span className="px-2 text-center font-display text-[34px] leading-[0.95] font-extrabold tracking-[-0.04em] md:text-[38px]">
                 {t.big}
+              </span>
+              <span className="absolute -bottom-6 left-1/2 size-[112px] -translate-x-1/2 overflow-hidden rounded-full ring-4 ring-white/25 md:size-[124px]">
+                <AppImage image={t.image ?? null} alt="" sizes="130px" />
               </span>
             </Link>
           </li>
         ))}
+      </ul>
+    </section>
+  );
+}
+
+/** A coupon-style ticket: notches cut into both sides. */
+const ticket = {
+  WebkitMask:
+    "radial-gradient(circle at 0 50%, transparent 7px, #000 7.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 7px, #000 7.5px) right / 51% 100% no-repeat",
+  mask: "radial-gradient(circle at 0 50%, transparent 7px, #000 7.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 7px, #000 7.5px) right / 51% 100% no-repeat",
+};
+
+/** "Shopping on a budget?": ticket-shaped price caps that open Discover filtered to them. */
+export function BudgetTickets({ pool }: { pool: ProductWithBrand[] | undefined }) {
+  const caps = useMemo(() => {
+    if (!pool?.length) return [];
+    const out: { naira: number; n: number }[] = [];
+    for (const naira of [500, 1000, 2000, 5000, 10000]) {
+      const n = pool.filter((x) => x.priceKobo <= naira * 100).length;
+      if (n > 0 && n !== out[out.length - 1]?.n) out.push({ naira, n });
+    }
+    return out;
+  }, [pool]);
+  if (caps.length < 2) return null;
+  return (
+    <section aria-labelledby="home-budget">
+      <h2
+        id="home-budget"
+        className="mb-3.5 text-[19px] font-semibold tracking-[-0.02em] md:text-[21px]"
+      >
+        Shopping on a budget?
+      </h2>
+      <ul className="-mx-(--gutter) scrollbar-none flex snap-x scroll-px-(--gutter) gap-3 overflow-x-auto px-(--gutter) md:mx-0 md:scroll-px-0 md:px-0">
+        {caps.map((c, i) => (
+          <li key={c.naira} className="shrink-0 snap-start">
+            <Link
+              href={`/explore?max=${c.naira}&sort=price_asc`}
+              aria-label={`Under ${formatNaira(c.naira * 100)}: ${c.n} items`}
+              className="flex h-[76px] w-[118px] flex-col items-center justify-center rounded-xl text-white transition-opacity hover:opacity-90"
+              style={{ ...ticket, background: i === 0 ? "#17754c" : "#c81e16" }}
+            >
+              <span className="text-[12.5px] leading-none font-semibold opacity-90">under</span>
+              <span className="font-display text-[30px] leading-none font-extrabold tracking-[-0.04em]">
+                {c.naira >= 1000 ? `₦${c.naira / 1000}k` : `₦${c.naira}`}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/**
+ * "Categories": colour cards two to a row, the name top-left and a real photo
+ * from that category in the corner (or its drawing when there's no photo yet).
+ */
+export function CategoryCards({ pool }: { pool: ProductWithBrand[] | undefined }) {
+  const photo = useMemo(() => {
+    const m = new Map<CategoryId, ImageRef>();
+    for (const p of pool ?? [])
+      if (p.images[0] && !m.has(p.category)) m.set(p.category, p.images[0]);
+    return m;
+  }, [pool]);
+  return (
+    <section aria-labelledby="home-category-cards">
+      <h2
+        id="home-category-cards"
+        className="mb-3.5 text-[19px] font-semibold tracking-[-0.02em] md:text-[21px]"
+      >
+        Categories
+      </h2>
+      <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {categories.map((c) => {
+          const pal = paletteFor(c.id);
+          const img = photo.get(c.id);
+          return (
+            <li key={c.id}>
+              <Link
+                href={`/explore?category=${c.id}`}
+                className="relative block h-[96px] overflow-hidden rounded-2xl md:h-[112px]"
+                style={{ background: pal.bg, color: pal.ink }}
+              >
+                <span className="relative z-10 block px-3.5 pt-3 text-[16px] leading-tight font-bold md:text-[17px]">
+                  {categoryName(c.id)}
+                </span>
+                {img ? (
+                  <span className="absolute -right-4 -bottom-5 size-[92px] overflow-hidden rounded-full ring-4 ring-white/20 md:size-[104px]">
+                    <AppImage image={img} alt="" sizes="110px" />
+                  </span>
+                ) : (
+                  <CategoryArt
+                    id={c.id}
+                    centered
+                    still
+                    className="absolute -right-1 -bottom-1 h-[74%] w-[52%]"
+                  />
+                )}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

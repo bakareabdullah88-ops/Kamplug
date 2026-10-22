@@ -1,13 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useReorder } from "@/components/orders/use-reorder";
 import Link from "next/link";
 import {
   ArrowRight,
-  CircleHelp,
-  RotateCcw,
-  Sparkles,
   BadgeCheck,
   Bike,
   ChevronDown,
@@ -53,9 +48,11 @@ import { useUi } from "@/stores/ui";
 import { RelationBadge, etaText } from "./nearby";
 import {
   CategoryGrid,
+  BudgetTickets,
+  CategoryCards,
   DealBanners,
   HomeSectionHead,
-  PriceTiles,
+  PosterTiles,
   ProductRail,
 } from "./home-sections";
 
@@ -63,11 +60,11 @@ import {
 function SearchBar({ onFilters, active }: { onFilters: () => void; active: number }) {
   const setCommandOpen = useUi((s) => s.setCommandOpen);
   return (
-    <div className="flex w-full gap-2.5">
+    <div className="relative flex h-13 w-full items-center rounded-2xl bg-ink/[0.05] transition-colors focus-within:bg-ink/[0.07] hover:bg-ink/[0.07]">
       <button
         type="button"
         onClick={() => setCommandOpen(true)}
-        className="flex h-14 min-w-0 flex-1 items-center gap-3 rounded-full bg-surface px-5 text-left text-[15px] text-muted ring-1 ring-line transition-colors hover:ring-line-strong"
+        className="flex h-full min-w-0 flex-1 items-center gap-3 rounded-2xl pr-2 pl-4 text-left text-[15px] text-muted"
       >
         <Search className="size-5 shrink-0 text-accent" aria-hidden />
         <span className="truncate">What do you need today?</span>
@@ -77,11 +74,11 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
         onClick={onFilters}
         aria-label={active ? `Sort and filter (${active} on)` : "Sort and filter"}
         aria-haspopup="dialog"
-        className="relative grid size-14 shrink-0 place-items-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-hover"
+        className="relative mr-1.5 grid size-10 shrink-0 place-items-center rounded-xl text-ink transition-colors hover:bg-ink/[0.06]"
       >
         <SlidersHorizontal className="size-5" aria-hidden />
         {active > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 grid size-5 place-items-center rounded-full bg-[#ffd84d] text-[11px] font-bold text-[#1b1f3b] tabular ring-2 ring-surface">
+          <span className="absolute top-0.5 right-0.5 grid size-4.5 place-items-center rounded-full bg-accent text-[10.5px] font-bold text-on-accent tabular">
             {active}
           </span>
         )}
@@ -152,56 +149,6 @@ function OnTheWay({ order }: { order: Order }) {
         Track <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
       </span>
     </Link>
-  );
-}
-
-/**
- * Shortcuts under the search: order your last delivery again, answer a few
- * questions to find something, or jump to something random from the market.
- * Repeat only shows once there's a delivered order to repeat.
- */
-function QuickActions({ lastOrder }: { lastOrder: Order | undefined }) {
-  const router = useRouter();
-  const { reorder, pendingId } = useReorder();
-  const pool = useProducts({ pageSize: 24 }).data?.items;
-  const surprise = () => {
-    if (!pool?.length) return;
-    const pick = pool[Math.floor(Math.random() * pool.length)]!;
-    router.push(`/products/${pick.slug}`);
-  };
-  const row =
-    "flex h-14 w-full items-center gap-3 px-1 text-left text-[15px] font-semibold transition-colors hover:text-accent-ink disabled:opacity-50";
-  return (
-    <ul className="grid auto-cols-fr divide-y divide-line-thin border-y border-line-thin sm:grid-flow-col sm:divide-x sm:divide-y-0">
-      {lastOrder && (
-        <li>
-          <button
-            type="button"
-            className={row}
-            disabled={pendingId === lastOrder.id}
-            onClick={() => void reorder(lastOrder)}
-          >
-            <RotateCcw className="size-5 text-accent" aria-hidden />
-            <span className="min-w-0 flex-1 truncate">
-              Repeat last order
-              <span className="ml-2 font-normal text-muted">from {lastOrder.brandName}</span>
-            </span>
-          </button>
-        </li>
-      )}
-      <li className={cn(lastOrder && "sm:pl-4")}>
-        <Link href="/help-me-choose" className={row}>
-          <CircleHelp className="size-5 text-success" aria-hidden />
-          <span className="flex-1">Help me choose</span>
-        </Link>
-      </li>
-      <li className="sm:pl-4">
-        <button type="button" className={row} disabled={!pool?.length} onClick={surprise}>
-          <Sparkles className="size-5 text-warning" aria-hidden />
-          <span className="flex-1">Surprise me</span>
-        </button>
-      </li>
-    </ul>
   );
 }
 
@@ -594,10 +541,10 @@ export function DiscoverHome() {
     <div className={cn(pagePad, "flex flex-col gap-7 md:gap-9")}>
       <HomeHeader spotName={spotName} onFilters={openFilters} activeFilters={view.active} />
       <FilterSheet open={filtersOpen} onOpenChange={setFiltersOpen} view={view} />
-      <QuickActions lastOrder={orders?.find((o) => o.status === "delivered")} />
       {onTheWay && <OnTheWay order={onTheWay} />}
       <CategoryGrid />
       <DealBanners pool={pool} />
+      <PosterTiles pool={pool} located={view.located} />
 
       {empty ? (
         <EmptyMarket />
@@ -620,7 +567,7 @@ export function DiscoverHome() {
             skip={mineIds}
             href={`/explore?sort=${view.sort}${view.walking ? "&walk=1" : ""}`}
           />
-          <PriceTiles pool={pool} located={view.located} />
+          <BudgetTickets pool={pool} />
           <ProductRail
             eyebrow="Easy on the pocket"
             title="Under ₦2,000"
@@ -634,6 +581,7 @@ export function DiscoverHome() {
             href={`/explore?sort=${secondSort}${view.walking ? "&walk=1" : ""}`}
             skip={[...mineIds, ...firstIds]}
           />
+          <CategoryCards pool={pool} />
         </>
       )}
 
