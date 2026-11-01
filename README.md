@@ -1,5 +1,7 @@
 # Kamplug
 
+Live site: https://online-store-brown-alpha.vercel.app/
+
 A campus marketplace for Nigerian students. Buy from the student brands in your hostel, or open
 a shop and sell. One account has two modes, **Buying** and **Selling**, with an animated switch
 between them.
@@ -173,3 +175,7 @@ create real data once with `node scripts/make-state.mjs http://localhost:3100 sc
 `node scripts/screenshot.mjs http://localhost:3100 screenshots/out /studio,/studio/orders --state=screenshots/state/seller.json`.
 `node scripts/fit-check.mjs http://localhost:3100` visits every page at seven widths and reports
 anything wider than the screen.
+
+## Licence
+
+MIT. See [`LICENSE`](LICENSE).
