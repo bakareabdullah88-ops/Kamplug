@@ -30,6 +30,8 @@ import { KamplugLogo } from "@/components/app/kamplug-mark";
 import { PosterWords } from "@/components/brand/poster-words";
 import { CategoryArt } from "@/components/market/category-art";
 import { WALKING_MINUTES } from "@/domain/distance";
+import { features } from "@/config/features";
+import { WaitlistForm } from "@/components/landing/waitlist-form";
 
 export const metadata: Metadata = {
   title: { absolute: `${brand.name} · Your campus plug` },
@@ -123,6 +125,12 @@ function SeeMore({ href }: { href: string }) {
   );
 }
 
+/** Before launch every way in is the waitlist form at the top of the page. */
+const waitlist = features.waitlist;
+const JOIN = "#waitlist";
+const signupHref = waitlist ? JOIN : "/signup";
+const sellHref = waitlist ? JOIN : "/open-shop";
+
 const buddyGrid = Array.from({ length: 10 }, (_, i) => ({
   shape: BUDDY_SHAPES[i % BUDDY_SHAPES.length]!,
   color: BUDDY_COLORS[(i * 3) % BUDDY_COLORS.length]!,
@@ -146,7 +154,10 @@ export default function LandingPage() {
       <LandingNav />
       <Page>
         {/* Hero: the UNILAG gate on a clear morning, the whole width of the page */}
-        <section className="relative overflow-hidden bg-[#f4f5f8] pt-28 md:pt-36">
+        <section
+          id="waitlist"
+          className="relative scroll-mt-0 overflow-hidden bg-[#f4f5f8] pt-28 md:pt-36"
+        >
           <Clouds3D />
           <div className="relative mx-auto max-w-4xl px-5 text-center">
             <CampusBadge />
@@ -155,9 +166,18 @@ export default function LandingPage() {
               Food, thrift, beauty and more from UNILAG students near you. See how far each shop is
               and how soon it gets to you.
             </p>
-            <div className="mt-8 flex justify-center">
-              <SpotPicker />
-            </div>
+            {waitlist ? (
+              <div className="mt-8 flex flex-col items-center gap-3">
+                <p className="text-[15px] font-bold text-[#3a5bff]">
+                  Opening soon. Be first in when we launch.
+                </p>
+                <WaitlistForm />
+              </div>
+            ) : (
+              <div className="mt-8 flex justify-center">
+                <SpotPicker />
+              </div>
+            )}
           </div>
           <GateScene className="relative mt-6 h-[260px] w-full sm:h-[340px] md:mt-2 md:h-[420px] xl:h-[460px]" />
         </section>
@@ -250,21 +270,21 @@ export default function LandingPage() {
                 mark: <Burst className="size-9" color="#ff6a4d" />,
                 title: "Start selling",
                 body: "Cook, thrift, braid or print? Open a shop in minutes and reach every student on your campus.",
-                href: "/open-shop",
+                href: sellHref,
                 panel: <SellPanel className="h-full w-full" />,
               },
               {
                 mark: <span className="block h-7 w-14 rounded-t-full bg-[#3ddc97]" aria-hidden />,
                 title: "Shop your campus",
                 body: "Shops nearest you come first, with the walk time. Order in a few taps and track it to your hall.",
-                href: "/signup",
+                href: signupHref,
                 panel: <ShopPanel className="h-full w-full" />,
               },
               {
                 mark: <Sparkle className="size-10" color="#3a5bff" />,
                 title: "Meet the buddies",
                 body: "Every account gets an animated buddy as its profile picture. Pick your shape and colour.",
-                href: "/signup",
+                href: signupHref,
                 panel: (
                   <div className="grid h-full grid-cols-5 grid-rows-2">
                     {buddyGrid.map((b, i) => (
@@ -326,12 +346,14 @@ export default function LandingPage() {
                 Gate stand or the Library steps. Every order shows when it should reach you.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <Link href="/signup" className={btn.ink}>
-                  Start shopping
+                <Link href={signupHref} className={btn.ink}>
+                  {waitlist ? "Join the waitlist" : "Start shopping"}
                 </Link>
-                <Link href="/open-shop" className={btn.white}>
-                  Deliver for your shop
-                </Link>
+                {!waitlist && (
+                  <Link href="/open-shop" className={btn.white}>
+                    Deliver for your shop
+                  </Link>
+                )}
               </div>
             </Reveal>
             <Reveal from="top" delay={120}>
@@ -349,8 +371,8 @@ export default function LandingPage() {
                 Message the seller about your order, agree a pickup time and see each update as it
                 happens. All without leaving your room.
               </p>
-              <Link href="/signup" className={cn(btn.white, "mt-8")}>
-                Create your account
+              <Link href={signupHref} className={cn(btn.white, "mt-8")}>
+                {waitlist ? "Join the waitlist" : "Create your account"}
               </Link>
             </Reveal>
             <HostelRoom className="block w-full" />
@@ -393,16 +415,24 @@ export default function LandingPage() {
           <Reveal from="top" className="relative mx-auto max-w-3xl">
             <h2 className={h2}>Be the plug</h2>
             <p className="mx-auto mt-4 max-w-lg text-[18px] leading-snug md:text-[20px]">
-              UNILAG is already buying. One free account for buying and selling.
+              {waitlist
+                ? "Kamplug opens at UNILAG soon. Join the waitlist and be first in, to buy or to sell."
+                : "UNILAG is already buying. One free account for buying and selling."}
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link href="/signup" className={btn.white}>
-                Create your account
-              </Link>
-              <Link href="/login" className={btn.ink}>
-                Log in
-              </Link>
-            </div>
+            {waitlist ? (
+              <div className="mt-8 flex justify-center">
+                <WaitlistForm tone="dark" />
+              </div>
+            ) : (
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link href="/signup" className={btn.white}>
+                  Create your account
+                </Link>
+                <Link href="/login" className={btn.ink}>
+                  Log in
+                </Link>
+              </div>
+            )}
           </Reveal>
           <TakeawaySet className="relative mx-auto mt-10 block w-full max-w-[640px] translate-y-2" />
         </section>
@@ -425,32 +455,44 @@ export default function LandingPage() {
               {brand.description}
             </p>
           </div>
-          {[
-            {
-              title: "Buy",
-              links: [
-                ["Discover", "/explore"],
-                ["Orders", "/orders"],
-                ["Saved", "/wishlist"],
-              ],
-            },
-            {
-              title: "Sell",
-              links: [
-                ["Open a shop", "/open-shop"],
-                ["Shop dashboard", "/studio"],
-              ],
-            },
-            {
-              title: "Kamplug",
-              links: [
-                ["How it works", "/#how"],
-                ["FAQs", "/#faq"],
-                ["Log in", "/login"],
-                ["Create an account", "/signup"],
-              ],
-            },
-          ].map((c) => (
+          {(waitlist
+            ? [
+                {
+                  title: "Kamplug",
+                  links: [
+                    ["How it works", "/#how"],
+                    ["FAQs", "/#faq"],
+                    ["Join the waitlist", "/#waitlist"],
+                  ],
+                },
+              ]
+            : [
+                {
+                  title: "Buy",
+                  links: [
+                    ["Discover", "/explore"],
+                    ["Orders", "/orders"],
+                    ["Saved", "/wishlist"],
+                  ],
+                },
+                {
+                  title: "Sell",
+                  links: [
+                    ["Open a shop", "/open-shop"],
+                    ["Shop dashboard", "/studio"],
+                  ],
+                },
+                {
+                  title: "Kamplug",
+                  links: [
+                    ["How it works", "/#how"],
+                    ["FAQs", "/#faq"],
+                    ["Log in", "/login"],
+                    ["Create an account", "/signup"],
+                  ],
+                },
+              ]
+          ).map((c) => (
             <div key={c.title}>
               <p className="text-[13px] font-extrabold tracking-[0.18em] text-[#ffd23f] uppercase">
                 {c.title}

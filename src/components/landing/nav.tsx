@@ -7,6 +7,7 @@ import { ArrowRight, Menu as MenuIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
+import { features } from "@/config/features";
 import { useSession } from "@/queries/session";
 
 const links = [
@@ -96,7 +97,11 @@ export function LandingNav() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          {isReady && user ? (
+          {features.waitlist ? (
+            <Link href="/#waitlist" className={cta}>
+              Join waitlist
+            </Link>
+          ) : isReady && user ? (
             <Link href="/home" className={cta} aria-label="Open Kamplug">
               {/* Small phones get the short label so it stays on one line. */}
               Open<span className="hidden min-[400px]:inline"> Kamplug</span>
@@ -148,7 +153,7 @@ export function LandingNav() {
                   {l.label}
                 </Link>
               ))}
-              {!user && (
+              {!user && !features.waitlist && (
                 <Link
                   href="/login"
                   onClick={() => setOpen(false)}

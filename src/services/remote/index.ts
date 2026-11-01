@@ -116,6 +116,7 @@ const media: MediaService = {
 const POLL_MS = 20_000;
 
 export const remoteServices: Services = {
+  waitlist: service("waitlist"),
   auth: service("auth"),
   catalog: service("catalog"),
   social: service("social"),

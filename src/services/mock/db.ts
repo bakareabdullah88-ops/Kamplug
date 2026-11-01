@@ -49,6 +49,7 @@ export const COLLECTIONS: CollectionName[] = [
   "threads",
   "places",
   "events",
+  "waitlist",
 ];
 
 /** Collections from v1 that no longer exist. */

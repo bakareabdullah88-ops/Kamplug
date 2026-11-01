@@ -3,13 +3,14 @@
 import { ChevronDown } from "lucide-react";
 import { Popover } from "@/components/ui/overlay";
 import { focusCampusId } from "@/config/brand";
+import { features } from "@/config/features";
 import { seedCampuses } from "@/services/mock/seed/campuses";
 
 const campuses = seedCampuses();
 const live = campuses.find((c) => c.id === focusCampusId);
 const next = campuses.filter((c) => c.id !== focusCampusId);
 
-/** "Live at UNILAG": tap it to see which campuses are coming next. */
+/** "Live at UNILAG" ("Coming to UNILAG" before launch): tap it to see which campuses are coming next. */
 export function CampusBadge() {
   return (
     <Popover
@@ -21,7 +22,7 @@ export function CampusBadge() {
           className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-bold ring-1 ring-[#1b1f3b]/10 transition-colors hover:bg-[#eef1ff]"
         >
           <span className="size-2 rounded-full bg-[#3ddc97]" aria-hidden />
-          Live at {live?.shortName ?? "UNILAG"}
+          {features.waitlist ? "Coming to" : "Live at"} {live?.shortName ?? "UNILAG"}
           <span className="font-semibold text-[#5a5f78]">· {next.length} more coming</span>
           <ChevronDown className="size-3.5" aria-hidden />
         </button>

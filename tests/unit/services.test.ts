@@ -472,3 +472,30 @@ describe("buying and selling", () => {
     });
   });
 });
+
+describe("waitlist", () => {
+  it("keeps each email once, tidied, in the order people joined", async () => {
+    expect(await s.waitlist.join({ email: "  Tola@Example.com", role: "both" })).toEqual({
+      position: 1,
+      already: false,
+    });
+    expect(await s.waitlist.join({ email: "bayo@example.com", role: "sell" })).toEqual({
+      position: 2,
+      already: false,
+    });
+    expect(await s.waitlist.join({ email: "tola@example.com", role: "buy" })).toEqual({
+      position: 1,
+      already: true,
+    });
+    const db = await getDb();
+    expect(db.waitlist.map((w) => [w.email, w.role])).toEqual([
+      ["tola@example.com", "both"],
+      ["bayo@example.com", "sell"],
+    ]);
+  });
+
+  it("refuses something that isn't an email", async () => {
+    await expectCode(s.waitlist.join({ email: "tola", role: "buy" }), "VALIDATION");
+    await expectCode(s.waitlist.join({ email: "", role: "buy" }), "VALIDATION");
+  });
+});

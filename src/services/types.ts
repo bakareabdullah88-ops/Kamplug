@@ -387,6 +387,15 @@ export type SavedPlace = {
 export type SortKey =
   "relevance" | "popular" | "newest" | "nearest" | "price_asc" | "price_desc" | "rating";
 
+/** Someone waiting for Kamplug to open. Only ever written; never sent back to anyone. */
+export type WaitlistEntry = {
+  id: ID;
+  email: string;
+  /** What they want to do on Kamplug. */
+  role: "buy" | "sell" | "both";
+  createdAt: ISODate;
+};
+
 export type ProductQuery = {
   q?: string;
   category?: CategoryId;

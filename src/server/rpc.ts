@@ -7,11 +7,14 @@ import { mockMessages, mockNotifications, mockPlaces } from "@/services/mock/inb
 import { mockOrders } from "@/services/mock/orders";
 import { mockSocial } from "@/services/mock/social";
 import { mockStudio } from "@/services/mock/studio";
+import { mockWaitlist } from "@/services/mock/waitlist";
+import { features } from "@/config/features";
 import { endSession, sessionUser, startSession } from "./session";
 import { runCall } from "./store";
 
 /** What the browser may call. Media has its own routes; realtime is /api/sync. */
 const callable: Omit<Services, "media" | "realtime"> = {
+  waitlist: mockWaitlist,
   auth: mockAuth,
   catalog: mockCatalog,
   social: mockSocial,
@@ -98,6 +101,7 @@ export function __resetAttempts() {
 
 /** Calls a minute, per account (or per address when signed out). */
 const LIMITS: Record<string, number> = {
+  "waitlist.join": 5,
   "auth.signIn": 30,
   "auth.signUp": 10,
   "auth.deleteAccount": 5,
@@ -156,6 +160,14 @@ export async function handleRpc(req: Request): Promise<Response> {
   const fn = service && Object.hasOwn(service, body.method) ? service[body.method] : null;
   if (typeof fn !== "function") return errorResponse("NOT_FOUND", "No such operation.");
   const name = `${body.service}.${body.method}`;
+  // Before launch only the waitlist and public catalogue reads work: no accounts, no orders.
+  if (
+    features.waitlist &&
+    body.service !== "waitlist" &&
+    body.service !== "catalog" &&
+    name !== "auth.getSession"
+  )
+    return errorResponse("FORBIDDEN", "Kamplug isn't open yet. Join the waitlist.");
   const max = LIMITS[name];
   const tooMany = () =>
     errorResponse("UNAVAILABLE", "Too many attempts. Wait a minute and try again.");

@@ -21,6 +21,7 @@ const flags = vi.hoisted(() => ({
   onlinePayments: false,
   passwordResetEmail: false,
   payouts: false,
+  waitlist: false,
 }));
 vi.mock("@/config/features", () => ({ features: flags }));
 
@@ -563,6 +564,36 @@ describe.skipIf(!url)("backend on Postgres", () => {
       }),
     );
     expect(res.status).toBe(403);
+  });
+
+  it("only takes waitlist sign-ups while Kamplug isn't open", async () => {
+    flags.waitlist = true;
+    try {
+      const b = browser();
+      const signUp = await b.raw("auth", "signUp", {
+        name: "Ada",
+        email: "ada@unilag.edu.ng",
+        password: "campus123",
+      });
+      expect(signUp.status).toBe(403);
+      expect((await b.raw("orders", "listMyOrders")).status).toBe(403);
+      expect(await b.call("auth", "getSession")).toBeNull();
+      expect((await b.call("catalog", "listCampuses")).length).toBeGreaterThan(0);
+      expect(
+        await b.call("waitlist", "join", { email: "Ada@Unilag.edu.ng ", role: "sell" }),
+      ).toEqual({ position: 1, already: false });
+      expect(await b.call("waitlist", "join", { email: "ada@unilag.edu.ng", role: "buy" })).toEqual(
+        {
+          position: 1,
+          already: true,
+        },
+      );
+      expect(await code(b.call("waitlist", "join", { email: "not an email", role: "buy" }))).toBe(
+        "VALIDATION",
+      );
+    } finally {
+      flags.waitlist = false;
+    }
   });
 
   it("slows down password guessing on one account and message spam", async () => {

@@ -207,7 +207,16 @@ export interface RealtimeService {
   subscribe(cb: () => void): () => void;
 }
 
+export interface WaitlistService {
+  /** Adds an email (once). `position` is how many joined up to and including them. */
+  join(input: { email: string; role: "buy" | "sell" | "both" }): Promise<{
+    position: number;
+    already: boolean;
+  }>;
+}
+
 export interface Services {
+  waitlist: WaitlistService;
   auth: AuthService;
   catalog: CatalogService;
   social: SocialService;
