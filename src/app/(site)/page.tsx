@@ -63,14 +63,21 @@ const steps = [
   },
 ];
 
+/** Before launch every way in is the waitlist form at the top of the page. */
+const waitlist = features.waitlist;
+
 const faqs = [
   {
     q: "What is Kamplug?",
-    a: "Kamplug is a marketplace for UNILAG students. Students sell food, thrift, beauty, tech, books and more, and other students order from them for delivery to their hall or pickup on campus.",
+    a: waitlist
+      ? "Kamplug is a marketplace for UNILAG students, opening soon. Students will sell food, thrift, beauty, tech, books and more, and other students will order from them for delivery to their hall or pickup on campus."
+      : "Kamplug is a marketplace for UNILAG students. Students sell food, thrift, beauty, tech, books and more, and other students order from them for delivery to their hall or pickup on campus.",
   },
   {
     q: "Does it cost anything?",
-    a: "No. Creating an account, shopping and opening a shop are all free.",
+    a: waitlist
+      ? "No. Joining the waitlist is free, and so are shopping and opening a shop once we open."
+      : "No. Creating an account, shopping and opening a shop are all free.",
   },
   {
     q: "How do I know which shop is closest?",
@@ -82,11 +89,13 @@ const faqs = [
   },
   {
     q: "How do I open a shop?",
-    a: "Create an account, tap Open a shop and follow five short steps: name, handle, category, where you deliver from, and your first product. It's free.",
+    a: waitlist
+      ? 'Join the waitlist and pick "I want to sell". When Kamplug opens you create an account, tap Open a shop and follow five short steps: name, handle, category, where you deliver from, and your first product. It\'s free.'
+      : "Create an account, tap Open a shop and follow five short steps: name, handle, category, where you deliver from, and your first product. It's free.",
   },
   {
     q: "Which campuses are on Kamplug?",
-    a: `Kamplug is live at UNILAG right now. ${campuses
+    a: `${waitlist ? "Kamplug opens at UNILAG first." : "Kamplug is live at UNILAG right now."} ${campuses
       .filter((c) => c.id !== focusCampusId)
       .map((c) => c.shortName)
       .join(", ")} are coming next.`,
@@ -125,8 +134,6 @@ function SeeMore({ href }: { href: string }) {
   );
 }
 
-/** Before launch every way in is the waitlist form at the top of the page. */
-const waitlist = features.waitlist;
 const JOIN = "#waitlist";
 const signupHref = waitlist ? JOIN : "/signup";
 const sellHref = waitlist ? JOIN : "/open-shop";
@@ -171,7 +178,7 @@ export default function LandingPage() {
                 <p className="text-[15px] font-bold text-[#3a5bff]">
                   Opening soon. Be first in when we launch.
                 </p>
-                <WaitlistForm />
+                <WaitlistForm anchor />
               </div>
             ) : (
               <div className="mt-8 flex justify-center">
@@ -228,10 +235,10 @@ export default function LandingPage() {
               Jollof, small chops and late-night bites from students in your hall.
             </p>
             <Link
-              href="/explore?category=food"
+              href={waitlist ? JOIN : "/explore?category=food"}
               className="mt-6 inline-flex h-14 items-center gap-2 rounded-xl bg-[#ffe3b3] px-7 text-[16px] font-bold text-[#8c1d18] transition-colors hover:bg-white"
             >
-              Order food <ArrowRight className="size-5" />
+              {waitlist ? "Join the waitlist" : "Order food"} <ArrowRight className="size-5" />
             </Link>
           </div>
         </section>
@@ -252,8 +259,8 @@ export default function LandingPage() {
                 No setup fee and no monthly fee. Set where you sell from, list your products and
                 buyers nearby see you first.
               </p>
-              <Link href="/open-shop" className={cn(btn.cobalt, "mt-8")}>
-                Open your shop <ArrowRight className="size-5" />
+              <Link href={sellHref} className={cn(btn.cobalt, "mt-8")}>
+                {waitlist ? "Join as a seller" : "Open your shop"} <ArrowRight className="size-5" />
               </Link>
             </Reveal>
             <Reveal from="top" delay={120}>

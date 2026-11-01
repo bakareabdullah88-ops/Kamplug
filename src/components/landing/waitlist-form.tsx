@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, Check } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { services } from "@/services";
 import { errorMessage } from "@/services/errors";
@@ -17,8 +17,45 @@ const roles: { value: Role; label: string }[] = [
  * Join the waitlist: an email and what you want to do on Kamplug. Saved to the
  * shared database; the same email only counts once.
  */
-export function WaitlistForm({ tone = "light" }: { tone?: "light" | "dark" }) {
+export function WaitlistForm({
+  tone = "light",
+  anchor = false,
+}: {
+  tone?: "light" | "dark";
+  /**
+   * The form every "Join the waitlist" link on the page leads to. A link to
+   * "#waitlist" on the page you're already on doesn't move anything, so this
+   * one catches those clicks, scrolls itself into view and puts the cursor in
+   * the email box.
+   */
+  anchor?: boolean;
+}) {
   const id = useId();
+  const boxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!anchor) return;
+    const bring = (focus: boolean) => {
+      const box = boxRef.current;
+      if (!box) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      box.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+      if (focus) box.querySelector("input")?.focus({ preventScroll: true });
+    };
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const link = (e.target as Element | null)?.closest?.("a[href]");
+      const href = link?.getAttribute("href");
+      if (href !== "#waitlist" && href !== "/#waitlist") return;
+      // Before the page's own link handling, so it doesn't try (and fail) to navigate.
+      e.preventDefault();
+      e.stopPropagation();
+      bring(true);
+    };
+    document.addEventListener("click", onClick, true);
+    // Sent here from a closed page (/home, /login…): show the form.
+    if (window.location.hash === "#waitlist") bring(false);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [anchor]);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("buy");
   const [pending, setPending] = useState(false);
@@ -73,7 +110,10 @@ export function WaitlistForm({ tone = "light" }: { tone?: "light" | "dark" }) {
       className="flex w-full max-w-[600px] flex-col items-center gap-3 text-left"
       aria-label="Join the waitlist"
     >
-      <div className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1b1f3b]/10 md:h-[68px]">
+      <div
+        ref={boxRef}
+        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1b1f3b]/10 md:h-[68px]"
+      >
         <label htmlFor={`${id}-email`} className="sr-only">
           Your email
         </label>

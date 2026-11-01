@@ -1,5 +1,6 @@
 "use client";
 
+import { features } from "@/config/features";
 import Link from "next/link";
 import { useRef } from "react";
 import {
@@ -136,7 +137,7 @@ export function CategoryStrip() {
       {tiles.map((t, i) => (
         <Reveal key={t.id} from="top" delay={i * 90} className={t.span}>
           <TiltLink
-            href={t.href}
+            href={features.waitlist ? "#waitlist" : t.href}
             className={t.big ? "min-h-[420px] md:min-h-0" : "min-h-[230px]"}
             style={{ background: t.bg }}
           >
@@ -190,7 +191,7 @@ export function CategoryStrip() {
       ))}
       <Reveal from="top" delay={tiles.length * 90} className="col-span-2">
         <TiltLink
-          href="/explore"
+          href={features.waitlist ? "#waitlist" : "/explore"}
           className="flex min-h-[200px] flex-col justify-between bg-[#1b1f3b] p-6 text-white md:p-8"
         >
           <div>

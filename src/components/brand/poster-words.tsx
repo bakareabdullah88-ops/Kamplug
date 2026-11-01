@@ -37,16 +37,17 @@ export function PosterWords({
       {Array.from({ length: rows }, (_, i) => (
         <p
           key={i}
-          className={i < solid && i > 0 ? "opacity-75" : undefined}
+          // The word is drawn by CSS, not written in the page, so screen readers,
+          // search engines and link previews don't read it out four times.
+          data-word={Array.from({ length: repeat }, () => word).join(" ")}
+          className={cn("before:content-[attr(data-word)]", i < solid && i > 0 && "opacity-75")}
           // Outlined rows keep the text colour for the stroke and only drop the fill.
           style={
             i < solid
               ? undefined
               : { WebkitTextStroke: `${stroke}px currentColor`, WebkitTextFillColor: "transparent" }
           }
-        >
-          {Array.from({ length: repeat }, () => word).join(" ")}
-        </p>
+        />
       ))}
     </div>
   );
