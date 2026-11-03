@@ -72,7 +72,7 @@ export function AccountMenu({ side = "bottom" }: { side?: "right" | "bottom" }) 
         }
         className="flex h-10 w-full items-center gap-2.5 rounded-md px-2.5 text-small font-medium text-danger hover:bg-danger-soft"
       >
-        <LogOut className="size-4" /> Sign out
+        <LogOut className="size-4" /> Sign ou
       </button>
     </Popover>
   );
