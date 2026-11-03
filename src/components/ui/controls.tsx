@@ -236,17 +236,18 @@ export function RangeSlider({
       step={step}
       minStepsBetweenThumbs={1}
       aria-label={label}
-      className="relative flex h-10 w-full touch-none items-center select-none"
+      // Inset by half a thumb so the thumbs sit inside the box, not over its edges.
+      className="relative mx-2.5 flex h-10 touch-none items-center select-none"
     >
       <RSlider.Track className="relative h-1 grow overflow-hidden rounded-full bg-line-strong">
-        <RSlider.Range className="absolute h-full bg-ink" />
+        <RSlider.Range className="absolute h-full bg-accent" />
       </RSlider.Track>
       {value.map((v, i) => (
         <RSlider.Thumb
           key={i}
           aria-label={i === 0 ? `Minimum ${label}` : `Maximum ${label}`}
           aria-valuetext={formatValue(v)}
-          className="block size-6 rounded-full bg-surface shadow-[0_0_0_1.5px_var(--ink),var(--shadow-sm)] transition-transform duration-150 hover:scale-110 focus-visible:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-95"
+          className="block size-5 rounded-full bg-surface shadow-[0_0_0_2px_var(--accent),var(--shadow-sm)] transition-transform duration-150 hover:scale-110 focus-visible:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-95"
         />
       ))}
     </RSlider.Root>

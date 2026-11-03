@@ -99,6 +99,8 @@ export interface OrderService {
   listMyOrders(): Promise<Order[]>;
   getOrder(id: ID): Promise<Order>;
   cancelOrder(id: ID): Promise<Order>;
+  /** The buyer says they've got it (when the seller couldn't take their code). */
+  confirmReceived(id: ID): Promise<Order>;
   reviewOrderItem(input: ReviewInput): Promise<Review>;
   myReviews(): Promise<Review[]>;
   /** Spending dashboard for the signed-in buyer. */
@@ -115,6 +117,8 @@ export interface MessageService {
   listThreads(as: "buyer" | "brand"): Promise<Thread[]>;
   getThread(id: ID, as: "buyer" | "brand"): Promise<Thread>;
   startThread(input: { brandId: ID; productId?: ID }): Promise<Thread>;
+  /** A shop opens (or finds) its conversation with the buyer of one of its orders. */
+  startThreadWithBuyer(input: { orderId: ID }): Promise<Thread>;
   send(input: { threadId: ID; body: string; as: "buyer" | "brand" }): Promise<Thread>;
 }
 
@@ -174,7 +178,10 @@ export interface StudioService {
   deleteProducts(ids: ID[]): Promise<void>;
 
   listOrders(): Promise<Order[]>;
-  updateOrderStatus(id: ID, status: OrderStatus): Promise<Order>;
+  /** `note`: optional reason when declining or cancelling; the buyer sees it. */
+  updateOrderStatus(id: ID, status: OrderStatus, note?: string): Promise<Order>;
+  /** Finishes an order with the buyer's 4-digit handover code. */
+  completeOrder(id: ID, code: string): Promise<Order>;
 
   listCustomers(): Promise<Customer[]>;
   listReviews(): Promise<Review[]>;
@@ -200,7 +207,16 @@ export interface RealtimeService {
   subscribe(cb: () => void): () => void;
 }
 
+export interface WaitlistService {
+  /** Adds an email (once). `position` is how many joined up to and including them. */
+  join(input: { email: string; role: "buy" | "sell" | "both" }): Promise<{
+    position: number;
+    already: boolean;
+  }>;
+}
+
 export interface Services {
+  waitlist: WaitlistService;
   auth: AuthService;
   catalog: CatalogService;
   social: SocialService;

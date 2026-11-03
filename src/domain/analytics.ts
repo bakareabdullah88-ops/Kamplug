@@ -123,7 +123,8 @@ export function funnel(
 
 export type Part = { key: string; label: string; valueKobo: number; share: number };
 export type DailyPoint = { date: string; amountKobo: number; orders: number };
-export type WeekdayCount = { day: number; label: string; orders: number };
+/** Items sold on each day of the week (every unit counts, so two of a thing is two). */
+export type WeekdayCount = { day: number; label: string; items: number };
 export type RatePoint = { label: string; rate: number | null };
 export type Insight = { value: string; label: string };
 
@@ -160,10 +161,13 @@ function daily(orders: Order[], r: DayRange): DailyPoint[] {
 }
 
 function byWeekday(orders: Order[]): { days: WeekdayCount[]; peak: number | null } {
-  const days = WEEKDAYS.map((label, day) => ({ day, label, orders: 0 }));
-  for (const o of orders) days[new Date(o.placedAt).getDay()]!.orders += 1;
-  const max = Math.max(...days.map((d) => d.orders));
-  return { days, peak: max > 0 ? days.findIndex((d) => d.orders === max) : null };
+  const days = WEEKDAYS.map((label, day) => ({ day, label, items: 0 }));
+  for (const o of orders) {
+    const units = o.items.reduce((n, it) => n + it.quantity, 0);
+    days[new Date(o.placedAt).getDay()]!.items += units;
+  }
+  const max = Math.max(...days.map((d) => d.items));
+  return { days, peak: max > 0 ? days.findIndex((d) => d.items === max) : null };
 }
 
 /** Share of orders in each bucket that came from someone who had ordered before. */

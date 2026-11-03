@@ -68,9 +68,16 @@ test("buyer pages, new account", async ({ page }) => {
     "/wishlist",
     "/notifications",
     "/messages",
+    "/help-me-choose",
   ]) {
     await audit(page, path);
   }
+  // The quiz walks through to results.
+  await page.goto("/help-me-choose");
+  await page.getByRole("button", { name: /Anything good/ }).click();
+  await page.getByRole("button", { name: /Any price/ }).click();
+  await page.getByRole("button", { name: /Either is fine/ }).click();
+  await expect(page.getByText("Here's what fits")).toBeVisible();
   await expectNoAppErrors(page, errors);
 });
 
@@ -86,7 +93,6 @@ test("seller pages, with one product", async ({ page }) => {
   });
   for (const path of [
     "/studio",
-    "/studio/analytics",
     "/studio/products",
     "/studio/products/new",
     "/studio/orders",

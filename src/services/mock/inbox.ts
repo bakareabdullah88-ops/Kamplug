@@ -4,7 +4,8 @@ import { ServiceError } from "../errors";
 import { schemas } from "./schemas";
 import type { Thread } from "../types";
 import { commit, getDb } from "./db";
-import { clone, requireUser } from "./context";
+import { buyerLabel, clone, forShop, requireUser } from "./context";
+import { atName } from "@/domain/username";
 import { latency, quick } from "./latency";
 import { pushNotification } from "./notify";
 
@@ -37,6 +38,7 @@ export const mockNotifications: NotificationService = {
 };
 
 function canSee(thread: Thread, userId: string, brandIds: string[], as: "buyer" | "brand") {
+  if (as !== "buyer" && as !== "brand") throw new ServiceError("VALIDATION", "Unknown inbox.");
   return as === "buyer" ? thread.buyerId === userId : brandIds.includes(thread.brandId);
 }
 
@@ -48,7 +50,8 @@ export const mockMessages: MessageService = {
     return clone(
       db.threads
         .filter((t) => canSee(t, user.id, user.brandIds, as))
-        .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)),
+        .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+        .map((t) => (as === "brand" ? forShop(db, t) : t)),
     );
   },
 
@@ -61,11 +64,20 @@ export const mockMessages: MessageService = {
       throw new ServiceError("NOT_FOUND", "Conversation not found.");
     if (as === "buyer") t.unreadForBuyer = 0;
     else t.unreadForBrand = 0;
-    await commit("threads");
-    return clone(t);
+    // Opening the chat is seeing the message: its "new message" alerts are read too.
+    // (Older shop alerts linked to the inbox without naming the chat.)
+    for (const n of db.notifications) {
+      if (n.userId !== user.id || n.kind !== "message" || n.read) continue;
+      if (n.href?.endsWith(`thread=${t.id}`) || (as === "brand" && n.href === "/studio/messages"))
+        n.read = true;
+    }
+    await commit("threads", "notifications");
+    return clone(as === "brand" ? forShop(db, t) : t);
   },
 
   async startThread({ brandId, productId }) {
+    if (typeof brandId !== "string" || (productId !== undefined && typeof productId !== "string"))
+      throw new ServiceError("VALIDATION", "Choose a shop to message.");
     await quick();
     const db = await getDb();
     const user = await requireUser(db);
@@ -78,7 +90,7 @@ export const mockMessages: MessageService = {
       t = {
         id: newId("th"),
         buyerId: user.id,
-        buyerName: user.name,
+        buyerName: atName(user),
         brandId,
         brandName: brand.name,
         brandHandle: brand.handle,
@@ -93,6 +105,36 @@ export const mockMessages: MessageService = {
       await commit("threads");
     }
     return clone(t);
+  },
+
+  async startThreadWithBuyer({ orderId }) {
+    if (typeof orderId !== "string") throw new ServiceError("VALIDATION", "Choose an order.");
+    await quick();
+    const db = await getDb();
+    const user = await requireUser(db);
+    const order = db.orders.find((o) => o.id === orderId && user.brandIds.includes(o.brandId));
+    if (!order) throw new ServiceError("NOT_FOUND", "Order not found.");
+    const brand = db.brands.find((b) => b.id === order.brandId);
+    if (!brand) throw new ServiceError("NOT_FOUND", "Brand not found.");
+    let t = db.threads.find((x) => x.buyerId === order.buyerId && x.brandId === brand.id);
+    if (!t) {
+      t = {
+        id: newId("th"),
+        buyerId: order.buyerId,
+        buyerName: buyerLabel(db, order.buyerId, order.buyerName),
+        brandId: brand.id,
+        brandName: brand.name,
+        brandHandle: brand.handle,
+        brandLogo: clone(brand.logo),
+        messages: [],
+        updatedAt: new Date().toISOString(),
+        unreadForBuyer: 0,
+        unreadForBrand: 0,
+      };
+      db.threads.push(t);
+      await commit("threads");
+    }
+    return clone(forShop(db, t));
   },
 
   async send({ threadId, body, as }) {
@@ -117,9 +159,9 @@ export const mockMessages: MessageService = {
       pushNotification(db, {
         userId: owner.id,
         kind: "message",
-        title: `Message from ${t.buyerName}`,
+        title: `Message from ${buyerLabel(db, t.buyerId, t.buyerName)}`,
         body: text.slice(0, 90),
-        href: "/studio/messages",
+        href: `/studio/messages?thread=${t.id}`,
       });
     }
     if (as === "brand") {
@@ -132,7 +174,7 @@ export const mockMessages: MessageService = {
       });
     }
     await commit("threads", "notifications");
-    return clone(t);
+    return clone(as === "brand" ? forShop(db, t) : t);
   },
 };
 

@@ -1,7 +1,7 @@
 import { brand as appBrand } from "@/config/brand";
 import { purchaseBlock } from "@/domain/bag";
 import { groupTotal, sumQuote, type CheckoutQuote, type GroupQuote } from "@/domain/checkout";
-import { canBuyerCancel, transition } from "@/domain/orders";
+import { awaitingHandover, canBuyerCancel, newHandoverCode, transition } from "@/domain/orders";
 import { buyerDashboard } from "@/domain/analytics";
 import { categories, categoryById } from "@/config/categories";
 import { features } from "@/config/features";
@@ -14,7 +14,8 @@ import type { CheckoutInput } from "../inputs";
 import { schemas, type Schemas } from "./schemas";
 import type { Order, Product, UserRecord } from "../types";
 import { commit, getDb } from "./db";
-import { clone, requireUser } from "./context";
+import { clone, orderForShop, requireUser } from "./context";
+import { atName } from "@/domain/username";
 import { latency } from "./latency";
 import { notifyBuyerOfStatus, pushNotification } from "./notify";
 import type { DbSnapshot } from "./seed";
@@ -25,6 +26,8 @@ type Resolved = {
     quote: GroupQuote;
     lines: { product: Product; variantKey: string; quantity: number }[];
     input: CheckoutInput["groups"][number];
+    /** The promo this group used, if it applied. */
+    promoId: string | null;
   }[];
 };
 
@@ -43,14 +46,36 @@ function price(
     );
   }
   const input = parsed.data;
+  // One group per shop, so stock and promo limits are counted once for the whole checkout.
+  if (new Set(input.groups.map((g) => g.brandId)).size !== input.groups.length)
+    throw new ServiceError("VALIDATION", "Each shop can only appear once in a checkout.");
   const groups: Resolved["groups"] = [];
+  /** Uses of each promo within this checkout, so a limited code can't apply twice. */
+  const promoUses = new Map<string, number>();
   for (const g of input.groups) {
     const brand = db.brands.find((b) => b.id === g.brandId);
     if (!brand) throw new ServiceError("NOT_FOUND", "A brand in your bag no longer exists.");
     const problems: GroupQuote["problems"] = [];
     const lines: Resolved["groups"][number]["lines"] = [];
+    if (user.brandIds.includes(brand.id)) {
+      problems.push({
+        productId: "",
+        variantKey: "",
+        reason: "This is your own shop, so you can't buy from it.",
+      });
+    }
+    /** Units asked for so far, per product and option, across repeated lines. */
+    const asked = new Map<string, number>();
     for (const l of g.lines) {
       const product = db.products.find((p) => p.id === l.productId);
+      if (product && product.brandId !== brand.id) {
+        problems.push({
+          productId: l.productId,
+          variantKey: l.variantKey,
+          reason: `This item isn't sold by ${brand.name}.`,
+        });
+        continue;
+      }
       if (!product) {
         problems.push({
           productId: l.productId,
@@ -68,7 +93,10 @@ function price(
         continue;
       }
       const v = findVariant(product, l.variantKey)!;
-      if (v.stock < l.quantity) {
+      const key = `${product.id}/${v.key}`;
+      const total = (asked.get(key) ?? 0) + l.quantity;
+      asked.set(key, total);
+      if (v.stock < total) {
         problems.push({
           productId: l.productId,
           variantKey: l.variantKey,
@@ -95,12 +123,15 @@ function price(
     let deliveryFee = method === "delivery" ? brand.fulfilment.deliveryFeeKobo : 0;
     let discount = 0;
     let promo: GroupQuote["promo"] = null;
+    let promoId: string | null = null;
     if (g.promoCode) {
       const code = normalizeCode(g.promoCode);
       const found = db.promos.find(
         (p) => p.code === code && (p.brandId === null || p.brandId === brand.id),
       );
-      const res = evaluatePromo(found ?? db.promos.find((p) => p.code === code), {
+      const row = found ?? db.promos.find((p) => p.code === code);
+      const usedHere = row ? (promoUses.get(row.id) ?? 0) : 0;
+      const res = evaluatePromo(row && { ...row, usageCount: row.usageCount + usedHere }, {
         brandId: brand.id,
         subtotalKobo: subtotal,
         deliveryFeeKobo: deliveryFee,
@@ -110,6 +141,10 @@ function price(
         discount = res.discountKobo;
         if (res.freeDelivery) deliveryFee = 0;
         promo = { code, status: "applied", label: res.label };
+        if (row) {
+          promoId = row.id;
+          promoUses.set(row.id, usedHere + 1);
+        }
       } else {
         promo = { code, status: "invalid", reason: res.reason };
       }
@@ -129,7 +164,7 @@ function price(
       promo,
       problems,
     };
-    groups.push({ quote, lines, input: g });
+    groups.push({ quote, lines, input: g, promoId });
   }
   return { quote: sumQuote(groups.map((g) => g.quote)), groups };
 }
@@ -181,9 +216,10 @@ export const mockOrders: OrderService = {
       const order: Order = {
         id: newId("o"),
         code: orderCode(appBrand.orderPrefix),
+        handoverCode: newHandoverCode(),
         checkoutId,
         buyerId: user.id,
-        buyerName: user.name,
+        buyerName: atName(user),
         buyerPhone: parsed.phone,
         brandId: brand.id,
         brandName: brand.name,
@@ -212,7 +248,15 @@ export const mockOrders: OrderService = {
         totalKobo: g.quote.totalKobo,
         ...(g.quote.promo?.status === "applied" ? { promoCode: g.quote.promo.code } : {}),
         // Offline payments are collected by the seller on handover and marked paid on delivery.
-        payment: { method: parsed.paymentMethod, status: online ? "paid" : "pending" },
+        // How depends on each order's own fulfilment, whatever single method the client sent.
+        payment: {
+          method: online
+            ? parsed.paymentMethod
+            : f.method === "pickup"
+              ? "pay_on_pickup"
+              : "pay_on_delivery",
+          status: online ? "paid" : "pending",
+        },
         status: "placed",
         timeline: [{ status: "placed", at: placedAt }],
         autoProgress: false,
@@ -227,8 +271,8 @@ export const mockOrders: OrderService = {
         if (v) v.stock = Math.max(0, v.stock - l.quantity);
         l.product.salesCount += l.quantity;
       }
-      if (g.quote.promo?.status === "applied") {
-        const promo = db.promos.find((p) => p.code === g.quote.promo!.code);
+      if (g.promoId) {
+        const promo = db.promos.find((p) => p.id === g.promoId);
         if (promo) promo.usageCount += 1;
       }
       if (owner) {
@@ -236,7 +280,7 @@ export const mockOrders: OrderService = {
           userId: owner.id,
           kind: "order",
           title: `New order ${order.code}`,
-          body: `${user.name} ordered ${order.items.length} item${order.items.length > 1 ? "s" : ""}. Accept it to let them know you're on it.`,
+          body: `${atName(user)} ordered ${order.items.length} item${order.items.length > 1 ? "s" : ""}. Accept it to let them know you're on it.`,
           href: "/studio/orders",
         });
       }
@@ -275,7 +319,8 @@ export const mockOrders: OrderService = {
     if (order.buyerId !== user.id && !user.brandIds.includes(order.brandId)) {
       throw new ServiceError("NOT_FOUND", "We couldn't find that order.");
     }
-    return clone(order);
+    // The shop sees the buyer by username; the buyer sees their own order as is.
+    return clone(order.buyerId === user.id ? order : orderForShop(db, order));
   },
 
   async cancelOrder(id) {
@@ -313,12 +358,42 @@ export const mockOrders: OrderService = {
         userId: brand.ownerId,
         kind: "order",
         title: `${next.code} was cancelled`,
-        body: `${user.name} cancelled before you accepted it. The stock is back on your shelf.`,
+        body: `${atName(user)} cancelled before you accepted it. The stock is back on your shelf.`,
         href: `/studio/orders?order=${next.id}`,
       });
     }
     await commit("orders", "products", "notifications");
     return clone(next);
+  },
+
+  async confirmReceived(id) {
+    if (typeof id !== "string") throw new ServiceError("VALIDATION", "Choose an order.");
+    await latency(0.6);
+    const db = await getDb();
+    const user = await requireUser(db);
+    const order = db.orders.find((o) => o.id === id && o.buyerId === user.id);
+    if (!order) throw new ServiceError("NOT_FOUND", "We couldn't find that order.");
+    if (!awaitingHandover(order))
+      throw new ServiceError(
+        "CONFLICT",
+        order.status === "delivered"
+          ? "This order is already done."
+          : "You can confirm once it's on its way or ready to collect.",
+      );
+    const next = applySellerTransition(db, id, "delivered");
+    const done = { ...next, handedOver: "buyer" as const };
+    db.orders[db.orders.findIndex((o) => o.id === id)] = done;
+    const brand = db.brands.find((b) => b.id === done.brandId);
+    if (brand)
+      pushNotification(db, {
+        userId: brand.ownerId,
+        kind: "order",
+        title: `${done.code} received`,
+        body: `${atName(user)} confirmed they got their order.`,
+        href: `/studio/orders?order=${done.id}`,
+      });
+    await commit("orders", "notifications");
+    return clone(done);
   },
 
   async reviewOrderItem(raw) {
@@ -341,7 +416,7 @@ export const mockOrders: OrderService = {
       productId: input.productId,
       brandId: order.brandId,
       userId: user.id,
-      authorName: shortName(user.name),
+      authorName: atName(user),
       rating: input.rating,
       body: input.body,
       ...(item.variantLabel ? { variantLabel: item.variantLabel } : {}),
@@ -406,19 +481,20 @@ export const mockOrders: OrderService = {
   },
 };
 
-function shortName(full: string) {
-  const [first, last] = full.trim().split(/\s+/);
-  return last ? `${first} ${last[0]}.` : (first ?? full);
-}
-
 /** Seller-side transition with notification (used by Studio). */
-export function applySellerTransition(db: DbSnapshot, orderId: string, to: Order["status"]): Order {
+/** `note`: the seller's reason, kept on the timeline and passed to the buyer (decline / cancel). */
+export function applySellerTransition(
+  db: DbSnapshot,
+  orderId: string,
+  to: Order["status"],
+  note?: string,
+): Order {
   const idx = db.orders.findIndex((o) => o.id === orderId);
   const order = db.orders[idx];
   if (!order) throw new ServiceError("NOT_FOUND", "Order not found.");
   let next: Order;
   try {
-    next = transition({ ...order, autoProgress: false }, to, Date.now());
+    next = transition({ ...order, autoProgress: false }, to, Date.now(), note);
     if (to === "delivered" && next.payment.status === "pending") {
       next = { ...next, payment: { ...next.payment, status: "paid" } };
     }
@@ -433,6 +509,6 @@ export function applySellerTransition(db: DbSnapshot, orderId: string, to: Order
     }
   }
   db.orders[idx] = next;
-  notifyBuyerOfStatus(db, next, to);
+  notifyBuyerOfStatus(db, next, to, undefined, note);
   return next;
 }

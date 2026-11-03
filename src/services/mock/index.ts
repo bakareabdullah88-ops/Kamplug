@@ -7,8 +7,10 @@ import { mockMedia } from "./media";
 import { mockOrders } from "./orders";
 import { mockSocial } from "./social";
 import { mockStudio } from "./studio";
+import { mockWaitlist } from "./waitlist";
 
 export const mockServices: Services = {
+  waitlist: mockWaitlist,
   auth: mockAuth,
   catalog: mockCatalog,
   social: mockSocial,

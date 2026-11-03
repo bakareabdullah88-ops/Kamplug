@@ -16,11 +16,7 @@ export default function Route() {
         description="Quick replies win orders. Buyers see when you last replied."
       />
       <Suspense fallback={<Skeleton className="h-[60dvh] w-full" rounded="lg" />}>
-        <InboxView
-          as="brand"
-          title="Conversations"
-          emptyBody="When buyers message your shop, conversations show up here."
-        />
+        <InboxView emptyBody="When buyers message your shop, conversations show up here, next to your own chats with shops." />
       </Suspense>
     </Page>
   );

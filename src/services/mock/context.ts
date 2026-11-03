@@ -1,21 +1,13 @@
-import { accessList, userIdFor } from "@/config/access";
-import { features } from "@/config/features";
 import { ServiceError } from "../errors";
-import type { Brand, UserRecord, User } from "../types";
+import { atName } from "@/domain/username";
+import type { Brand, Order, UserRecord, User } from "../types";
 import { getDb, getSessionUserId } from "./db";
 import type { DbSnapshot } from "./seed";
-
-/** The access-list entry behind an account, in invite-only mode. */
-export function accessEntryFor(userId: string) {
-  return accessList.find((e) => userIdFor(e) === userId);
-}
 
 export async function currentUser(db?: DbSnapshot): Promise<UserRecord | null> {
   const d = db ?? (await getDb());
   const id = await getSessionUserId();
   if (!id) return null;
-  // Invite-only: accounts not (or no longer) on the list are signed out.
-  if (features.inviteOnly && !accessEntryFor(id)) return null;
   return d.users.find((u) => u.id === id) ?? null;
 }
 
@@ -35,8 +27,10 @@ export async function requireBrand(db: DbSnapshot): Promise<{ user: UserRecord; 
 /** Strip private fields before returning a user to the UI. */
 export function publicUser(u: UserRecord): User {
   const { passwordHash, passwordSalt, ...rest } = u;
-  const role = features.inviteOnly ? (accessEntryFor(u.id)?.role ?? "member") : "member";
-  return { ...structuredClone(rest), role };
+  return {
+    ...structuredClone(rest),
+    hasPassword: !!passwordHash,
+  };
 }
 
 /** Return detached copies so UI mutations never leak into the store. */
@@ -50,4 +44,32 @@ export function nowIso() {
 
 export function notFound(what: string): never {
   throw new ServiceError("NOT_FOUND", `${what} not found.`);
+}
+
+/** A buyer as a shop sees them: their username, never their real name. */
+export function buyerLabel(db: DbSnapshot, buyerId: string, fallback: string): string {
+  const u = db.users.find((x) => x.id === buyerId);
+  return u ? atName(u) : fallback.startsWith("@") ? fallback : "@buyer";
+}
+
+/** An order or thread with the buyer shown by username, for the shop's side. */
+export function forShop<T extends { buyerId: string; buyerName: string }>(db: DbSnapshot, x: T): T {
+  return { ...x, buyerName: buyerLabel(db, x.buyerId, x.buyerName) };
+}
+
+/** A review with its author shown by username, wherever it's read. */
+export function withAuthor<T extends { userId: string; authorName: string }>(
+  db: DbSnapshot,
+  r: T,
+): T {
+  return { ...r, authorName: buyerLabel(db, r.userId, r.authorName) };
+}
+
+/**
+ * An order as its shop sees it: buyer by username, and never the handover
+ * code, only whether one is needed to finish it.
+ */
+export function orderForShop(db: DbSnapshot, o: Order): Order {
+  const { handoverCode, ...rest } = forShop(db, o);
+  return handoverCode ? { ...rest, needsHandoverCode: true } : rest;
 }
