@@ -12,17 +12,16 @@ export type ButtonVariant = "primary" | "accent" | "secondary" | "ghost" | "dang
 export type ButtonSize = "sm" | "md" | "lg" | "icon" | "icon-sm";
 
 const base =
-  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap font-medium " +
-  "transition-[background-color,color,box-shadow,border-color,scale] duration-150 ease-out " +
+  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap font-semibold " +
+  "transition-[background-color,color,box-shadow,border-color,scale,translate] duration-150 ease-out " +
   "disabled:pointer-events-none disabled:opacity-45 aria-disabled:pointer-events-none aria-disabled:opacity-45 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 const variants: Record<ButtonVariant, string> = {
-  // Main call to action: blue when Buying, green in Shop Studio.
-  primary: "bg-accent text-on-accent hover:bg-accent-hover shadow-xs",
-  accent: "bg-accent text-on-accent hover:bg-accent-hover shadow-xs",
-  secondary:
-    "bg-surface text-ink shadow-[inset_0_0_0_1px_var(--line-strong)] hover:bg-surface-2 hover:shadow-[inset_0_0_0_1px_var(--ink)]",
+  // Flat, like the landing page: colour does the work, no shadows.
+  primary: "bg-accent text-on-accent hover:bg-accent-hover",
+  accent: "bg-accent text-on-accent hover:bg-accent-hover",
+  secondary: "bg-surface text-ink ring-1 ring-inset ring-line-strong hover:bg-surface-2",
   ghost: "bg-transparent text-ink hover:bg-ink/[0.06] dark:hover:bg-ink/[0.08]",
   danger: "bg-danger text-white hover:brightness-110 dark:text-canvas",
   link: "bg-transparent px-0! h-auto! text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink",

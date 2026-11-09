@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { brand } from "@/config/brand";
+import { BrandMarkSvg, brandColors } from "@/lib/brand-mark";
 import { defaultFontPreset, emphasis, getFontPreset } from "@/config/font-presets";
 
 export const alt = `${brand.name}: buy from student brands on your campus`;
@@ -37,85 +38,24 @@ export default async function OpengraphImage() {
         width: "100%",
         height: "100%",
         display: "flex",
-        background: "#f6f8f7",
-        padding: 72,
-        position: "relative",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: brandColors.paper,
+        fontFamily: serif,
+        color: brandColors.ink,
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          right: -120,
-          top: -120,
-          width: 560,
-          height: 560,
-          borderRadius: 999,
-          background: "#dff3e6",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          right: 96,
-          bottom: 96,
-          width: 260,
-          height: 320,
-          borderRadius: 24,
-          background: "#2f6b70",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <svg width="200" height="250" viewBox="0 0 400 500">
-          <path
-            d="M128 152 L170 130 Q200 156 230 130 L272 152 L322 206 L284 238 L268 222 L268 386 Q200 396 132 386 L132 222 L116 238 L78 206 Z"
-            fill="#d3e1e2"
-          />
-        </svg>
+      {/* Just the mark, the name and one line: room to breathe at any preview size. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+        <BrandMarkSvg size={132} />
+        <div style={{ display: "flex", fontSize: 128, letterSpacing: -6, lineHeight: 1 }}>
+          kamplug
+        </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          width: "68%",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            fontFamily: serif,
-            fontSize: 48,
-            color: "#0f1115",
-          }}
-        >
-          {brand.name}
-          <div style={{ width: 12, height: 12, borderRadius: 999, background: "#2f45d8" }} />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontFamily: serif,
-            fontSize: 96,
-            lineHeight: 0.95,
-            color: "#0f1115",
-            letterSpacing: -2,
-          }}
-        >
-          <span>Buy from the brands</span>
-          <span
-            style={{ color: "#2f45d8", fontStyle: emphasis === "italic" ? "italic" : "normal" }}
-          >
-            in your hostel.
-          </span>
-        </div>
-        <div style={{ fontFamily: serif, fontSize: 30, color: "#59606a" }}>
-          Thrift · food · skincare · prints · tech, from students on your campus
-        </div>
+      <div style={{ display: "flex", marginTop: 40, fontSize: 46, letterSpacing: -1.5 }}>
+        Your campus plug. Buy and sell at&nbsp;
+        <span style={{ color: brandColors.cobalt }}>UNILAG.</span>
       </div>
     </div>,
     {

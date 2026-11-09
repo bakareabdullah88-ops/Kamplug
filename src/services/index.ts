@@ -36,6 +36,7 @@ function lazy<K extends Exclude<keyof Services, "realtime">>(name: K): Services[
 }
 
 export const services: Services = {
+  waitlist: lazy("waitlist"),
   auth: lazy("auth"),
   catalog: lazy("catalog"),
   social: lazy("social"),

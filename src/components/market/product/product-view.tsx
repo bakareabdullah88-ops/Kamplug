@@ -4,15 +4,26 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { BadgeCheck, Bike, Clock, MapPin, MessageCircle, ShoppingBag, Store } from "lucide-react";
+import {
+  BadgeCheck,
+  Bike,
+  Clock,
+  Footprints,
+  MapPin,
+  MessageCircle,
+  ShoppingBag,
+  Store,
+} from "lucide-react";
 import { AppImage } from "@/components/ui/app-image";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Price, QuantityStepper, Stars } from "@/components/ui/misc";
+import { QuantityStepper } from "@/components/ui/misc";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { ChatSheet } from "@/components/messages/chat-sheet";
 import { spring } from "@/design/motion";
 import { purchaseBlock, MAX_LINE_QUANTITY } from "@/domain/bag";
+import { formatEta, formatWhen } from "@/domain/distance";
+import { categories, categoryName } from "@/config/categories";
 import { discountPercent, formatNaira } from "@/domain/money";
 import {
   findVariant,
@@ -22,7 +33,7 @@ import {
   type Selection,
 } from "@/domain/variants";
 import { flyToBag } from "@/lib/fly-to-bag";
-import { useDocumentTitle } from "@/lib/hooks";
+import { useDocumentTitle, useTextEntryFocus } from "@/lib/hooks";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/cn";
 import {
@@ -34,12 +45,14 @@ import {
   useProducts,
   useRelatedProducts,
 } from "@/queries/catalog";
+import { useNearness } from "@/queries/nearby";
 import { useSession } from "@/queries/session";
 import { isServiceError } from "@/services/errors";
 import type { ProductWithBrand } from "@/services/types";
 import { useBag } from "@/stores/bag";
 import { useUi } from "@/stores/ui";
 import { toast } from "@/stores/toast";
+import { DistanceLine } from "../nearby";
 import { ProductCard, ProductCardSkeleton } from "../product-card";
 import { Rail } from "../rail";
 import { ReviewsBlock } from "../reviews";
@@ -106,6 +119,7 @@ export function ProductView() {
   const { data: brand } = useBrand(p?.brand.handle ?? "");
   const campus = useCampus(p?.brand.campusId);
   const { user } = useSession();
+  const typing = useTextEntryFocus();
   const reviews = useProductReviews(p?.id);
   const related = useRelatedProducts(p?.id);
   const moreFromBrand = useProducts(
@@ -133,6 +147,8 @@ export function ProductView() {
   const variant = p && key ? findVariant(p, key) : undefined;
   const stock = variant?.stock ?? 0;
   const price = p && key ? unitPrice(p, key) : (p?.priceKobo ?? 0);
+
+  const near = useNearness(brand?.fulfilment, brand?.campusId);
 
   if (isPending) return <ProductSkeleton />;
   if (error || !p) {
@@ -164,6 +180,7 @@ export function ProductView() {
   const own = block.blocked && block.reason === "own_product";
   const canAdd = !block.blocked && !!key;
   const fulfilment = brand?.fulfilment;
+  const CategoryIcon = categories.find((c) => c.id === p.category)?.icon;
   const points =
     campus?.pickupPoints.filter((pp) => fulfilment?.pickupPointIds.includes(pp.id)) ?? [];
 
@@ -197,10 +214,9 @@ export function ProductView() {
     ) : (
       <Button
         size="lg"
-        className={className}
+        className={cn("justify-between gap-4 px-6", className)}
         disabled={!canAdd}
         onClick={onAdd}
-        leadingIcon={<ShoppingBag className="size-4.5" />}
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
@@ -209,16 +225,19 @@ export function ProductView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={spring.snappy}
+            className="inline-flex items-center gap-2"
           >
+            <ShoppingBag className="size-4.5" aria-hidden />
             {added
               ? "Added"
               : stockInfo === "sold_out"
                 ? "Sold out"
                 : p.brand.vacation
                   ? "Shop on break"
-                  : `Add to bag · ${formatNaira(price * qty)}`}
+                  : "Add to bag"}
           </motion.span>
         </AnimatePresence>
+        {canAdd && <span className="font-mono tabular">{formatNaira(price * qty)}</span>}
       </Button>
     );
 
@@ -266,38 +285,77 @@ export function ProductView() {
             )}
           </Link>
           <h1 className="mt-4 font-display text-display-md text-balance">{p.name}</h1>
-          <div className="mt-3 flex items-center gap-3">
-            {p.ratingCount > 0 ? (
-              <a
-                href="#reviews"
-                className="inline-flex items-center gap-2 text-small hover:underline"
+          <ul className="mt-4 flex flex-wrap gap-2" aria-label="At a glance">
+            <li>
+              <Link
+                href={`/explore?category=${p.category}`}
+                className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line hover:ring-line-strong"
               >
-                <Stars value={p.rating} size={14} className="text-ink" />
-                <span className="text-muted">
-                  {p.rating.toFixed(1)} · {p.ratingCount} reviews
-                </span>
-              </a>
-            ) : (
-              <span className="text-small text-muted">No reviews yet</span>
+                {CategoryIcon && <CategoryIcon className="size-4 text-accent" aria-hidden />}
+                {categoryName(p.category)}
+              </Link>
+            </li>
+            {fulfilment?.pickup && (
+              <li className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line">
+                <MapPin className="size-4 text-success" aria-hidden />
+                Free pickup
+              </li>
             )}
-            <span className="text-small text-muted">· {p.salesCount} sold</span>
-          </div>
-          <div className="mt-6 flex items-center gap-3">
-            <Price
-              kobo={price}
-              compareAt={
-                p.compareAtKobo ? p.compareAtKobo + (variant?.priceDeltaKobo ?? 0) : undefined
-              }
-              size="display"
-            />
-            {off && (
-              <span className="rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-semibold text-on-accent">
-                −{off}%
-              </span>
+            {fulfilment?.delivery && (
+              <li className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line">
+                <Bike className="size-4 text-warning" aria-hidden />
+                {fulfilment.deliveryFeeKobo
+                  ? `Delivery ${formatNaira(fulfilment.deliveryFeeKobo)}`
+                  : "Free delivery"}
+              </li>
             )}
-          </div>
+          </ul>
 
-          <p className="mt-6 text-body-lg text-ink-2">{p.description}</p>
+          <dl className="mt-6 grid grid-cols-4 border-y border-line-thin py-4">
+            <div className="min-w-0">
+              <dd className="truncate font-mono text-[20px] font-semibold tabular">
+                {formatNaira(price)}
+              </dd>
+              <dt className="text-[12.5px] text-muted">
+                {p.compareAtKobo && off ? (
+                  <s>{formatNaira(p.compareAtKobo + (variant?.priceDeltaKobo ?? 0))}</s>
+                ) : (
+                  "price"
+                )}
+              </dt>
+            </div>
+            <div className="min-w-0 pl-3">
+              <dd className="text-[20px] font-semibold tabular">{p.salesCount}</dd>
+              <dt className="text-[12.5px] text-muted">sold</dt>
+            </div>
+            <div className="min-w-0 pl-3">
+              <dd className="text-[20px] font-semibold tabular">
+                {p.ratingCount > 0 ? p.rating.toFixed(1) : "–"}
+              </dd>
+              <dt className="text-[12.5px] text-muted">
+                {p.ratingCount > 0 ? `${p.ratingCount} reviews` : "no reviews yet"}
+              </dt>
+            </div>
+            <div className="min-w-0 pl-3">
+              <dd className="text-[20px] font-semibold tabular">
+                {fulfilment ? formatEta(fulfilment.prepMinutes) : "–"}
+              </dd>
+              <dt className="text-[12.5px] text-muted">to get ready</dt>
+            </div>
+          </dl>
+
+          {off && (
+            <p className="mt-4 inline-flex rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-semibold text-on-accent">
+              −{off}% today
+            </p>
+          )}
+
+          <section aria-labelledby="about-title" className="mt-6">
+            <h2 id="about-title" className="text-[16px] font-semibold">
+              About this
+            </h2>
+            <p className="mt-2 text-body text-muted">{p.description}</p>
+          </section>
 
           {p.options.length > 0 && (
             <div className="mt-8">
@@ -358,14 +416,6 @@ export function ProductView() {
             />
           </div>
           <div className="mt-6 flex items-center gap-3 lg:hidden">
-            {!own && (
-              <QuantityStepper
-                value={qty}
-                onChange={setQty}
-                max={Math.max(1, Math.min(stock, MAX_LINE_QUANTITY))}
-                label="Quantity"
-              />
-            )}
             <WishlistButton
               productId={p.id}
               productName={p.name}
@@ -377,23 +427,22 @@ export function ProductView() {
           </div>
 
           {fulfilment && (
-            <div className="card mt-8 divide-y divide-line">
+            <div className="card mt-8 divide-y divide-line-thin border-b border-line-thin">
               {fulfilment.delivery && (
-                <div className="flex gap-3 p-4">
+                <div className="flex gap-3 py-4">
                   <Bike className="mt-0.5 size-5 shrink-0" />
                   <div className="text-small">
                     <p className="font-medium">
                       Delivery · {formatNaira(fulfilment.deliveryFeeKobo)}
                     </p>
                     <p className="text-muted">
-                      To {fulfilment.zoneIds.length} zones on {campus?.shortName}. Promo codes like
-                      FREEDEL work at checkout.
+                      To {fulfilment.zoneIds.length} zones on {campus?.shortName}.
                     </p>
                   </div>
                 </div>
               )}
               {fulfilment.pickup && (
-                <div className="flex gap-3 p-4">
+                <div className="flex gap-3 py-4">
                   <MapPin className="mt-0.5 size-5 shrink-0" />
                   <div className="text-small">
                     <p className="font-medium">Free pickup</p>
@@ -403,15 +452,25 @@ export function ProductView() {
                   </div>
                 </div>
               )}
-              <div className="flex gap-3 p-4">
+              {(near.metres !== null || near.relation) && brand && (
+                <div className="flex gap-3 py-4">
+                  <Footprints className="mt-0.5 size-5 shrink-0" />
+                  <div className="text-small">
+                    <p className="font-medium">How far</p>
+                    <DistanceLine
+                      fulfilment={fulfilment}
+                      campusId={brand.campusId}
+                      badge
+                      eta
+                      className="mt-1 text-small"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="flex gap-3 py-4">
                 <Clock className="mt-0.5 size-5 shrink-0" />
                 <div className="text-small">
-                  <p className="font-medium">
-                    Usually ready in{" "}
-                    {fulfilment.prepMinutes >= 60
-                      ? `${Math.round(fulfilment.prepMinutes / 60)} hour${fulfilment.prepMinutes >= 120 ? "s" : ""}`
-                      : `${fulfilment.prepMinutes} minutes`}
-                  </p>
+                  <p className="font-medium">Usually ready {formatWhen(fulfilment.prepMinutes)}</p>
                   <p className="text-muted">
                     Each brand ships its own order. You&apos;ll track it live.
                   </p>
@@ -421,7 +480,7 @@ export function ProductView() {
           )}
 
           {p.details.length > 0 && (
-            <details className="group mt-8 border-t border-line pt-5" open>
+            <details className="group mt-8 border-t border-line-thin pt-5" open>
               <summary className="flex cursor-pointer list-none items-center justify-between text-title font-semibold [&::-webkit-details-marker]:hidden">
                 Details
                 <span className="text-muted transition-transform group-open:rotate-45" aria-hidden>
@@ -440,7 +499,7 @@ export function ProductView() {
           )}
 
           {!own && (
-            <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-line pt-6">
+            <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-line-thin pt-6">
               <Button
                 variant="ghost"
                 leadingIcon={<MessageCircle className="size-4.5" />}
@@ -461,7 +520,7 @@ export function ProductView() {
       <section
         id="reviews"
         aria-labelledby="reviews-title"
-        className="mt-20 scroll-mt-24 border-t border-line pt-12"
+        className="mt-20 scroll-mt-24 border-t border-line-thin pt-12"
       >
         <h2 id="reviews-title" className="mb-8 font-display text-display-sm">
           What students say
@@ -478,13 +537,23 @@ export function ProductView() {
 
       {/* Sticky add-to-bag (phones & tablets) */}
       <div className="h-24 lg:hidden" aria-hidden />
-      <div className="fixed inset-x-0 bottom-0 z-(--z-header) border-t border-line bg-canvas/95 px-(--gutter) pt-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-lg lg:hidden">
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-(--z-header) border-t border-line-thin bg-canvas/95 px-(--gutter) pt-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-lg lg:hidden",
+          // Out of the way while typing (a review, a message): the keyboard would lift it over the field.
+          typing && "hidden",
+        )}
+      >
         <div className="mx-auto flex max-w-2xl items-center gap-3">
-          <div className="min-w-0">
-            <p className="truncate text-small text-muted">{p.name}</p>
-            <p className="font-mono text-body font-medium tabular">{formatNaira(price * qty)}</p>
-          </div>
-          {addButton("ml-auto flex-1 max-w-64")}
+          {!own && (
+            <QuantityStepper
+              value={qty}
+              onChange={setQty}
+              max={Math.max(1, Math.min(stock, MAX_LINE_QUANTITY))}
+              label="Quantity"
+            />
+          )}
+          {addButton("flex-1")}
         </div>
       </div>
 

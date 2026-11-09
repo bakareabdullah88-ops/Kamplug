@@ -5,6 +5,7 @@ import { __resetMemory, getDb, purgeSampleData, resetDb } from "@/services/mock/
 import { generateSeed } from "@/services/mock/seed";
 import { isServiceError } from "@/services/errors";
 import { presetRange } from "@/domain/analytics";
+import { stepsFor } from "@/domain/orders";
 import type { CheckoutInput } from "@/services/inputs";
 
 beforeEach(async () => {
@@ -214,8 +215,12 @@ describe("buying and selling", () => {
     await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
     const sellerNotes = await s.notifications.list();
     expect(sellerNotes.some((n) => /order/i.test(n.title))).toBe(true);
-    for (const st of ["confirmed", "preparing", "out_for_delivery", "delivered"] as const)
+    for (const st of ["confirmed", "preparing", "out_for_delivery"] as const)
       await s.studio.updateOrderStatus(order.id, st);
+    // Finishing takes the buyer's code; the shop never sees it.
+    expect((await s.studio.listOrders())[0]!.handoverCode).toBeUndefined();
+    await expectCode(s.studio.updateOrderStatus(order.id, "delivered"), "VALIDATION");
+    await s.studio.completeOrder(order.id, order.handoverCode!);
     await expectCode(s.studio.updateOrderStatus(order.id, "placed"), "CONFLICT");
 
     const dash = await s.studio.getDashboard(presetRange("7d"));
@@ -235,6 +240,195 @@ describe("buying and selling", () => {
     const home = await s.orders.getDashboard(presetRange("30d"));
     expect(home.spent.value).toBe(order.totalKobo);
     expect(home.toReview).toBe(1);
+  });
+
+  it("records offline payment per order from how it is fulfilled", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const input = checkout(brand.id, product.id, { paymentMethod: "pay_on_delivery" });
+    input.groups[0]!.fulfilment = {
+      method: "pickup",
+      zoneId: "unilag-z1",
+      pickupPointId: "unilag-pp1",
+    };
+    const { orders } = await s.orders.createOrders(input);
+    expect(orders[0]!.payment.method).toBe("pay_on_pickup");
+    const delivered = await s.orders.createOrders(
+      checkout(brand.id, product.id, { paymentMethod: "pay_on_pickup" }),
+    );
+    expect(delivered.orders[0]!.payment.method).toBe("pay_on_delivery");
+  });
+
+  it("passes a seller's reason for declining on to the buyer", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const { orders } = await s.orders.createOrders(checkout(brand.id, product.id));
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    await expectCode(
+      s.studio.updateOrderStatus(orders[0]!.id, "confirmed", "no reason needed"),
+      "VALIDATION",
+    );
+    const declined = await s.studio.updateOrderStatus(
+      orders[0]!.id,
+      "declined",
+      "  Sold out today ",
+    );
+    expect(declined.timeline.at(-1)).toMatchObject({ status: "declined", note: "Sold out today" });
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "bisi@example.com", password: PASSWORD });
+    const notes = await s.notifications.list();
+    expect(notes.some((n) => n.body.includes("Reason: Sold out today"))).toBe(true);
+  });
+
+  it("lets a shop message the buyer of its order, reusing one conversation", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const { orders } = await s.orders.createOrders(checkout(brand.id, product.id));
+    const mine = await s.messages.startThread({ brandId: brand.id });
+    await expectCode(s.messages.startThreadWithBuyer({ orderId: orders[0]!.id }), "NOT_FOUND");
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    const t = await s.messages.startThreadWithBuyer({ orderId: orders[0]!.id });
+    expect(t.id).toBe(mine.id);
+    // Shops see a username, never the buyer's real name.
+    expect(t.buyerName).toMatch(/^@bisi_[a-z0-9]{4}$/);
+    expect((await s.messages.listThreads("brand")).map((x) => x.id)).toContain(t.id);
+    expect((await s.studio.listOrders())[0]!.buyerName).toBe(t.buyerName);
+    expect((await s.studio.listCustomers())[0]!.name).toBe(t.buyerName);
+  });
+
+  it("shows the buyer's chosen username to shops, and keeps usernames unique", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const base = { name: "Bisi Ade", campusId: "c_unilag", phone: "08030000000" };
+    await s.auth.updateProfile({ ...base, username: "BisiCooks" });
+    await s.orders.createOrders(checkout(brand.id, product.id));
+    await s.messages.startThread({ brandId: brand.id });
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    expect((await s.messages.listThreads("brand"))[0]!.buyerName).toBe("@bisicooks");
+    await expectCode(
+      s.auth.updateProfile({
+        name: "Kemi Bakes",
+        campusId: "c_unilag",
+        phone: "08031234567",
+        username: "bisicooks",
+      }),
+      "CONFLICT",
+    );
+  });
+
+  it("filters products to shops that deliver, or that offer pickup", async () => {
+    const { brand, product } = await openShop();
+    const ids = async (method: "pickup" | "delivery") =>
+      (await s.catalog.getProducts({ method })).items.map((p) => p.id);
+    expect(await ids("pickup")).toContain(product.id);
+    expect(await ids("delivery")).toContain(product.id);
+    // Stop delivering: it drops out of "bring it to me" but stays for pickup.
+    const db = await getDb();
+    db.brands.find((b) => b.id === brand.id)!.fulfilment.delivery = false;
+    expect(await ids("delivery")).not.toContain(product.id);
+    expect(await ids("pickup")).toContain(product.id);
+  });
+
+  it("shows reviewers by username, never their real name", async () => {
+    const { brand, product } = await openShop();
+    await signUpBuyer();
+    const { orders } = await s.orders.createOrders(checkout(brand.id, product.id));
+    const order = orders[0]!;
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    for (const step of stepsFor(order.fulfilment.method).slice(1, -1))
+      await s.studio.updateOrderStatus(order.id, step);
+    await s.studio.completeOrder(order.id, order.handoverCode!);
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "bisi@example.com", password: PASSWORD });
+    const review = await s.orders.reviewOrderItem({
+      orderId: order.id,
+      productId: product.id,
+      rating: 5,
+      body: "Lovely",
+    });
+    expect(review.authorName).toMatch(/^@bisi_[a-z0-9]{4}$/);
+    const { reviews } = await s.catalog.getProductReviews(product.id);
+    expect(reviews[0]!.authorName).toBe(review.authorName);
+    expect(JSON.stringify(reviews)).not.toContain("Bisi Ade");
+  });
+
+  it("marks a message's alert as seen once the chat is opened", async () => {
+    const { brand } = await openShop();
+    await signUpBuyer();
+    const t = await s.messages.startThread({ brandId: brand.id });
+    await s.messages.send({ threadId: t.id, body: "Do you have it in red?", as: "buyer" });
+    await s.auth.signOut();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    const unread = async () =>
+      (await s.notifications.list()).filter((n) => n.kind === "message" && !n.read);
+    expect(await unread()).toHaveLength(1);
+    await s.messages.getThread(t.id, "brand");
+    expect(await unread()).toHaveLength(0);
+    expect((await s.messages.listThreads("brand"))[0]!.unreadForBrand).toBe(0);
+  });
+
+  describe("handover code", () => {
+    /** An order out for delivery, as the buyer sees it (with the code). */
+    async function outForDelivery() {
+      const { brand, product } = await openShop();
+      await signUpBuyer();
+      const { orders } = await s.orders.createOrders(checkout(brand.id, product.id));
+      const order = orders[0]!;
+      await s.auth.signOut();
+      await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+      for (const st of ["confirmed", "preparing", "out_for_delivery"] as const)
+        await s.studio.updateOrderStatus(order.id, st);
+      return order;
+    }
+
+    it("gives every order a secret 4-digit code only the buyer sees", async () => {
+      const order = await outForDelivery();
+      expect(order.handoverCode).toMatch(/^\d{4}$/);
+      const shopView = (await s.studio.listOrders())[0]!;
+      expect(shopView.handoverCode).toBeUndefined();
+      expect(JSON.stringify(shopView)).not.toContain(`"${order.handoverCode}"`);
+    });
+
+    it("refuses wrong codes and pauses entry after five", async () => {
+      const order = await outForDelivery();
+      const wrong = order.handoverCode === "0000" ? "1111" : "0000";
+      await expectCode(s.studio.completeOrder(order.id, "12"), "VALIDATION");
+      for (let i = 0; i < 4; i++)
+        await expectCode(s.studio.completeOrder(order.id, wrong), "VALIDATION");
+      await expectCode(s.studio.completeOrder(order.id, wrong), "VALIDATION");
+      // Locked now, even with the right code.
+      await expectCode(s.studio.completeOrder(order.id, order.handoverCode!), "UNAVAILABLE");
+      expect((await s.studio.listOrders())[0]!.status).toBe("out_for_delivery");
+    });
+
+    it("finishes with the right code, marks it paid and records how", async () => {
+      const order = await outForDelivery();
+      const done = await s.studio.completeOrder(order.id, ` ${order.handoverCode} `);
+      expect(done.status).toBe("delivered");
+      expect(done.payment.status).toBe("paid");
+      expect(done.handedOver).toBe("code");
+      expect(done.handoverCode).toBeUndefined();
+    });
+
+    it("lets the buyer confirm they got it, but only once it's on the way", async () => {
+      const { brand, product } = await openShop();
+      await signUpBuyer();
+      const { orders } = await s.orders.createOrders(checkout(brand.id, product.id));
+      await expectCode(s.orders.confirmReceived(orders[0]!.id), "CONFLICT");
+      await s.auth.signOut();
+      await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+      for (const st of ["confirmed", "preparing", "out_for_delivery"] as const)
+        await s.studio.updateOrderStatus(orders[0]!.id, st);
+      await s.auth.signOut();
+      await s.auth.signIn({ email: "bisi@example.com", password: PASSWORD });
+      const done = await s.orders.confirmReceived(orders[0]!.id);
+      expect(done.status).toBe("delivered");
+      expect(done.handedOver).toBe("buyer");
+    });
   });
 
   it("refuses online payments until they are switched on", async () => {
@@ -276,5 +470,32 @@ describe("buying and selling", () => {
       accountLast4: "6789",
       accountName: "Kemi Bakes",
     });
+  });
+});
+
+describe("waitlist", () => {
+  it("keeps each email once, tidied, in the order people joined", async () => {
+    expect(await s.waitlist.join({ email: "  Tola@Example.com", role: "both" })).toEqual({
+      position: 1,
+      already: false,
+    });
+    expect(await s.waitlist.join({ email: "bayo@example.com", role: "sell" })).toEqual({
+      position: 2,
+      already: false,
+    });
+    expect(await s.waitlist.join({ email: "tola@example.com", role: "buy" })).toEqual({
+      position: 1,
+      already: true,
+    });
+    const db = await getDb();
+    expect(db.waitlist.map((w) => [w.email, w.role])).toEqual([
+      ["tola@example.com", "both"],
+      ["bayo@example.com", "sell"],
+    ]);
+  });
+
+  it("refuses something that isn't an email", async () => {
+    await expectCode(s.waitlist.join({ email: "tola", role: "buy" }), "VALIDATION");
+    await expectCode(s.waitlist.join({ email: "", role: "buy" }), "VALIDATION");
   });
 });
