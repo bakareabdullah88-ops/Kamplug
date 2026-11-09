@@ -10,8 +10,8 @@ export const features = {
   /** Automatic seller payouts (BACKEND-SEAM: Paystack transfers). */
   payouts: false,
   /**
-   * Not open yet: only the landing page is reachable and its buttons join a
-   * waitlist. On unless NEXT_PUBLIC_WAITLIST is "0" (set that in Vercel to open up).
+   * Waitlist mode: only the landing page is reachable and its buttons join a
+   * waitlist. Off: Kamplug is open. Set NEXT_PUBLIC_WAITLIST=1 in Vercel to turn it on.
    */
-  waitlist: process.env.NEXT_PUBLIC_WAITLIST !== "0",
+  waitlist: process.env.NEXT_PUBLIC_WAITLIST === "1",
 } as const;
