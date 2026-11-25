@@ -1,20 +1,20 @@
 "use client";
 
 import { features } from "@/config/features";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Reveal } from "./reveal";
-import { BeautySet, BookStack, JollofPlate, TechSet, ThriftRack } from "./illustrations";
 
 type Tile = {
   id: string;
   title: string;
   body: string;
   href: string;
-  bg: string;
-  Art: (p: { className?: string }) => React.ReactNode;
+  /** A photo of the category, shown as the tile's background. */
+  photo: string;
   span: string;
   big?: boolean;
 };
@@ -25,8 +25,7 @@ const tiles: Tile[] = [
     title: "Food & groceries",
     body: "Meals, snacks, drinks and groceries from cooks and sellers in your hall.",
     href: "/explore?category=food",
-    bg: "#ffe9a8",
-    Art: JollofPlate,
+    photo: "/discover/food.jpg",
     span: "col-span-2 md:row-span-2",
     big: true,
   },
@@ -35,8 +34,7 @@ const tiles: Tile[] = [
     title: "Fashion",
     body: "Thrift, clothes, shoes, bags.",
     href: "/explore?category=fashion",
-    bg: "#dfe5ff",
-    Art: ThriftRack,
+    photo: "/discover/thrift.jpg",
     span: "col-span-1",
   },
   {
@@ -44,8 +42,7 @@ const tiles: Tile[] = [
     title: "Beauty",
     body: "Skincare, haircare, makeup.",
     href: "/explore?category=beauty",
-    bg: "#ffd9cf",
-    Art: BeautySet,
+    photo: "/discover/beauty.jpg",
     span: "col-span-1",
   },
   {
@@ -53,8 +50,7 @@ const tiles: Tile[] = [
     title: "Technology",
     body: "Chargers, gadgets, accessories.",
     href: "/explore?category=tech",
-    bg: "#d4f0ff",
-    Art: TechSet,
+    photo: "/discover/tech.jpg",
     span: "col-span-1",
   },
   {
@@ -62,8 +58,7 @@ const tiles: Tile[] = [
     title: "Academics",
     body: "Textbooks, past questions, stationery.",
     href: "/explore?category=academics",
-    bg: "#d6f7e8",
-    Art: BookStack,
+    photo: "/discover/books.jpg",
     span: "col-span-1",
   },
 ];
@@ -123,9 +118,12 @@ export function CategoryStrip() {
         <Reveal key={t.id} from="top" delay={i * 90} className={t.span}>
           <TiltLink
             href={features.waitlist ? "#waitlist" : t.href}
-            className={t.big ? "min-h-[420px] md:min-h-0" : "min-h-[230px]"}
-            style={{ background: t.bg }}
+            className={cn(
+              "flex flex-col justify-end bg-[#1b1f3b] text-white",
+              t.big ? "min-h-[420px] md:min-h-0" : "min-h-[230px]",
+            )}
           >
+            <Photo src={t.photo} big={t.big} />
             <div className={cn("relative z-10 flex flex-col p-5 md:p-7", t.big && "md:p-9")}>
               <h3
                 className={cn(
@@ -137,7 +135,7 @@ export function CategoryStrip() {
               </h3>
               <p
                 className={cn(
-                  "mt-2 max-w-[22ch] leading-snug",
+                  "mt-2 max-w-[26ch] leading-snug text-white/90",
                   t.big ? "text-[16px] md:text-[19px]" : "text-[14.5px]",
                 )}
               >
@@ -152,42 +150,59 @@ export function CategoryStrip() {
             </div>
             <span
               aria-hidden
-              className="absolute top-5 right-5 z-10 grid size-9 place-items-center rounded-full bg-[#1b1f3b] text-white opacity-0 transition-opacity group-hover:opacity-100 max-md:hidden"
+              className="absolute top-5 right-5 z-10 grid size-9 place-items-center rounded-full bg-white text-[#1b1f3b] opacity-0 transition-opacity group-hover:opacity-100 max-md:hidden"
             >
               <ArrowUpRight className="size-4" />
             </span>
-            <div
-              className={cn(
-                "pointer-events-none absolute transition-transform duration-500 group-hover:scale-105",
-                t.big
-                  ? "right-[-6%] bottom-[-6%] w-[72%] md:w-[70%]"
-                  : "right-[-8%] bottom-[-10%] w-[62%] md:w-[58%]",
-              )}
-            >
-              <t.Art className="w-full" />
-            </div>
           </TiltLink>
         </Reveal>
       ))}
-      <Reveal from="top" delay={tiles.length * 90} className="col-span-2">
+      <Reveal from="top" delay={tiles.length * 90} className="col-span-2 md:col-span-4">
         <TiltLink
           href={features.waitlist ? "#waitlist" : "/explore?category=lifestyle"}
-          className="flex min-h-[200px] flex-col justify-between bg-[#1b1f3b] p-6 text-white md:p-8"
+          className="flex min-h-[200px] flex-col justify-end bg-[#1b1f3b] text-white"
         >
-          <div>
-            <p className="text-[13px] font-extrabold tracking-[0.2em] text-[#ffd23f] uppercase">
+          <Photo src="/discover/accessories.jpg" wide />
+          <div className="relative z-10 flex flex-col p-6 md:p-8">
+            <h3 className="text-[26px] leading-none font-extrabold tracking-[-0.045em] md:text-[30px]">
               Lifestyle
+            </h3>
+            <p className="mt-2 max-w-[36ch] text-[14.5px] leading-snug text-white/90 md:text-[16px]">
+              Accessories, gifts and room essentials.
             </p>
-            <p className="mt-3 text-[26px] leading-tight font-extrabold tracking-[-0.04em] md:text-[34px]">
-              Accessories, gifts and room essentials
-            </p>
+            <span className="mt-4 inline-flex items-center gap-2 text-[13px] font-extrabold tracking-[0.2em] uppercase">
+              Shop lifestyle
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            </span>
           </div>
-          <span className="mt-4 inline-flex items-center gap-2 text-[14px] font-extrabold tracking-[0.2em] uppercase">
-            Shop lifestyle
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-          </span>
         </TiltLink>
       </Reveal>
     </div>
+  );
+}
+
+/** The category photo filling the tile, darkened at the bottom so the white text reads. */
+function Photo({ src, big, wide }: { src: string; big?: boolean; wide?: boolean }) {
+  return (
+    <>
+      <Image
+        src={src}
+        alt=""
+        fill
+        sizes={
+          big ? "(min-width: 768px) 50vw, 100vw" : wide ? "100vw" : "(min-width: 768px) 25vw, 50vw"
+        }
+        className="object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+      <span
+        aria-hidden
+        className={cn(
+          "absolute inset-0",
+          wide
+            ? "bg-gradient-to-t from-black/85 via-black/55 to-black/25 md:bg-gradient-to-r md:from-black/85 md:via-black/50 md:to-black/10"
+            : "bg-gradient-to-t from-black/80 via-black/35 to-black/5",
+        )}
+      />
+    </>
   );
 }
