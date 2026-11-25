@@ -45,7 +45,7 @@ export async function openShop(page: Page, name: string, tagline: string) {
   await page.goto("/open-shop");
   await page.getByLabel("Brand name").fill(name);
   await page.getByRole("button", { name: "Continue" }).click();
-  await page.getByRole("radio", { name: "Food & snacks" }).click();
+  await page.getByRole("radio", { name: "Food & groceries" }).click();
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByRole("button", { name: "Skip for now" }).click();
   await page.getByLabel("Tagline").fill(tagline);

@@ -87,8 +87,8 @@ type Errors = Record<string, string>;
 
 const uid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 9)}`;
 
-/** One-off pieces (thrift) usually come in ones; everything else starts at 10. */
-const defaultStock = (category: CategoryId) => (category === "thrift" ? 1 : 10);
+/** New products start with 10 in stock; one-off pieces (thrift) can be set to 1. */
+const DEFAULT_STOCK = 10;
 
 function toDraft(p: Product | undefined, fallbackCategory: CategoryId): Draft {
   if (!p) {
@@ -102,7 +102,7 @@ function toDraft(p: Product | undefined, fallbackCategory: CategoryId): Draft {
       compareAt: "",
       images: [],
       options: [],
-      variants: [{ key: "default", stock: defaultStock(fallbackCategory), priceDeltaKobo: 0 }],
+      variants: [{ key: "default", stock: DEFAULT_STOCK, priceDeltaKobo: 0 }],
       status: "published",
     };
   }
@@ -1154,8 +1154,8 @@ function EditorForm({
                     label="How many do you have?"
                     error={errors.variants}
                     hint={
-                      draft.category === "thrift"
-                        ? "One-off pieces: leave it at 1."
+                      draft.category === "fashion"
+                        ? "Thrift or one-off piece? Set it to 1. Buyers can't order more than this."
                         : "Buyers can't order more than this. It goes down with each order."
                     }
                   >
@@ -1202,16 +1202,7 @@ function EditorForm({
                     label="Category"
                     value={draft.category}
                     onValueChange={(v) =>
-                      setDraft((d) => {
-                        const category = v as CategoryId;
-                        // Stock still at the old category's starting number: follow the new one.
-                        const only = d.options.length === 0 ? d.variants[0] : undefined;
-                        const variants =
-                          !product && only && only.stock === defaultStock(d.category)
-                            ? [{ ...only, stock: defaultStock(category) }]
-                            : d.variants;
-                        return { ...d, category, variants };
-                      }, "category")
+                      setDraft((d) => ({ ...d, category: v as CategoryId }), "category")
                     }
                     options={categories.map((c) => ({ value: c.id, label: c.name }))}
                   />

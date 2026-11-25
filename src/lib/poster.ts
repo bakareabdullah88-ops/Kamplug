@@ -35,25 +35,21 @@ export const posterPalettes: PosterPalette[] = [
 /** A sensible starting colour for each kind of shop: appetite red for food, and so on. */
 export const categoryPalette: Record<CategoryId, PosterPalette["id"]> = {
   food: "tomato",
-  thrift: "butter",
   fashion: "night",
   beauty: "blush",
-  accessories: "cobalt",
-  print: "butter",
   tech: "cobalt",
-  books: "mint",
+  academics: "mint",
+  lifestyle: "butter",
 };
 
 /** One loud word per category, for poster type. */
 export const categoryWord: Record<CategoryId, string> = {
   food: "FOOD",
-  thrift: "THRIFT",
   fashion: "FASHION",
   beauty: "BEAUTY",
-  accessories: "EXTRAS",
-  print: "PRINT",
   tech: "TECH",
-  books: "BOOKS",
+  academics: "STUDY",
+  lifestyle: "VIBES",
 };
 
 export function paletteFor(category: CategoryId): PosterPalette {

@@ -4,9 +4,7 @@ import {
   BooksIcon,
   FashionIcon,
   FoodIcon,
-  PrintIcon,
   TechIcon,
-  ThriftIcon,
 } from "@/components/icons/kamplug-icons";
 import type { AppIcon } from "@/components/icons/kamplug-icons";
 import type { ArtMotif, CategoryId } from "@/services/types";
@@ -23,73 +21,75 @@ export type Category = {
   icon: LucideIcon | AppIcon;
 };
 
-/** Static taxonomy. BACKEND-SEAM: could be served by the API later. */
+/**
+ * Phase 1: physical products only, in the order shoppers see them.
+ * BACKEND-SEAM: could be served by the API later.
+ */
 export const categories: readonly Category[] = [
-  {
-    id: "fashion",
-    icon: FashionIcon,
-    name: "Fashion",
-    blurb: "Made-on-campus streetwear and tailoring",
-    motif: "tee",
-    palette: "clay",
-  },
-  {
-    id: "thrift",
-    icon: ThriftIcon,
-    name: "Thrift",
-    blurb: "Vintage finds, one of one",
-    motif: "jacket",
-    palette: "sand",
-  },
   {
     id: "food",
     icon: FoodIcon,
-    name: "Food & snacks",
-    blurb: "Small chops, jollof, late-night bites",
+    name: "Food & groceries",
+    blurb: "Meals, snacks, drinks, groceries",
     motif: "bowl",
     palette: "ochre",
   },
   {
+    id: "fashion",
+    icon: FashionIcon,
+    name: "Fashion",
+    blurb: "Thrift, clothes, shoes, bags",
+    motif: "tee",
+    palette: "clay",
+  },
+  {
     id: "beauty",
     icon: BeautyIcon,
-    name: "Skincare & beauty",
-    blurb: "Shea, black soap, glow oils",
+    name: "Beauty",
+    blurb: "Skincare, haircare, makeup",
     motif: "dropper",
     palette: "rose",
   },
   {
-    id: "accessories",
-    icon: AccessoriesIcon,
-    name: "Accessories",
-    blurb: "Beads, bags and little extras",
-    motif: "bracelet",
-    palette: "plum",
-  },
-  {
-    id: "print",
-    icon: PrintIcon,
-    name: "Print & design",
-    blurb: "Posters, stickers, custom cards",
-    motif: "poster",
-    palette: "sea",
-  },
-  {
     id: "tech",
     icon: TechIcon,
-    name: "Tech accessories",
-    blurb: "Cases, cables, earbuds",
+    name: "Technology",
+    blurb: "Chargers, gadgets, accessories",
     motif: "earbuds",
     palette: "ink",
   },
   {
-    id: "books",
+    id: "academics",
     icon: BooksIcon,
-    name: "Books & notes",
-    blurb: "Past questions, novels, study packs",
+    name: "Academics",
+    blurb: "Textbooks, past questions, stationery",
     motif: "book",
     palette: "sage",
   },
+  {
+    id: "lifestyle",
+    icon: AccessoriesIcon,
+    name: "Lifestyle",
+    blurb: "Accessories, gifts, room essentials",
+    motif: "bracelet",
+    palette: "plum",
+  },
 ] as const;
+
+/** Categories from before Phase 1, and where their shops and products live now. */
+export const legacyCategory: Record<string, CategoryId> = {
+  thrift: "fashion",
+  books: "academics",
+  accessories: "lifestyle",
+  print: "lifestyle",
+};
+
+/** A category id from a link or old data, as a current one (or null if unknown). */
+export function toCategoryId(id: string | null | undefined): CategoryId | null {
+  if (!id) return null;
+  if (categories.some((c) => c.id === id)) return id as CategoryId;
+  return legacyCategory[id] ?? null;
+}
 
 export function categoryById(id: CategoryId): Category {
   const c = categories.find((x) => x.id === id);

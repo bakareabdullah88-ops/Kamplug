@@ -86,7 +86,7 @@ await signUp(seller);
 await page.goto(`${base}/open-shop`);
 await page.getByLabel("Brand name").fill("Mama Kemi's Kitchen");
 await page.getByRole("button", { name: "Continue" }).click();
-await page.getByRole("radio", { name: "Food & snacks" }).click();
+await page.getByRole("radio", { name: "Food & groceries" }).click();
 await page.getByRole("button", { name: "Continue" }).click();
 await page.getByRole("button", { name: "Skip for now" }).click();
 await page.getByLabel("Tagline").fill("Small chops and jollof, made fresh daily");

@@ -6,6 +6,9 @@ import { z } from "zod";
 import { USERNAME_RE } from "@/domain/username";
 import { BUDDY_COLORS, BUDDY_SHAPES } from "@/domain/buddy";
 
+/** The Phase 1 categories, in the order shoppers see them. */
+const CATEGORY_IDS = ["food", "fashion", "beauty", "tech", "academics", "lifestyle"] as const;
+
 const nigerianPhone = z
   .string()
   .trim()
@@ -105,12 +108,7 @@ const fulfilmentSchema = z
 export const createBrandSchema = z.object({
   name: z.string().trim().min(2, "Give your brand a name").max(40),
   handle: handleSchema,
-  category: z.enum(
-    ["fashion", "thrift", "food", "beauty", "accessories", "print", "tech", "books"],
-    {
-      message: "Pick a category",
-    },
-  ),
+  category: z.enum(CATEGORY_IDS, { message: "Pick a category" }),
   tagline: z.string().trim().min(4, "A short line about what you sell").max(80),
   bio: z.string().trim().max(400).default(""),
   logoImageId: z.string().optional(),
@@ -162,16 +160,7 @@ export const productInputSchema = z
     name: z.string().trim().min(3, "Name your product").max(80),
     description: z.string().trim().min(10, "Describe it in a sentence or two").max(1200),
     details: z.array(z.string().trim().min(1).max(120)).max(8).default([]),
-    category: z.enum([
-      "fashion",
-      "thrift",
-      "food",
-      "beauty",
-      "accessories",
-      "print",
-      "tech",
-      "books",
-    ]),
+    category: z.enum(CATEGORY_IDS),
     tags: z.array(z.string().trim().min(1).max(24)).max(8).default([]),
     priceKobo: z.number().int().min(10_000, "Minimum price is ₦100").max(100_000_000),
     compareAtKobo: z.number().int().min(0).max(100_000_000).optional(),

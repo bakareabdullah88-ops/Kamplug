@@ -22,7 +22,7 @@ await p.getByLabel("Brand name").fill("Sunday Shea Co");
 await p.waitForTimeout(1200);
 await p.screenshot({ path: `${out}/open-shop-1-1280.png` });
 await p.getByRole("button", { name: "Continue" }).click();
-await p.getByRole("radio", { name: "Skincare & beauty" }).click();
+await p.getByRole("radio", { name: "Beauty" }).click();
 await p.waitForTimeout(500);
 await p.screenshot({ path: `${out}/open-shop-2-1280.png` });
 await p.getByRole("button", { name: "Continue" }).click();

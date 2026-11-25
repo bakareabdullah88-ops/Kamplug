@@ -32,8 +32,8 @@ type Tile = {
 const tiles: Tile[] = [
   {
     id: "food",
-    title: "Food",
-    body: "Jollof, small chops, shawarma and late-night bites from cooks in your hall.",
+    title: "Food & groceries",
+    body: "Meals, snacks, drinks and groceries from cooks and sellers in your hall.",
     href: "/explore?category=food",
     icon: Soup,
     bg: "#ffe9a8",
@@ -42,10 +42,10 @@ const tiles: Tile[] = [
     big: true,
   },
   {
-    id: "thrift",
-    title: "Thrift",
-    body: "Vintage finds, one of one.",
-    href: "/explore?category=thrift",
+    id: "fashion",
+    title: "Fashion",
+    body: "Thrift, clothes, shoes, bags.",
+    href: "/explore?category=fashion",
     icon: Shirt,
     bg: "#dfe5ff",
     Art: ThriftRack,
@@ -54,7 +54,7 @@ const tiles: Tile[] = [
   {
     id: "beauty",
     title: "Beauty",
-    body: "Shea, black soap, glow oils.",
+    body: "Skincare, haircare, makeup.",
     href: "/explore?category=beauty",
     icon: Sparkles,
     bg: "#ffd9cf",
@@ -63,8 +63,8 @@ const tiles: Tile[] = [
   },
   {
     id: "tech",
-    title: "Tech",
-    body: "Chargers, earbuds, cases.",
+    title: "Technology",
+    body: "Chargers, gadgets, accessories.",
     href: "/explore?category=tech",
     icon: Cpu,
     bg: "#d4f0ff",
@@ -72,10 +72,10 @@ const tiles: Tile[] = [
     span: "col-span-1",
   },
   {
-    id: "books",
-    title: "Books",
-    body: "Past questions and notes.",
-    href: "/explore?category=books",
+    id: "academics",
+    title: "Academics",
+    body: "Textbooks, past questions, stationery.",
+    href: "/explore?category=academics",
     icon: BookOpen,
     bg: "#d6f7e8",
     Art: BookStack,
@@ -191,19 +191,19 @@ export function CategoryStrip() {
       ))}
       <Reveal from="top" delay={tiles.length * 90} className="col-span-2">
         <TiltLink
-          href={features.waitlist ? "#waitlist" : "/explore"}
+          href={features.waitlist ? "#waitlist" : "/explore?category=lifestyle"}
           className="flex min-h-[200px] flex-col justify-between bg-[#1b1f3b] p-6 text-white md:p-8"
         >
           <div>
             <p className="text-[13px] font-extrabold tracking-[0.2em] text-[#ffd23f] uppercase">
-              And more
+              Lifestyle
             </p>
             <p className="mt-3 text-[26px] leading-tight font-extrabold tracking-[-0.04em] md:text-[34px]">
-              Fashion, accessories, prints, custom cards, phone repairs…
+              Accessories, gifts and room essentials
             </p>
           </div>
           <span className="mt-4 inline-flex items-center gap-2 text-[14px] font-extrabold tracking-[0.2em] uppercase">
-            See every category
+            Shop lifestyle
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </span>
         </TiltLink>

@@ -6,6 +6,7 @@ import { generateSeed } from "@/services/mock/seed";
 import { isServiceError } from "@/services/errors";
 import { presetRange } from "@/domain/analytics";
 import { stepsFor } from "@/domain/orders";
+import { categories, toCategoryId } from "@/config/categories";
 import type { CheckoutInput } from "@/services/inputs";
 
 beforeEach(async () => {
@@ -142,6 +143,71 @@ describe("fresh install", () => {
     const db = await getDb();
     expect(db.users).toHaveLength(0);
     expect(await s.auth.getSession()).toBeNull();
+  });
+
+  it("moves shops and products from old categories to the Phase 1 ones", async () => {
+    const { createStore } = await import("idb-keyval");
+    const kv = createStore("kiosk-db", "kv");
+    await set("meta:version", 3, kv);
+    await set(
+      "col:brands",
+      [
+        { id: "b_1", ownerId: "u_1", category: "thrift" },
+        { id: "b_2", ownerId: "u_1", category: "print" },
+        { id: "b_3", ownerId: "u_1", category: "food" },
+      ],
+      kv,
+    );
+    await set(
+      "col:products",
+      [
+        { id: "p_1", brandId: "b_1", category: "thrift" },
+        { id: "p_2", brandId: "b_2", category: "books" },
+        { id: "p_3", brandId: "b_2", category: "accessories" },
+      ],
+      kv,
+    );
+    __resetMemory();
+    const db = await getDb();
+    expect(db.brands.map((b) => b.category)).toEqual(["fashion", "lifestyle", "food"]);
+    expect(db.products.map((p) => p.category)).toEqual(["fashion", "academics", "lifestyle"]);
+  });
+});
+
+describe("categories", () => {
+  it("keeps Phase 1 to six categories and opens old links in their new home", () => {
+    expect(categories.map((c) => c.name)).toEqual([
+      "Food & groceries",
+      "Fashion",
+      "Beauty",
+      "Technology",
+      "Academics",
+      "Lifestyle",
+    ]);
+    expect(toCategoryId("thrift")).toBe("fashion");
+    expect(toCategoryId("books")).toBe("academics");
+    expect(toCategoryId("print")).toBe("lifestyle");
+    expect(toCategoryId("tech")).toBe("tech");
+    expect(toCategoryId("nonsense")).toBeNull();
+  });
+
+  it("refuses an old category on a new product", async () => {
+    await openShop();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    const input = {
+      name: "Denim jacket",
+      description: "Vintage denim, size M, barely worn.",
+      priceKobo: 500_000,
+      options: [],
+      variants: [{ key: "default", stock: 1, priceDeltaKobo: 0 }],
+      status: "published" as const,
+    };
+    await expectCode(
+      s.studio.createProduct({ ...input, category: "thrift" as never }),
+      "VALIDATION",
+    );
+    const ok = await s.studio.createProduct({ ...input, category: "fashion" });
+    expect(ok.category).toBe("fashion");
   });
 });
 

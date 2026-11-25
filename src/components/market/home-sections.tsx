@@ -21,14 +21,12 @@ const palette = (id: string): PosterPalette =>
 
 /** Short names that fit under a tile. */
 const short: Record<CategoryId, string> = {
-  fashion: "Fashion",
-  thrift: "Thrift",
   food: "Food",
+  fashion: "Fashion",
   beauty: "Beauty",
-  accessories: "Extras",
-  print: "Print",
   tech: "Tech",
-  books: "Books",
+  academics: "Academics",
+  lifestyle: "Lifestyle",
 };
 
 /** A small grey line over a bold title, with "See more" on the right. */
@@ -62,14 +60,14 @@ export function HomeSectionHead({
   );
 }
 
-/** Every category as a square tile: the drawing on top, the name under it. Two rows of four on phones. */
+/** Every category as a square tile: the drawing on top, the name under it. Two rows of three on phones. */
 export function CategoryGrid() {
   return (
     <section aria-labelledby="home-categories">
       <h2 id="home-categories" className="sr-only">
         Categories
       </h2>
-      <ul className="grid grid-cols-4 gap-2.5 md:grid-cols-8 md:gap-3">
+      <ul className="grid grid-cols-3 gap-2.5 md:grid-cols-6 md:gap-3">
         {categories.map((c) => (
           <li key={c.id}>
             <Link
@@ -407,7 +405,7 @@ export function CategoryCards({ pool }: { pool: ProductWithBrand[] | undefined }
       >
         Categories
       </h2>
-      <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
         {categories.map((c) => {
           const pal = paletteFor(c.id);
           const img = photo.get(c.id);

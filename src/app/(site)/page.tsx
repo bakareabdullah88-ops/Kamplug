@@ -102,7 +102,7 @@ const faqs = [
   },
   {
     q: "Is Kamplug only for food?",
-    a: "Not at all. Food is popular, but you'll find thrift, fashion, skincare, phone accessories, prints and study materials too.",
+    a: "Not at all. Food and groceries are popular, but you'll also find fashion and thrift, beauty, tech gadgets, textbooks and past questions, and lifestyle items like gifts and room essentials.",
   },
 ];
 

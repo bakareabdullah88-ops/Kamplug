@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useTransition } from "react";
-import { categories } from "@/config/categories";
+import { toCategoryId } from "@/config/categories";
 import type { CategoryId, ProductQuery, SortKey } from "@/services/types";
 
 export type ExploreParams = {
@@ -53,7 +53,8 @@ export function parseExplore(sp: URLSearchParams): ExploreParams {
   const q = sp.get("q")?.trim() ?? "";
   return {
     q,
-    category: categories.some((c) => c.id === cat) ? (cat as CategoryId) : "all",
+    // Old links (thrift, books…) open the category those items moved to.
+    category: toCategoryId(cat) ?? "all",
     sort: sort && SORTS.includes(sort) ? sort : q ? "relevance" : "popular",
     min: num(sp.get("min")),
     max: num(sp.get("max")),

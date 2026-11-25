@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import type { PoolClient } from "pg";
 import { COLLECTIONS, installDriver, type CollectionName } from "@/services/mock/db";
 import { hasSample, stripSample } from "@/services/mock/sample-sync";
+import { hasLegacyCategories, remapCategories } from "@/services/mock/category-migration";
 import { generateSeed, type DbSnapshot } from "@/services/mock/seed";
 import { ServiceError } from "@/services/errors";
 import { deleteMedia } from "./media-store";
@@ -303,6 +304,8 @@ async function prepare() {
     const pool = await db();
     await pool.query("delete from kamplug_sessions where user_id like '%\\_demo\\_%'");
   }
+  // Shops and products from before Phase 1 move to their new category.
+  if (hasLegacyCategories(viewOf(await refresh()).db)) await maintain((d) => remapCategories(d));
   sampleChecked = true;
 }
 

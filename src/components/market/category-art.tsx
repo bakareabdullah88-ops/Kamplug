@@ -205,68 +205,6 @@ function Fashion() {
   );
 }
 
-/* --------------------------------- Thrift --------------------------------- */
-/** A vintage suitcase with brass corners, straps and a swinging price tag. */
-function Thrift() {
-  return (
-    <>
-      <Shadow cx={228} rx={82} />
-      <rect x="160" y="176" width="12" height="8" rx="2" fill={K} />
-      <rect x="262" y="176" width="12" height="8" rx="2" fill={K} />
-      <path
-        d="M208 98 Q208 80 224 80 Q240 80 240 98"
-        fill="none"
-        stroke={K}
-        strokeWidth={10}
-        strokeLinecap="round"
-      />
-      <path
-        d="M208 98 Q208 80 224 80 Q240 80 240 98"
-        fill="none"
-        stroke={C.coralDk}
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
-      <Box x={150} y={104} w={132} h={74} d={16} front={C.coral} lit={C.coralLt} dark={C.coralDk}>
-        <path d="M176 104 L192 93 H204 L188 104 Z" fill={C.cobaltDk} {...T} />
-        <path d="M244 104 L260 93 H272 L256 104 Z" fill={C.cobaltDk} {...T} />
-        <rect x="176" y="104" width="12" height="74" fill={C.cobalt} {...T} />
-        <rect x="244" y="104" width="12" height="74" fill={C.cobalt} {...T} />
-        <rect x="173" y="130" width="18" height="12" rx="2" fill={C.yellow} {...T} />
-        <rect x="241" y="130" width="18" height="12" rx="2" fill={C.yellow} {...T} />
-        <path
-          d="M150 164 V178 H164 Z M282 164 V178 H268 Z M150 118 V104 H164 Z M268 104 H282 V118 Z"
-          fill={C.yellow}
-          {...T}
-        />
-        <circle cx="216" cy="152" r="12" fill={C.mint} {...T} />
-        <circle cx="216" cy="152" r="5" fill={C.white} />
-        <rect
-          x="203"
-          y="114"
-          width="26"
-          height="14"
-          rx="4"
-          fill={C.sky}
-          {...T}
-          transform="rotate(-8 216 121)"
-        />
-      </Box>
-      {/* Price tag hanging off the handle */}
-      <g className="lp-sway" style={around(209, 94)}>
-        <path d="M209 94 Q196 102 188 114" fill="none" {...T} />
-        <g transform="rotate(-12 188 132)">
-          <path d="M178 122 L188 112 L198 122 V152 H178 Z" fill={C.white} {...S} />
-          <circle cx="188" cy="121" r="2.5" fill={K} />
-          <rect x="182" y="131" width="12" height="5" rx="2" fill={C.coral} />
-          <path d="M182 143 H194" stroke={C.shade} strokeWidth={3} strokeLinecap="round" />
-        </g>
-      </g>
-      <Spark x={300} y={58} r={11} />
-    </>
-  );
-}
-
 /* ---------------------------------- Food ---------------------------------- */
 /** A bowl of jollof with fried plantain, steam wisps drifting up. */
 function Food() {
@@ -472,48 +410,6 @@ function Accessories() {
   );
 }
 
-/* ---------------------------------- Print --------------------------------- */
-/** A printer feeding out a printed sheet. */
-function Print() {
-  return (
-    <>
-      <Shadow cx={230} rx={82} />
-      <g className="lp-rise">
-        <rect x="186" y="54" width="68" height="80" fill={C.white} {...S} />
-        <rect x="196" y="64" width="26" height="18" rx="2" fill={C.cobalt} />
-        <circle cx="238" cy="73" r="7" fill={C.coral} />
-        <path
-          d="M196 92 H244 M196 100 H244 M196 108 H230"
-          stroke={C.shade}
-          strokeWidth={4}
-          strokeLinecap="round"
-        />
-      </g>
-      <rect x="160" y="172" width="14" height="8" rx="2" fill={K} />
-      <rect x="266" y="172" width="14" height="8" rx="2" fill={K} />
-      <Box x={150} y={110} w={140} h={64} d={18} front={C.paper} lit={C.white} dark={C.shade}>
-        <path d="M180 104 H258" stroke={K} strokeWidth={4} strokeLinecap="round" />
-        <rect x="150" y="160" width="140" height="14" fill={C.cobalt} {...S} />
-        <rect x="162" y="128" width="74" height="8" rx="4" fill={K} />
-        <path d="M164 136 H234 L242 150 H156 Z" fill={C.sky} {...T} />
-        <rect x="248" y="118" width="32" height="12" rx="3" fill={C.mint} {...T} />
-        <circle cx="254" cy="144" r="4" fill={C.coral} {...T} />
-        <circle cx="267" cy="144" r="4" fill={C.yellow} {...T} />
-      </Box>
-      <circle
-        className="lp-twinkle"
-        style={lpDelay("-0.8s")}
-        cx="280"
-        cy="144"
-        r="4"
-        fill={C.mint}
-        {...T}
-      />
-      <Spark x={292} y={58} r={10} delay="-1.6s" />
-    </>
-  );
-}
-
 /* ---------------------------------- Tech ---------------------------------- */
 /** Over-ear headphones bobbing beside a phone, a music note floating up. */
 function Tech() {
@@ -620,14 +516,12 @@ function Books() {
 }
 
 const ART: Record<CategoryId, () => JSX.Element> = {
-  fashion: Fashion,
-  thrift: Thrift,
   food: Food,
+  fashion: Fashion,
   beauty: Beauty,
-  accessories: Accessories,
-  print: Print,
   tech: Tech,
-  books: Books,
+  academics: Books,
+  lifestyle: Accessories,
 };
 
 /** A decorative, gently animated illustration for a category tile. */

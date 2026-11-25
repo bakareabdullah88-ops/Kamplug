@@ -107,8 +107,8 @@ export type Session = { id: ID; userId: ID; createdAt: ISODate };
 
 /* --------------------------------- Brands --------------------------------- */
 
-export type CategoryId =
-  "fashion" | "thrift" | "food" | "beauty" | "accessories" | "print" | "tech" | "books";
+/** Phase 1: physical products only. Services come in a later phase. */
+export type CategoryId = "food" | "fashion" | "beauty" | "tech" | "academics" | "lifestyle";
 
 export type OpenHours = {
   /** 0 = Sunday … 6 = Saturday */

@@ -1,13 +1,14 @@
 import { clear, createStore, del, getMany, set, setMany, type UseStore } from "idb-keyval";
 import { generateSeed, type DbSnapshot } from "./seed";
 import { stripSample } from "./sample-sync";
+import { remapCategories } from "./category-migration";
 
 /**
  * In-memory repositories hydrated from IndexedDB and written through on change.
  * One key per collection keeps writes small; the whole dataset is < 1MB.
  */
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 /**
  * Where the data lives. By default the browser's IndexedDB (one person's
@@ -67,6 +68,8 @@ const migrations: Record<number, (db: DbSnapshot) => void> = {
   2: purgeSampleData,
   // The sample shops and preview account are gone for good.
   3: stripSample,
+  // Phase 1: six categories of physical products.
+  4: remapCategories,
 };
 
 const isSampleUser = (id: string) =>
