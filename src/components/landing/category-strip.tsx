@@ -181,7 +181,7 @@ export function CategoryStrip() {
   );
 }
 
-/** The category photo filling the tile, darkened at the bottom so the white text reads. */
+/** The category photo filling the tile, softly blurred and darkened at the bottom so the white text reads. */
 function Photo({ src, big, wide }: { src: string; big?: boolean; wide?: boolean }) {
   return (
     <>
@@ -192,7 +192,9 @@ function Photo({ src, big, wide }: { src: string; big?: boolean; wide?: boolean 
         sizes={
           big ? "(min-width: 768px) 50vw, 100vw" : wide ? "100vw" : "(min-width: 768px) 25vw, 50vw"
         }
-        className="object-cover transition-transform duration-700 group-hover:scale-105"
+        // Softly blurred so the photo sets the mood and the text stays in front;
+        // scaled up a touch so the blurred edges never show inside the corners.
+        className="scale-110 object-cover blur-[3px] transition-transform duration-700 group-hover:scale-[1.15]"
       />
       <span
         aria-hidden
