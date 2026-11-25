@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { BuddyAvatar } from "@/components/app/buddy";
 import { CategoryStrip } from "@/components/landing/category-strip";
 import { FaqPanel } from "@/components/landing/faq-panel";
 import { Clouds3D, GateScene } from "@/components/landing/gate-scene";
 import { SpotPicker } from "@/components/landing/spot-picker";
 import {
-  Burst,
   DeliveryKeke,
   HostelRoom,
   SellPanel,
   ShopPanel,
-  Sparkle,
-  TakeawaySet,
   TuckShop,
 } from "@/components/landing/illustrations";
 import { HeroHeadline } from "@/components/landing/hero-headline";
@@ -21,14 +17,11 @@ import { LandingNav } from "@/components/landing/nav";
 import { Reveal } from "@/components/landing/reveal";
 import { Page } from "@/components/shell/page";
 import { brand } from "@/config/brand";
-import { BUDDY_COLORS, BUDDY_SHAPES } from "@/domain/buddy";
 import { cn } from "@/lib/cn";
 import { seedCampuses } from "@/services/mock/seed/campuses";
 import { focusCampusId } from "@/config/brand";
 import { CampusBadge } from "@/components/landing/campus-badge";
 import { KamplugLogo } from "@/components/app/kamplug-mark";
-import { PosterWords } from "@/components/brand/poster-words";
-import { CategoryArt } from "@/components/market/category-art";
 import { WALKING_MINUTES } from "@/domain/distance";
 import { features } from "@/config/features";
 import { WaitlistForm } from "@/components/landing/waitlist-form";
@@ -106,8 +99,6 @@ const faqs = [
   },
 ];
 
-const INK = "#1b1f3b";
-
 /** Section titles: heavy, tight and big. */
 const h2 =
   "text-[clamp(38px,5.6vw,68px)] leading-[0.98] font-extrabold tracking-[-0.055em] text-balance";
@@ -137,23 +128,6 @@ function SeeMore({ href }: { href: string }) {
 const JOIN = "#waitlist";
 const signupHref = waitlist ? JOIN : "/signup";
 const sellHref = waitlist ? JOIN : "/open-shop";
-
-const buddyGrid = Array.from({ length: 10 }, (_, i) => ({
-  shape: BUDDY_SHAPES[i % BUDDY_SHAPES.length]!,
-  color: BUDDY_COLORS[(i * 3) % BUDDY_COLORS.length]!,
-}));
-const gridBgs = [
-  "#ffd9cf",
-  "#3a5bff",
-  "#ffd23f",
-  "#9fd8ff",
-  INK,
-  "#ff6a4d",
-  "#ffd23f",
-  INK,
-  "#ffd9cf",
-  "#3a5bff",
-];
 
 export default function LandingPage() {
   return (
@@ -209,37 +183,64 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Hungry? A food-poster band: the word stacked as type, the food drawn in front */}
+        {/* Trust: how a handover works, plainly, with the real campus numbers */}
         <section
-          aria-labelledby="hungry-title"
-          className="relative overflow-hidden bg-[#c81e16] px-4 pt-12 pb-16 text-[#ffe3b3] md:px-8 md:pt-14 md:pb-20"
+          aria-labelledby="trust-title"
+          className="bg-[#1b1f3b] px-4 py-20 text-white md:px-8 md:py-28"
         >
-          <h2 id="hungry-title" className="sr-only">
-            Hungry? Order food on campus
-          </h2>
-          {/* The words are the headline; the food sits on top of them. */}
-          <div className="relative mx-auto max-w-[1240px]">
-            <PosterWords
-              word="Hungry?"
-              rows={4}
-              stroke={3}
-              className="text-center text-[length:clamp(76px,15vw,220px)]"
-            />
-            <CategoryArt
-              id="food"
-              className="absolute top-1/2 left-1/2 w-[min(560px,78%)] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_26px_30px_rgba(0,0,0,0.32)]"
-            />
-          </div>
-          <div className="relative mx-auto mt-8 flex max-w-[1240px] flex-col items-center text-center">
-            <p className="max-w-md text-[18px] leading-snug font-semibold md:text-[20px]">
-              Jollof, small chops and late-night bites from students in your hall.
-            </p>
-            <Link
-              href={waitlist ? JOIN : "/explore?category=food"}
-              className="mt-6 inline-flex h-14 items-center gap-2 rounded-xl bg-[#ffe3b3] px-7 text-[16px] font-bold text-[#8c1d18] transition-colors hover:bg-white"
-            >
-              {waitlist ? "Join the waitlist" : "Order food"} <ArrowRight className="size-5" />
-            </Link>
+          <div className="mx-auto grid max-w-[1240px] items-center gap-12 md:grid-cols-[1.1fr_1fr]">
+            <Reveal from="top">
+              <p className="text-[13px] font-bold tracking-[0.18em] text-[#9fb0ff] uppercase">
+                Safe handover
+              </p>
+              <h2 id="trust-title" className={cn(h2, "mt-4")}>
+                Pay when it&apos;s in your hands
+              </h2>
+              <dl className="mt-10 divide-y divide-white/15 border-y border-white/15">
+                {[
+                  [
+                    "Handover code",
+                    "Every order gets a 4-digit code only the buyer sees. The seller enters it when you have your order, and not before.",
+                  ],
+                  [
+                    "Pay on delivery",
+                    "Pay the seller when you collect or when it reaches your hall. No money changes hands before then.",
+                  ],
+                  [
+                    "Reviews from real buyers",
+                    "Only people who received an order can review it, so ratings come from real purchases.",
+                  ],
+                ].map(([t, d]) => (
+                  <div key={t} className="grid gap-1 py-5 md:grid-cols-[200px_1fr] md:gap-6">
+                    <dt className="text-[17px] font-bold">{t}</dt>
+                    <dd className="text-[16px] leading-relaxed text-white/80">{d}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
+            <Reveal from="top" delay={120}>
+              {/* What the buyer sees on their order: an example code. */}
+              <div className="mx-auto max-w-[400px] rounded-2xl bg-white p-7 text-[#1b1f3b]">
+                <p className="text-[12px] font-bold tracking-[0.16em] text-[#5a5f78] uppercase">
+                  Your handover code
+                </p>
+                <p
+                  className="mt-3 font-mono text-[56px] leading-none font-semibold tracking-[0.3em]"
+                  aria-label="Example handover code 4 8 2 7"
+                >
+                  4827
+                </p>
+                <p className="mt-4 text-[15px] leading-relaxed text-[#4a4f68]">
+                  Read this to the seller once your order is in your hands.
+                </p>
+                <p className="mt-6 border-t border-[#1b1f3b]/10 pt-4 text-[13px] text-[#5a5f78]">
+                  Example. Every order gets its own code.
+                </p>
+              </div>
+              <p className="mt-8 text-center text-[15px] text-white/70 tabular-nums">
+                {halls} halls · {faculties} faculties · {pickupSpots} pickup spots mapped at UNILAG
+              </p>
+            </Reveal>
           </div>
         </section>
 
@@ -248,8 +249,6 @@ export default function LandingPage() {
           id="sell"
           className="relative scroll-mt-20 overflow-hidden bg-[#ffe9a8] px-4 pt-20 md:px-8 md:pt-28"
         >
-          <Burst className="lp-twinkle absolute top-10 left-[6%] size-9" color="#ff6a4d" />
-          <Sparkle className="lp-twinkle absolute top-16 right-[8%] size-8" color="#3a5bff" />
           <div className="mx-auto grid max-w-[1240px] items-end gap-10 md:grid-cols-2">
             <Reveal from="top" className="md:order-2 md:pb-28">
               <h2 className={h2}>
@@ -274,33 +273,44 @@ export default function LandingPage() {
           <div className="mx-auto grid max-w-[1240px] gap-8 md:grid-cols-3 md:gap-6">
             {[
               {
-                mark: <Burst className="size-9" color="#ff6a4d" />,
                 title: "Start selling",
-                body: "Cook, thrift, braid or print? Open a shop in minutes and reach every student on your campus.",
+                body: "Cook, thrift or sell gadgets and books? Open a shop in minutes and reach every student on your campus.",
                 href: sellHref,
                 panel: <SellPanel className="h-full w-full" />,
               },
               {
-                mark: <span className="block h-7 w-14 rounded-t-full bg-[#3ddc97]" aria-hidden />,
                 title: "Shop your campus",
                 body: "Shops nearest you come first, with the walk time. Order in a few taps and track it to your hall.",
                 href: signupHref,
                 panel: <ShopPanel className="h-full w-full" />,
               },
               {
-                mark: <Sparkle className="size-10" color="#3a5bff" />,
-                title: "Meet the buddies",
-                body: "Every account gets an animated buddy as its profile picture. Pick your shape and colour.",
+                title: "Track every order",
+                body: "See each step from the shop to your hall, and message the seller in the same place.",
                 href: signupHref,
                 panel: (
-                  <div className="grid h-full grid-cols-5 grid-rows-2">
-                    {buddyGrid.map((b, i) => (
-                      <div
-                        key={i}
-                        className="grid place-items-center"
-                        style={{ background: gridBgs[i] }}
-                      >
-                        <BuddyAvatar buddy={b} size={58} className="!bg-transparent" />
+                  <div className="flex h-full flex-col justify-center gap-3 bg-[#eef1ff] px-7">
+                    {["Placed", "Accepted", "On the way", "Handed over"].map((step, n) => (
+                      <div key={step} className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            "size-3 shrink-0 rounded-full",
+                            n < 3 ? "bg-[#3a5bff]" : "bg-[#1b1f3b]/20",
+                          )}
+                        />
+                        <span
+                          className={cn(
+                            "text-[15px]",
+                            n === 2 ? "font-bold text-[#1b1f3b]" : "text-[#4a4f68]",
+                          )}
+                        >
+                          {step}
+                        </span>
+                        {n === 2 && (
+                          <span className="ml-auto text-[13px] font-semibold text-[#3a5bff]">
+                            About 12 min
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -314,8 +324,7 @@ export default function LandingPage() {
                 className="flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-[#1b1f3b]/10"
               >
                 <div className="flex-1 p-7 md:p-8">
-                  {c.mark}
-                  <h3 className="mt-5 text-[30px] leading-none font-extrabold tracking-[-0.04em] md:text-[32px]">
+                  <h3 className="text-[30px] leading-none font-extrabold tracking-[-0.04em] md:text-[32px]">
                     {c.title}
                   </h3>
                   <p className="mt-4 text-[17px] leading-relaxed">{c.body}</p>
@@ -327,22 +336,11 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Delivery: a full-width coral band with stripes racing behind the keke */}
+        {/* Delivery: a full-width coral band with the keke */}
         <section
           id="delivery"
           className="relative scroll-mt-20 overflow-hidden bg-[#ffd9cf] px-4 py-20 md:px-8 md:py-28"
         >
-          <div
-            aria-hidden
-            className="lp-stripes pointer-events-none absolute inset-y-0 left-0 flex w-[200%]"
-          >
-            {Array.from({ length: 10 }, (_, i) => (
-              <span
-                key={i}
-                className="mx-[4%] h-full w-[6%] shrink-0 -skew-x-[24deg] bg-white/35"
-              />
-            ))}
-          </div>
           <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 md:grid-cols-2">
             <Reveal from="top">
               <h2 className={h2}>
@@ -401,10 +399,7 @@ export default function LandingPage() {
                   delay={i * 140}
                   className="rounded-[26px] bg-white p-8 ring-1 ring-[#1b1f3b]/10"
                 >
-                  <span
-                    className="grid size-14 place-items-center rounded-2xl text-[26px] font-extrabold text-white"
-                    style={{ background: ["#3a5bff", "#ff6a4d", "#1b1f3b"][i] }}
-                  >
+                  <span className="grid size-12 place-items-center rounded-xl bg-[#1b1f3b] text-[20px] font-bold text-white">
                     {s.n}
                   </span>
                   <h3 className="mt-6 text-[24px] font-extrabold tracking-[-0.03em]">{s.title}</h3>
@@ -416,9 +411,7 @@ export default function LandingPage() {
         </section>
 
         {/* Be the plug: a full-width cobalt band */}
-        <section className="relative overflow-hidden bg-[#3a5bff] px-5 pt-20 text-center text-white md:pt-28">
-          <Sparkle className="lp-twinkle absolute top-12 left-[10%] size-9" color="#ffd23f" />
-          <Burst className="lp-twinkle absolute top-28 right-[9%] size-10" color="#ff6a4d" />
+        <section className="relative overflow-hidden bg-[#3a5bff] px-5 py-20 text-center text-white md:py-28">
           <Reveal from="top" className="relative mx-auto max-w-3xl">
             <h2 className={h2}>Be the plug</h2>
             <p className="mx-auto mt-4 max-w-lg text-[18px] leading-snug md:text-[20px]">
@@ -441,7 +434,6 @@ export default function LandingPage() {
               </div>
             )}
           </Reveal>
-          <TakeawaySet className="relative mx-auto mt-10 block w-full max-w-[640px] translate-y-2" />
         </section>
 
         {/* FAQs */}

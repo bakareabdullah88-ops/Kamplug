@@ -3,16 +3,7 @@
 import { features } from "@/config/features";
 import Link from "next/link";
 import { useRef } from "react";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  BookOpen,
-  Cpu,
-  Shirt,
-  Soup,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Reveal } from "./reveal";
 import { BeautySet, BookStack, JollofPlate, TechSet, ThriftRack } from "./illustrations";
@@ -22,7 +13,6 @@ type Tile = {
   title: string;
   body: string;
   href: string;
-  icon: LucideIcon;
   bg: string;
   Art: (p: { className?: string }) => React.ReactNode;
   span: string;
@@ -35,7 +25,6 @@ const tiles: Tile[] = [
     title: "Food & groceries",
     body: "Meals, snacks, drinks and groceries from cooks and sellers in your hall.",
     href: "/explore?category=food",
-    icon: Soup,
     bg: "#ffe9a8",
     Art: JollofPlate,
     span: "col-span-2 md:row-span-2",
@@ -46,7 +35,6 @@ const tiles: Tile[] = [
     title: "Fashion",
     body: "Thrift, clothes, shoes, bags.",
     href: "/explore?category=fashion",
-    icon: Shirt,
     bg: "#dfe5ff",
     Art: ThriftRack,
     span: "col-span-1",
@@ -56,7 +44,6 @@ const tiles: Tile[] = [
     title: "Beauty",
     body: "Skincare, haircare, makeup.",
     href: "/explore?category=beauty",
-    icon: Sparkles,
     bg: "#ffd9cf",
     Art: BeautySet,
     span: "col-span-1",
@@ -66,7 +53,6 @@ const tiles: Tile[] = [
     title: "Technology",
     body: "Chargers, gadgets, accessories.",
     href: "/explore?category=tech",
-    icon: Cpu,
     bg: "#d4f0ff",
     Art: TechSet,
     span: "col-span-1",
@@ -76,7 +62,6 @@ const tiles: Tile[] = [
     title: "Academics",
     body: "Textbooks, past questions, stationery.",
     href: "/explore?category=academics",
-    icon: BookOpen,
     bg: "#d6f7e8",
     Art: BookStack,
     span: "col-span-1",
@@ -142,12 +127,9 @@ export function CategoryStrip() {
             style={{ background: t.bg }}
           >
             <div className={cn("relative z-10 flex flex-col p-5 md:p-7", t.big && "md:p-9")}>
-              <span className="grid size-11 place-items-center rounded-2xl bg-white/70 text-[#1b1f3b]">
-                <t.icon className="size-5" aria-hidden />
-              </span>
               <h3
                 className={cn(
-                  "mt-4 leading-none font-extrabold tracking-[-0.045em]",
+                  "leading-none font-extrabold tracking-[-0.045em]",
                   t.big ? "text-[40px] md:text-[64px]" : "text-[26px] md:text-[30px]",
                 )}
               >
@@ -176,15 +158,13 @@ export function CategoryStrip() {
             </span>
             <div
               className={cn(
-                "pointer-events-none absolute transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3",
+                "pointer-events-none absolute transition-transform duration-500 group-hover:scale-105",
                 t.big
                   ? "right-[-6%] bottom-[-6%] w-[72%] md:w-[70%]"
                   : "right-[-8%] bottom-[-10%] w-[62%] md:w-[58%]",
               )}
             >
-              <div className="lp-bob" style={{ animationDelay: `${i * -0.7}s` }}>
-                <t.Art className="w-full" />
-              </div>
+              <t.Art className="w-full" />
             </div>
           </TiltLink>
         </Reveal>
