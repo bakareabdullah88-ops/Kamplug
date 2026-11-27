@@ -3,58 +3,34 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BadgeCheck,
   Bike,
-  ChevronDown,
   ChevronRight,
-  Footprints,
   Gauge,
-  Heart,
   MapPin,
   Search,
   SlidersHorizontal,
-  Star,
   Store,
 } from "lucide-react";
-import { categoryName } from "@/config/categories";
 import { pagePad } from "@/components/app/layout";
-import { AppImage } from "@/components/ui/app-image";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { Switch } from "@/components/ui/controls";
 import { ResponsiveSheet } from "@/components/ui/sheet";
-import {
-  WALKING_MINUTES,
-  arrivalMinutes,
-  compareNearness,
-  formatMetres,
-  nearness,
-  type Nearness,
-} from "@/domain/distance";
+import { WALKING_MINUTES, arrivalMinutes, compareNearness, nearness } from "@/domain/distance";
 import { formatNaira } from "@/domain/money";
 import { isActive, statusLabel } from "@/domain/orders";
 import { cn } from "@/lib/cn";
-import { formatCompact } from "@/lib/format";
 import { useBrands, useCampus, useCampuses, useProducts } from "@/queries/catalog";
 import { useBuyerSpot, useNearQuery } from "@/queries/nearby";
 import { useMyOrders } from "@/queries/orders";
 import { useSession } from "@/queries/session";
-import { useToggleFollow } from "@/queries/social";
 import type { Brand, Order, ProductQuery, ProductWithBrand, SortKey } from "@/services/types";
 import { useHomeFilters, type HomeSort } from "@/stores/home-filters";
 import { useUi } from "@/stores/ui";
-import { RelationBadge, etaText } from "./nearby";
-import {
-  CategoryGrid,
-  BudgetTickets,
-  CategoryCards,
-  DealBanners,
-  HomeSectionHead,
-  PosterTiles,
-  ProductRail,
-} from "./home-sections";
+import { AddressMenu } from "./address-menu";
+import { StoreCard, StoreCardSkeleton } from "./store-card";
+import { CategoryGrid, HomeSectionHead, ProductRail } from "./home-sections";
 
 /** Search everywhere; the round button beside it sorts and filters this feed in place. */
 function SearchBar({ onFilters, active }: { onFilters: () => void; active: number }) {
@@ -88,8 +64,8 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
 }
 
 /**
- * The top of home: where you're getting things to, a dashboard link on big
- * screens, and search. Plain and still: no scene, no animation.
+ * The top of home: where you're getting things to (a menu in place), a
+ * dashboard link on big screens, and search.
  */
 function HomeHeader({
   spotName,
@@ -103,17 +79,7 @@ function HomeHeader({
   return (
     <section className="flex flex-col gap-3.5">
       <div className="flex items-center justify-between gap-3">
-        <Link
-          href="/account/places"
-          className="-mx-2 flex min-w-0 flex-col rounded-lg px-2 py-1 transition-colors hover:bg-ink/[0.05]"
-        >
-          <span className="text-[12.5px] text-muted">Delivering to</span>
-          <span className="inline-flex min-w-0 items-center gap-1.5 text-[16px] font-bold">
-            <MapPin className="size-4 shrink-0 text-accent" aria-hidden />
-            <span className="truncate">{spotName ?? "Choose your spot"}</span>
-            <ChevronDown className="size-4 shrink-0 text-muted" aria-hidden />
-          </span>
-        </Link>
+        <AddressMenu label={spotName} />
         <Link
           href="/account"
           className="hidden h-10 shrink-0 items-center gap-2 rounded-full bg-surface px-4 text-[14px] font-semibold ring-1 ring-line transition-colors hover:bg-surface-2 md:inline-flex"
@@ -152,190 +118,119 @@ function OnTheWay({ order }: { order: Order }) {
   );
 }
 
-/** A shop in the style of a restaurant tile: a rounded photo with a badge and heart, then name and rating. No box around it. */
-function ShopTile({ brand: b, near }: { brand: Brand; near: ShopNear | undefined }) {
-  const { user } = useSession();
-  const follow = useToggleFollow();
-  const following = !!user?.followingBrandIds.includes(b.id);
-  const f = b.fulfilment;
-  const badge = b.vacation
-    ? "On a break"
-    : f?.delivery && !f.deliveryFeeKobo
-      ? "Free delivery"
-      : b.verified
-        ? "Verified shop"
-        : null;
-  return (
-    <article className="group relative w-[280px] md:w-auto">
-      <Link href={`/brands/${b.handle}`} className="block">
-        <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-surface-2">
-          <div className="size-full transition-transform duration-500 group-hover:scale-[1.04]">
-            <AppImage
-              image={b.cover}
-              alt=""
-              variant="cover"
-              sizes="(min-width: 1024px) 25vw, 280px"
-            />
-          </div>
-          {badge && (
-            <span
-              className={cn(
-                "absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold",
-                b.vacation ? "bg-surface text-ink" : "bg-brand text-white",
-              )}
-            >
-              {badge === "Verified shop" && <BadgeCheck className="size-3.5" aria-hidden />}
-              {badge === "Free delivery" && <Bike className="size-3.5" aria-hidden />}
-              {badge}
-            </span>
-          )}
-          {near?.relation && (
-            <RelationBadge relation={near.relation} className="absolute bottom-2.5 left-2.5" />
-          )}
-        </div>
-        <div className="flex items-start gap-2.5 pt-3">
-          <span className="size-10 shrink-0 overflow-hidden rounded-full ring-1 ring-line">
-            <AppImage image={b.logo} alt="" variant="logo" name={b.name} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="truncate text-[16px] font-semibold">{b.name}</h3>
-              {b.ratingCount > 0 && (
-                <span className="inline-flex shrink-0 items-center gap-1 text-[13.5px] font-semibold">
-                  <Star className="size-4 fill-[#f5b301] text-[#f5b301]" aria-hidden />
-                  <span className="tabular">{b.rating.toFixed(1)}</span>
-                  <span className="font-normal text-muted tabular">({b.ratingCount})</span>
-                </span>
-              )}
-            </div>
-            {near && near.metres !== null && near.walkMin !== null && (
-              <p className="mt-0.5 flex items-center gap-1.5 text-[13px] font-semibold text-accent-ink">
-                <Footprints className="size-3.5 shrink-0" aria-hidden />
-                <span className="truncate tabular">
-                  {near.metres === 0
-                    ? "Right by you"
-                    : `${formatMetres(near.metres)} · ${near.walkMin} min walk`}
-                  {near.etaMin !== null && ` · ${etaText(near.etaMin, !!f?.delivery)}`}
-                </span>
-              </p>
-            )}
-            <p className="mt-0.5 truncate text-[13px] text-muted">
-              {categoryName(b.category)}
-              {f?.delivery && f.deliveryFeeKobo
-                ? ` · ${formatNaira(f.deliveryFeeKobo)} delivery`
-                : ""}
-              {!f?.delivery && f?.pickup ? " · Pickup" : ""}
-              {` · ${formatCompact(b.followerCount)} followers`}
-            </p>
-          </div>
-        </div>
-      </Link>
-      {user && (
-        <button
-          type="button"
-          aria-pressed={following}
-          aria-label={following ? `Unfollow ${b.name}` : `Follow ${b.name}`}
-          onClick={() => follow.mutate({ id: b.id, handle: b.handle })}
-          className="absolute top-2.5 right-2.5 grid size-9 pressable place-items-center rounded-full bg-black/40"
-        >
-          <Heart
-            className={cn(
-              "size-[19px]",
-              following ? "fill-[#f43f5e] text-[#f43f5e]" : "text-white",
-            )}
-          />
-        </button>
-      )}
-    </article>
-  );
-}
-
-function ShopTileSkeleton() {
-  return (
-    <div className="w-[280px] md:w-auto" aria-hidden>
-      <Skeleton className="aspect-[16/10] w-full" rounded="lg" />
-      <div className="mt-2.5 flex gap-2.5">
-        <Skeleton className="size-10" rounded="full" />
-        <div className="flex-1">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="mt-1.5 h-3 w-40" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-type ShopNear = Nearness & { etaMin: number | null };
-
-const sortTitles: Record<HomeSort, string> = {
-  nearest: "Closest to you",
-  popular: "Popular shops",
-  rating: "Top rated shops",
-  newest: "New shops",
-};
-
-function Shops({
-  campusId,
-  view,
-  onFilters,
-}: {
-  campusId: string | undefined;
-  view: HomeView;
-  onFilters: () => void;
-}) {
+/**
+ * The campus's shops, ranked two ways: the most popular few for the featured
+ * row near the top, and the rest in the chosen order for "More stores".
+ * Only real numbers decide the order (followers, ratings, distance, age).
+ */
+function useRankedStores(campusId: string | undefined, view: HomeView) {
   const local = useBrands(campusId ? { campusId } : {}).data;
-  const everywhere = useBrands({ limit: 8 }).data;
+  const everywhere = useBrands({ limit: 24 }).data;
   const campuses = useCampuses().data;
   // Your campus first; if it has no shops yet, shops from everywhere.
   const pool = local && local.length > 0 ? local : everywhere;
-  const ranked = useMemo(() => {
+  return useMemo(() => {
     if (!pool) return undefined;
-    const rows = pool.map((b) => {
-      const campus = campuses?.find((c) => c.id === b.campusId);
-      const n = nearness(b.fulfilment, campus, view.buyer);
-      return { b, n: { ...n, etaMin: arrivalMinutes(b.fulfilment, n) } };
-    });
+    const rows = pool
+      .filter((b) => !b.vacation)
+      .map((b) => {
+        const campus = campuses?.find((c) => c.id === b.campusId);
+        const n = nearness(b.fulfilment, campus, view.buyer);
+        return { b, n: { ...n, etaMin: arrivalMinutes(b.fulfilment, n) } };
+      });
     const shown = view.walking ? rows.filter((r) => r.n.walking) : rows;
+    const score = (b: Brand) => b.followerCount + b.ratingCount * 3 + b.rating;
+    // Up to six featured, always leaving a few for "More stores" once there are four or more.
+    const n = shown.length;
+    const featuredCount = n < 3 ? 0 : n === 3 ? 3 : Math.min(6, Math.max(3, n - 3));
+    const featured = [...shown].sort((x, y) => score(y.b) - score(x.b)).slice(0, featuredCount);
     const by: Record<HomeSort, (x: (typeof rows)[number], y: (typeof rows)[number]) => number> = {
       nearest: (x, y) => compareNearness(x.n, y.n) || y.b.followerCount - x.b.followerCount,
-      popular: (x, y) => y.b.followerCount - x.b.followerCount,
+      popular: (x, y) => score(y.b) - score(x.b),
       rating: (x, y) => y.b.rating - x.b.rating || y.b.ratingCount - x.b.ratingCount,
       newest: (x, y) => Date.parse(y.b.createdAt) - Date.parse(x.b.createdAt),
     };
-    return [...shown].sort(by[view.sort]).slice(0, 8);
+    const featuredIds = new Set(featured.map((r) => r.b.id));
+    const rest = shown.filter((r) => !featuredIds.has(r.b.id)).sort(by[view.sort]);
+    return { featured, rest, total: shown.length };
   }, [pool, campuses, view.buyer, view.walking, view.sort]);
-  if (pool && pool.length === 0) return null;
+}
+
+type RankedStores = NonNullable<ReturnType<typeof useRankedStores>>;
+
+/** The most popular stores as large cards that swipe sideways. */
+function FeaturedStores({ stores }: { stores: RankedStores | undefined }) {
+  if (stores && stores.featured.length === 0) return null;
   return (
-    <section className="border-t border-line-thin pt-5 md:pt-6">
-      <HomeSectionHead eyebrow="Shops on campus" title={sortTitles[view.sort]} href="/explore" />
-      {view.located && (
-        <p className="-mt-2 mb-3.5 text-[13px] text-muted">
-          Measured from <b className="font-semibold text-ink">{view.buyer.label}</b>
-          {view.walking && " · walking distance only"}
-        </p>
-      )}
-      {ranked && ranked.length === 0 ? (
-        <div className="flex flex-col items-start gap-3 border-y border-line-thin py-6">
-          <p className="text-[15px]">No shops within a short walk of {view.buyer.label} yet.</p>
-          <Button variant="secondary" size="sm" onClick={onFilters}>
-            Change filters
-          </Button>
-        </div>
-      ) : (
-        <ul className="-mx-(--gutter) scrollbar-none flex snap-x scroll-px-(--gutter) gap-4 overflow-x-auto px-(--gutter) pb-1 md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 xl:grid-cols-4">
-          {ranked
-            ? ranked.map(({ b, n }) => (
-                <li key={b.id} className="shrink-0 snap-start">
-                  <ShopTile brand={b} near={n} />
-                </li>
-              ))
-            : Array.from({ length: 4 }, (_, i) => (
-                <li key={i} className="shrink-0">
-                  <ShopTileSkeleton />
-                </li>
-              ))}
-        </ul>
-      )}
+    <section>
+      <HomeSectionHead eyebrow="Most loved on campus" title="Popular stores" href="/explore" />
+      <ul className="-mx-(--gutter) scrollbar-none flex snap-x snap-mandatory scroll-px-(--gutter) gap-4 overflow-x-auto px-(--gutter) pb-1 md:mx-0 md:scroll-px-0 md:px-0 lg:gap-5">
+        {stores
+          ? stores.featured.map(({ b, n }, i) => (
+              <li
+                key={b.id}
+                className="w-[85vw] max-w-[380px] shrink-0 snap-start sm:w-[360px] lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none"
+              >
+                <StoreCard brand={b} near={n} priority={i < 2} />
+              </li>
+            ))
+          : Array.from({ length: 3 }, (_, i) => (
+              <li
+                key={i}
+                className="w-[85vw] max-w-[380px] shrink-0 sm:w-[360px] lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none"
+              >
+                <StoreCardSkeleton />
+              </li>
+            ))}
+      </ul>
+    </section>
+  );
+}
+
+const restTitles: Record<HomeSort, string> = {
+  nearest: "Nearest first",
+  popular: "Most popular first",
+  rating: "Top rated first",
+  newest: "Newest first",
+};
+
+/** Every other store, the same size as the featured ones, in a grid. */
+function MoreStores({
+  stores,
+  view,
+  onFilters,
+}: {
+  stores: RankedStores | undefined;
+  view: HomeView;
+  onFilters: () => void;
+}) {
+  if (!stores) return null;
+  if (stores.total === 0 && view.walking)
+    return (
+      <section className="flex flex-col items-start gap-3 border-y border-line-thin py-6">
+        <p className="text-[15px]">No shops within a short walk of {view.buyer.label} yet.</p>
+        <Button variant="secondary" size="sm" onClick={onFilters}>
+          Change filters
+        </Button>
+      </section>
+    );
+  if (stores.rest.length === 0) return null;
+  return (
+    <section className="border-t border-line-thin pt-6">
+      <HomeSectionHead
+        eyebrow={
+          view.located ? `${restTitles[view.sort]} from ${view.buyer.label}` : restTitles[view.sort]
+        }
+        title={stores.featured.length ? "More stores" : "Stores on campus"}
+        href="/explore"
+      />
+      <ul className="grid grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
+        {stores.rest.map(({ b, n }) => (
+          <li key={b.id}>
+            <StoreCard brand={b} near={n} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -489,8 +384,7 @@ export function DiscoverHome() {
   const spotName = view.buyer.label
     ? `${view.buyer.label}${spotCampus ? `, ${spotCampus.shortName}` : ""}`
     : campus?.name;
-  // One wide sample of what's in stock, for the banners and price tiles.
-  const pool = useProducts({ pageSize: 48, inStock: true }).data?.items;
+  const stores = useRankedStores(user?.campusId ?? undefined, view);
 
   // The feed follows the chosen sort; walking distance narrows every section.
   const base: ProductQuery = {
@@ -499,12 +393,13 @@ export function DiscoverHome() {
     ...(near ? { near } : {}),
     ...(view.walking ? { walking: true } : {}),
   };
-  const firstSort: SortKey = view.sort;
+  // The first row follows the chosen sort; "nearest" reads as popular nearby.
+  const firstSort: SortKey =
+    view.sort === "newest" ? "newest" : view.sort === "rating" ? "rating" : "popular";
   const first = { ...base, sort: firstSort };
-  const secondSort: SortKey = view.sort === "newest" ? "popular" : "newest";
-  const firstTitle: Record<HomeSort, string> = {
-    nearest: "Closest to you",
-    popular: "Popular right now",
+  const secondSort: SortKey = firstSort === "newest" ? "popular" : "newest";
+  const firstTitle: Record<string, string> = {
+    popular: view.located ? "Popular near you" : "Popular right now",
     rating: "Top rated",
     newest: "New on Kamplug",
   };
@@ -543,13 +438,19 @@ export function DiscoverHome() {
       <FilterSheet open={filtersOpen} onOpenChange={setFiltersOpen} view={view} />
       {onTheWay && <OnTheWay order={onTheWay} />}
       <CategoryGrid />
-      <DealBanners pool={pool} />
-      <PosterTiles pool={pool} located={view.located} />
 
       {empty ? (
         <EmptyMarket />
       ) : (
         <>
+          <FeaturedStores stores={stores} />
+          <ProductRail
+            eyebrow="On campus now"
+            title={firstTitle[firstSort] ?? "Popular right now"}
+            query={first}
+            skip={mineIds}
+            href={`/explore?sort=${firstSort}${view.walking ? "&walk=1" : ""}`}
+          />
           {mine && (
             <ProductRail
               eyebrow="Near you"
@@ -559,15 +460,6 @@ export function DiscoverHome() {
               keep={fromMine}
             />
           )}
-          <Shops campusId={user?.campusId ?? undefined} view={view} onFilters={openFilters} />
-          <ProductRail
-            eyebrow="On campus now"
-            title={firstTitle[view.sort]}
-            query={first}
-            skip={mineIds}
-            href={`/explore?sort=${view.sort}${view.walking ? "&walk=1" : ""}`}
-          />
-          <BudgetTickets pool={pool} />
           <ProductRail
             eyebrow="Easy on the pocket"
             title="Under ₦2,000"
@@ -581,7 +473,7 @@ export function DiscoverHome() {
             href={`/explore?sort=${secondSort}${view.walking ? "&walk=1" : ""}`}
             skip={[...mineIds, ...firstIds]}
           />
-          <CategoryCards pool={pool} />
+          <MoreStores stores={stores} view={view} onFilters={openFilters} />
         </>
       )}
 

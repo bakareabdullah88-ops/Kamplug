@@ -22,7 +22,7 @@ import type { CampusZone, SavedPlace } from "@/services/types";
 import { toast } from "@/stores/toast";
 import { NavPageHeader } from "@/components/app/nav-header";
 
-type Draft = {
+export type PlaceDraft = {
   id?: string;
   label: string;
   campusId: string;
@@ -37,7 +37,8 @@ function spotName(z: CampusZone) {
   return z.name.length <= 30 ? z.name : kindLabel[z.kind];
 }
 
-function PlaceForm({ draft, onDone }: { draft: Draft; onDone: () => void }) {
+/** Add or edit a saved place. Used on the addresses page and from the address menu on home. */
+export function PlaceForm({ draft, onDone }: { draft: PlaceDraft; onDone: () => void }) {
   const [d, setD] = useState(draft);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const campuses = useCampuses();
@@ -151,10 +152,10 @@ export function PlacesView() {
   const campuses = useCampuses();
   const { user } = useSession();
   const remove = useRemovePlace();
-  const [editing, setEditing] = useState<Draft | null>(null);
+  const [editing, setEditing] = useState<PlaceDraft | null>(null);
   const [confirm, setConfirm] = useState<SavedPlace | null>(null);
 
-  const blank: Draft = {
+  const blank: PlaceDraft = {
     label: "",
     campusId:
       campuses.data?.find((c) => c.id === user?.campusId)?.id ?? campuses.data?.[0]?.id ?? "",
