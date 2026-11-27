@@ -26,8 +26,8 @@ export type PosterPalette = {
 export const posterPalettes: PosterPalette[] = [
   { id: "tomato", name: "Tomato", bg: "#c81e16", ink: "#ffe3b3", soft: "#d4352a" },
   { id: "butter", name: "Butter", bg: "#ffd35c", ink: "#8c1d18", soft: "#ffe08a" },
-  { id: "cobalt", name: "Cobalt", bg: "#3a5bff", ink: "#fff1c9", soft: "#4d6bff" },
-  { id: "night", name: "Night", bg: "#1b1f3b", ink: "#ffd23f", soft: "#252a4d" },
+  { id: "sky", name: "Sky", bg: "#1f78a8", ink: "#fff1c9", soft: "#2b86b8" },
+  { id: "night", name: "Night", bg: "#1f1a17", ink: "#ffd23f", soft: "#2c2622" },
   { id: "mint", name: "Mint", bg: "#17754c", ink: "#fff1c9", soft: "#1f8458" },
   { id: "blush", name: "Blush", bg: "#ff7aa8", ink: "#5a0f2e", soft: "#ff8fb6" },
 ];
@@ -37,7 +37,7 @@ export const categoryPalette: Record<CategoryId, PosterPalette["id"]> = {
   food: "tomato",
   fashion: "night",
   beauty: "blush",
-  tech: "cobalt",
+  tech: "sky",
   academics: "mint",
   lifestyle: "butter",
 };
@@ -223,7 +223,7 @@ function priceBadge(
 /** The Kamplug socket mark on its tile. */
 function mark(ctx: Ctx, x: number, y: number, s: number) {
   const k = s / 64;
-  ctx.fillStyle = "#3a5bff";
+  ctx.fillStyle = "#d63426";
   roundRect(ctx, x, y, s, s, 16 * k);
   ctx.fill();
   ctx.fillStyle = "#ffffff";

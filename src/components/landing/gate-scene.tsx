@@ -10,7 +10,7 @@ import { cn } from "@/lib/cn";
  * they read as 3D.
  */
 
-const NAVY = "#1b1f3b";
+const NAVY = "#1f1a17";
 
 /** A box with a lit top and a shaded right side, so a flat rectangle reads as a block. */
 export function Block({
@@ -570,7 +570,7 @@ export function GateScene({ className }: { className?: string }) {
                 side="#8fa6f0"
                 top="#e6ecff"
                 sideRows={9}
-                sideWindow="#3a5bff"
+                sideWindow="#d63426"
               >
                 <rect x="-30" y="-322" width="60" height="22" fill="#e6ecff" />
                 <rect x="-30" y="-322" width="60" height="6" fill="#ffffff" />
@@ -583,7 +583,7 @@ export function GateScene({ className }: { className?: string }) {
                   h={20}
                   gapX={36}
                   gapY={30}
-                  color="#3a5bff"
+                  color="#d63426"
                 />
               </Box>
             </g>
@@ -603,7 +603,7 @@ export function GateScene({ className }: { className?: string }) {
                   h={36}
                   gapX={38}
                   gapY={50}
-                  color="#1b1f3b"
+                  color="#1f1a17"
                   rx={13}
                 />
               </Box>
@@ -680,7 +680,7 @@ export function GateScene({ className }: { className?: string }) {
                   d="M700 486 A45 45 0 0 1 790 486 l-10 4 A35 35 0 0 0 710 490 Z"
                   fill="#d8d2c4"
                 />
-                <rect x="534" y="244" width="52" height="40" rx="6" fill="#3a5bff" />
+                <rect x="534" y="244" width="52" height="40" rx="6" fill="#d63426" />
                 <path
                   d="M560 252 l5 10 l11 2 l-8 8 l2 11 l-10 -5 l-10 5 l2 -11 l-8 -8 l11 -2 Z"
                   fill="#ffd23f"
@@ -694,7 +694,7 @@ export function GateScene({ className }: { className?: string }) {
                       strokeLinecap="round"
                     />
                     <g className="lp-wave" style={{ animationDelay: `${i * -0.5}s` }}>
-                      <path d={`M${fx + 2} 238 h40 v24 h-40 Z`} fill="#3a5bff" />
+                      <path d={`M${fx + 2} 238 h40 v24 h-40 Z`} fill="#d63426" />
                       <path d={`M${fx + 15} 238 h14 v24 h-14 Z`} fill="#ffffff" />
                     </g>
                   </g>

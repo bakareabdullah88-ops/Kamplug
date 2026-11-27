@@ -9,7 +9,7 @@
 import type { CSSProperties, JSX, ReactNode } from "react";
 import type { CategoryId } from "@/services/types";
 
-const K = "#1b1f3b";
+const K = "#1f1a17";
 const S = {
   stroke: K,
   strokeWidth: 3.5,
@@ -19,9 +19,9 @@ const S = {
 const T = { ...S, strokeWidth: 2.5 };
 
 const C = {
-  cobalt: "#3a5bff",
-  cobaltLt: "#7088ff",
-  cobaltDk: "#2338b8",
+  cobalt: "#d63426",
+  cobaltLt: "#ff8a7a",
+  cobaltDk: "#9c241a",
   yellow: "#ffd84d",
   yellowLt: "#ffe896",
   yellowDk: "#e0b000",

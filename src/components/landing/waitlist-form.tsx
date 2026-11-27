@@ -71,7 +71,7 @@ export function WaitlistForm({
           "flex w-full max-w-[600px] items-center gap-3 rounded-3xl p-4 text-left ring-1 md:p-5",
           dark
             ? "bg-white/10 text-white ring-white/20"
-            : "bg-white text-[#1b1f3b] ring-[#1b1f3b]/10",
+            : "bg-white text-[#1f1a17] ring-[#1f1a17]/10",
         )}
       >
         <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#17754c] text-white">
@@ -81,7 +81,7 @@ export function WaitlistForm({
           <span className="block text-[17px] font-bold">
             {done.already ? "You're already on the list" : "You're on the list"}
           </span>
-          <span className={cn("block text-[15px]", dark ? "text-white/80" : "text-[#4a4f68]")}>
+          <span className={cn("block text-[15px]", dark ? "text-white/80" : "text-[#4f4741]")}>
             Number {done.position}. We&apos;ll email you the day Kamplug opens at UNILAG.
           </span>
         </span>
@@ -112,7 +112,7 @@ export function WaitlistForm({
     >
       <div
         ref={boxRef}
-        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1b1f3b]/10 md:h-[68px]"
+        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1f1a17]/10 md:h-[68px]"
       >
         <label htmlFor={`${id}-email`} className="sr-only">
           Your email
@@ -131,12 +131,12 @@ export function WaitlistForm({
           placeholder="Your email"
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-[#1b1f3b] outline-none placeholder:text-[#6b6f86] md:text-[17px]"
+          className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-[#1f1a17] outline-none placeholder:text-[#7d746d] md:text-[17px]"
         />
         <button
           type="submit"
           disabled={pending}
-          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#3a5bff] px-5 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#2a45d6] disabled:opacity-60 md:px-6 md:text-[16px]"
+          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#d63426] px-5 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#b42a20] disabled:opacity-60 md:px-6 md:text-[16px]"
         >
           {pending ? "Joining…" : "Join the waitlist"}
           <ArrowRight className="size-5 max-sm:hidden" aria-hidden />
@@ -157,14 +157,14 @@ export function WaitlistForm({
           <label
             key={r.value}
             className={cn(
-              "flex h-10 cursor-pointer items-center rounded-full px-4 text-[14px] font-semibold ring-1 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#3a5bff]",
+              "flex h-10 cursor-pointer items-center rounded-full px-4 text-[14px] font-semibold ring-1 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#d63426]",
               role === r.value
                 ? dark
-                  ? "bg-white text-[#1b1f3b] ring-white"
-                  : "bg-[#1b1f3b] text-white ring-[#1b1f3b]"
+                  ? "bg-white text-[#1f1a17] ring-white"
+                  : "bg-[#1f1a17] text-white ring-[#1f1a17]"
                 : dark
                   ? "text-white ring-white/40 hover:bg-white/10"
-                  : "bg-white text-[#1b1f3b] ring-[#1b1f3b]/15 hover:ring-[#1b1f3b]/40",
+                  : "bg-white text-[#1f1a17] ring-[#1f1a17]/15 hover:ring-[#1f1a17]/40",
             )}
           >
             <input

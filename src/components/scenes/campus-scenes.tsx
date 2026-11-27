@@ -82,8 +82,8 @@ function RoundTree({
 function Lamp({ x, y }: { x: number; y: number }) {
   return (
     <g>
-      <rect x={x - 2.5} y={y - 90} width="5" height="90" fill="#1b1f3b" />
-      <rect x={x - 10} y={y - 102} width="20" height="14" rx="4" fill="#1b1f3b" />
+      <rect x={x - 2.5} y={y - 90} width="5" height="90" fill="#1f1a17" />
+      <rect x={x - 10} y={y - 102} width="20" height="14" rx="4" fill="#1f1a17" />
       <circle cx={x} cy={y - 86} r="7" fill="#ffd23f" className="lp-twinkle" />
     </g>
   );
@@ -122,7 +122,7 @@ export function LagoonScene({ className }: { className?: string }) {
                 width="20"
                 height="16"
                 rx="2"
-                fill="#3a5bff"
+                fill="#d63426"
                 opacity={(r + c) % 3 === 0 ? 0.85 : 0.3}
               />
             )),
@@ -194,7 +194,7 @@ export function LagoonScene({ className }: { className?: string }) {
         {/* Canoe with a paddler's pole, bobbing in place */}
         <g className="lp-bob" style={{ animationDuration: "4.4s" }}>
           <path d="M520 340 q80 22 160 0 q-12 16 -80 16 q-68 0 -80 -16 Z" fill="#8a5a2b" />
-          <path d="M600 342 L630 290" stroke="#1b1f3b" strokeWidth="4" strokeLinecap="round" />
+          <path d="M600 342 L630 290" stroke="#1f1a17" strokeWidth="4" strokeLinecap="round" />
         </g>
       </g>
 
@@ -203,10 +203,10 @@ export function LagoonScene({ className }: { className?: string }) {
         <path d="M0 360 Q300 330 560 372 L560 400 L0 400 Z" fill="#3ddc97" />
         <path d="M0 376 Q300 350 560 388 L560 400 L0 400 Z" fill="#e9dcc3" />
         <g className="lp-grow" style={{ animationDelay: "0.5s" }}>
-          <rect x="150" y="340" width="90" height="10" rx="4" fill="#1b1f3b" />
+          <rect x="150" y="340" width="90" height="10" rx="4" fill="#1f1a17" />
           <rect x="150" y="322" width="90" height="10" rx="4" fill="#ff6a4d" />
-          <rect x="158" y="350" width="6" height="18" fill="#1b1f3b" />
-          <rect x="226" y="350" width="6" height="18" fill="#1b1f3b" />
+          <rect x="158" y="350" width="6" height="18" fill="#1f1a17" />
+          <rect x="226" y="350" width="6" height="18" fill="#1f1a17" />
         </g>
         <Lamp x={300} y={372} />
         <g className="lp-grow" style={{ animationDelay: "0.4s" }}>
@@ -266,7 +266,7 @@ export function LibraryScene({ className }: { className?: string }) {
           cy="372"
           rx="420"
           ry="12"
-          fill="#1b1f3b"
+          fill="#1f1a17"
           opacity="0.1"
         />
         <g className="lp-drop" style={{ animationDelay: "0.15s" }}>
@@ -289,7 +289,7 @@ export function LibraryScene({ className }: { className?: string }) {
                 width="680"
                 height="30"
                 rx="4"
-                fill="#3a5bff"
+                fill="#d63426"
                 opacity="0.85"
               />
               {Array.from({ length: 16 }, (_, c) => (
@@ -305,7 +305,7 @@ export function LibraryScene({ className }: { className?: string }) {
             </g>
           ))}
           {/* Roof slab */}
-          <rect x="340" y="114" width="760" height="18" rx="4" fill="#1b1f3b" />
+          <rect x="340" y="114" width="760" height="18" rx="4" fill="#1f1a17" />
           {/* Steps */}
           {[0, 1, 2, 3].map((i) => (
             <rect
@@ -318,7 +318,7 @@ export function LibraryScene({ className }: { className?: string }) {
             />
           ))}
           {/* Door */}
-          <rect x="680" y="262" width="80" height="68" rx="6" fill="#1b1f3b" />
+          <rect x="680" y="262" width="80" height="68" rx="6" fill="#1f1a17" />
         </g>
         {/* Pages fluttering up from an open book on the steps */}
         <g transform="translate(860 330)">
@@ -411,7 +411,7 @@ export function RouteScene({ className }: { className?: string }) {
         </g>
         {/* The faculty */}
         <g className="lp-drop" style={{ animationDelay: "0.2s" }}>
-          <path d="M1120 200 L1250 150 L1380 200 Z" fill="#3a5bff" />
+          <path d="M1120 200 L1250 150 L1380 200 Z" fill="#d63426" />
           <Block
             x={1130}
             y={200}
@@ -439,7 +439,7 @@ export function RouteScene({ className }: { className?: string }) {
         {/* Pins at both ends */}
         {[
           [210, 318, "#ff6a4d"],
-          [1230, 308, "#3a5bff"],
+          [1230, 308, "#d63426"],
         ].map(([x, y, c], i) => (
           <g key={i} className={i ? "lp-bob-late" : "lp-bob"}>
             <path
@@ -491,9 +491,9 @@ export function RouteScene({ className }: { className?: string }) {
  */
 export function MarketScene({ className }: { className?: string }) {
   const stalls = [
-    ["#3a5bff", "#ffffff"],
+    ["#d63426", "#ffffff"],
     ["#ff6a4d", "#ffffff"],
-    ["#ffd23f", "#1b1f3b"],
+    ["#ffd23f", "#1f1a17"],
     ["#3ddc97", "#ffffff"],
   ] as const;
   return (
@@ -501,7 +501,7 @@ export function MarketScene({ className }: { className?: string }) {
       <g data-depth="far" className="lp-layer">
         <Sun x={1300} y={80} r={36} />
         {/* Bunting */}
-        <path d="M0 70 Q720 130 1440 70" stroke="#1b1f3b" strokeWidth="3" fill="none" />
+        <path d="M0 70 Q720 130 1440 70" stroke="#1f1a17" strokeWidth="3" fill="none" />
         {Array.from({ length: 24 }, (_, i) => {
           const x = 30 + i * 60;
           const y = 70 + Math.sin((x / 1440) * Math.PI) * 58;
@@ -511,7 +511,7 @@ export function MarketScene({ className }: { className?: string }) {
               className="lp-wave"
               style={{ animationDelay: `${-i * 0.15}s` }}
               d={`M${x - 14} ${y} h28 l-14 22 Z`}
-              fill={["#3a5bff", "#ff6a4d", "#ffd23f", "#3ddc97"][i % 4]}
+              fill={["#d63426", "#ff6a4d", "#ffd23f", "#3ddc97"][i % 4]}
             />
           );
         })}
@@ -523,7 +523,7 @@ export function MarketScene({ className }: { className?: string }) {
           cy="372"
           rx="560"
           ry="12"
-          fill="#1b1f3b"
+          fill="#1f1a17"
           opacity="0.1"
         />
         <g className="lp-drop" style={{ animationDelay: "0.1s" }}>
@@ -543,7 +543,7 @@ export function MarketScene({ className }: { className?: string }) {
           return (
             <g key={i} className="lp-drop" style={{ animationDelay: `${0.25 + i * 0.1}s` }}>
               {/* Opening and counter */}
-              <rect x={x} y={220} width="230" height="150" fill="#1b1f3b" opacity="0.85" />
+              <rect x={x} y={220} width="230" height="150" fill="#1f1a17" opacity="0.85" />
               <rect x={x - 6} y={318} width="242" height="52" fill={c} />
               {/* Goods */}
               {[0, 1, 2, 3].map((g) => (
@@ -582,7 +582,7 @@ export function MarketScene({ className }: { className?: string }) {
         </g>
         {/* Market umbrella */}
         <g className="lp-sway" style={{ animationDuration: "5s" }}>
-          <rect x="1324" y="300" width="5" height="96" fill="#1b1f3b" />
+          <rect x="1324" y="300" width="5" height="96" fill="#1f1a17" />
           <path d="M1270 304 q56 -58 112 0 Z" fill="#ff6a4d" />
           <path d="M1298 304 q28 -58 28 -58 q0 58 28 58 Z" fill="#ffffff" opacity="0.5" />
         </g>
@@ -628,7 +628,7 @@ export function SceneBanner({
     <section
       aria-hidden
       className={cn(
-        "relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-[#eef1fb] dark:bg-[#161936]",
+        "relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-[#f7f6f4] dark:bg-[#161936]",
         className,
       )}
     >

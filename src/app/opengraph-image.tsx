@@ -55,7 +55,7 @@ export default async function OpengraphImage() {
       </div>
       <div style={{ display: "flex", marginTop: 40, fontSize: 46, letterSpacing: -1.5 }}>
         Your campus plug. Buy and sell at&nbsp;
-        <span style={{ color: brandColors.cobalt }}>UNILAG.</span>
+        <span style={{ color: brandColors.tomato }}>UNILAG.</span>
       </div>
     </div>,
     {

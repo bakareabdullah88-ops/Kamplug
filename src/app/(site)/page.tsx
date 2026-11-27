@@ -106,10 +106,10 @@ const h2 =
 /** Flat buttons: colour does the work, no shadows. */
 const btn = {
   cobalt:
-    "inline-flex h-14 items-center gap-2 rounded-xl bg-[#3a5bff] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#2a45d6]",
-  ink: "inline-flex h-14 items-center gap-2 rounded-xl bg-[#1b1f3b] px-7 text-[16px] font-bold text-white transition-colors hover:bg-black",
+    "inline-flex h-14 items-center gap-2 rounded-xl bg-[#d63426] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#b42a20]",
+  ink: "inline-flex h-14 items-center gap-2 rounded-xl bg-[#1f1a17] px-7 text-[16px] font-bold text-white transition-colors hover:bg-black",
   white:
-    "inline-flex h-14 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-bold text-[#1b1f3b] transition-colors hover:bg-[#eef1ff]",
+    "inline-flex h-14 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-bold text-[#1f1a17] transition-colors hover:bg-[#fdece9]",
 };
 
 /** "SEE MORE →" link under each feature card. */
@@ -117,7 +117,7 @@ function SeeMore({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="group mt-6 inline-flex items-center gap-2 text-[14px] font-extrabold tracking-[0.2em] text-[#3a5bff] uppercase"
+      className="group mt-6 inline-flex items-center gap-2 text-[14px] font-extrabold tracking-[0.2em] text-[#d63426] uppercase"
     >
       See more
       <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -131,13 +131,13 @@ const sellHref = waitlist ? JOIN : "/open-shop";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-dvh overflow-x-clip bg-white font-sans text-[#1b1f3b]">
+    <div className="min-h-dvh overflow-x-clip bg-white font-sans text-[#1f1a17]">
       <LandingNav />
       <Page>
         {/* Hero: the UNILAG gate on a clear morning, the whole width of the page */}
         <section
           id="waitlist"
-          className="relative scroll-mt-0 overflow-hidden bg-[#f4f5f8] pt-28 md:pt-36"
+          className="relative scroll-mt-0 overflow-hidden bg-[#f7f6f4] pt-28 md:pt-36"
         >
           <Clouds3D />
           <div className="relative mx-auto max-w-4xl px-5 text-center">
@@ -149,7 +149,7 @@ export default function LandingPage() {
             </p>
             {waitlist ? (
               <div className="mt-8 flex flex-col items-center gap-3">
-                <p className="text-[15px] font-bold text-[#3a5bff]">
+                <p className="text-[15px] font-bold text-[#d63426]">
                   Opening soon. Be first in when we launch.
                 </p>
                 <WaitlistForm anchor />
@@ -186,11 +186,11 @@ export default function LandingPage() {
         {/* Trust: how a handover works, plainly, with the real campus numbers */}
         <section
           aria-labelledby="trust-title"
-          className="bg-[#1b1f3b] px-4 py-20 text-white md:px-8 md:py-28"
+          className="bg-[#1f1a17] px-4 py-20 text-white md:px-8 md:py-28"
         >
           <div className="mx-auto grid max-w-[1240px] items-center gap-12 md:grid-cols-[1.1fr_1fr]">
             <Reveal from="top">
-              <p className="text-[13px] font-bold tracking-[0.18em] text-[#9fb0ff] uppercase">
+              <p className="text-[13px] font-bold tracking-[0.18em] text-[#ffb3a7] uppercase">
                 Safe handover
               </p>
               <h2 id="trust-title" className={cn(h2, "mt-4")}>
@@ -220,8 +220,8 @@ export default function LandingPage() {
             </Reveal>
             <Reveal from="top" delay={120}>
               {/* What the buyer sees on their order: an example code. */}
-              <div className="mx-auto max-w-[400px] rounded-2xl bg-white p-7 text-[#1b1f3b]">
-                <p className="text-[12px] font-bold tracking-[0.16em] text-[#5a5f78] uppercase">
+              <div className="mx-auto max-w-[400px] rounded-2xl bg-white p-7 text-[#1f1a17]">
+                <p className="text-[12px] font-bold tracking-[0.16em] text-[#6b625c] uppercase">
                   Your handover code
                 </p>
                 <p
@@ -230,10 +230,10 @@ export default function LandingPage() {
                 >
                   4827
                 </p>
-                <p className="mt-4 text-[15px] leading-relaxed text-[#4a4f68]">
+                <p className="mt-4 text-[15px] leading-relaxed text-[#4f4741]">
                   Read this to the seller once your order is in your hands.
                 </p>
-                <p className="mt-6 border-t border-[#1b1f3b]/10 pt-4 text-[13px] text-[#5a5f78]">
+                <p className="mt-6 border-t border-[#1f1a17]/10 pt-4 text-[13px] text-[#6b625c]">
                   Example. Every order gets its own code.
                 </p>
               </div>
@@ -252,7 +252,7 @@ export default function LandingPage() {
           <div className="mx-auto grid max-w-[1240px] items-end gap-10 md:grid-cols-2">
             <Reveal from="top" className="md:order-2 md:pb-28">
               <h2 className={h2}>
-                Open a shop for <span className="text-[#2a3fc4]">₦0</span>
+                Open a shop for <span className="text-[#b42a20]">₦0</span>
               </h2>
               <p className="mt-5 max-w-md text-[18px] leading-snug md:text-[20px]">
                 No setup fee and no monthly fee. Set where you sell from, list your products and
@@ -289,25 +289,25 @@ export default function LandingPage() {
                 body: "See each step from the shop to your hall, and message the seller in the same place.",
                 href: signupHref,
                 panel: (
-                  <div className="flex h-full flex-col justify-center gap-3 bg-[#eef1ff] px-7">
+                  <div className="flex h-full flex-col justify-center gap-3 bg-[#fdece9] px-7">
                     {["Placed", "Accepted", "On the way", "Handed over"].map((step, n) => (
                       <div key={step} className="flex items-center gap-3">
                         <span
                           className={cn(
                             "size-3 shrink-0 rounded-full",
-                            n < 3 ? "bg-[#3a5bff]" : "bg-[#1b1f3b]/20",
+                            n < 3 ? "bg-[#d63426]" : "bg-[#1f1a17]/20",
                           )}
                         />
                         <span
                           className={cn(
                             "text-[15px]",
-                            n === 2 ? "font-bold text-[#1b1f3b]" : "text-[#4a4f68]",
+                            n === 2 ? "font-bold text-[#1f1a17]" : "text-[#4f4741]",
                           )}
                         >
                           {step}
                         </span>
                         {n === 2 && (
-                          <span className="ml-auto text-[13px] font-semibold text-[#3a5bff]">
+                          <span className="ml-auto text-[13px] font-semibold text-[#d63426]">
                             About 12 min
                           </span>
                         )}
@@ -321,7 +321,7 @@ export default function LandingPage() {
                 key={c.title}
                 from="top"
                 delay={i * 120}
-                className="flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-[#1b1f3b]/10"
+                className="flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-[#1f1a17]/10"
               >
                 <div className="flex-1 p-7 md:p-8">
                   <h3 className="text-[30px] leading-none font-extrabold tracking-[-0.04em] md:text-[32px]">
@@ -368,7 +368,7 @@ export default function LandingPage() {
         </section>
 
         {/* Order, chat, track: night in the hostel, the full width of the page */}
-        <section className="relative overflow-hidden bg-[#1b1f3b] text-white">
+        <section className="relative overflow-hidden bg-[#1f1a17] text-white">
           <div className="mx-auto grid max-w-[1400px] items-end md:grid-cols-[1fr_1.25fr]">
             <Reveal from="top" className="px-5 pt-20 pb-8 md:px-12 md:py-28">
               <h2 className={h2}>Order, chat and track in one place</h2>
@@ -385,7 +385,7 @@ export default function LandingPage() {
         </section>
 
         {/* Get started in 3 steps */}
-        <section id="how" className="scroll-mt-20 bg-[#f4f5f8] px-4 py-20 md:px-8 md:py-28">
+        <section id="how" className="scroll-mt-20 bg-[#f7f6f4] px-4 py-20 md:px-8 md:py-28">
           <div className="mx-auto max-w-[1240px]">
             <Reveal from="top">
               <h2 className={cn(h2, "text-center")}>Get started in 3 steps</h2>
@@ -397,9 +397,9 @@ export default function LandingPage() {
                   key={s.n}
                   from="top"
                   delay={i * 140}
-                  className="rounded-[26px] bg-white p-8 ring-1 ring-[#1b1f3b]/10"
+                  className="rounded-[26px] bg-white p-8 ring-1 ring-[#1f1a17]/10"
                 >
-                  <span className="grid size-12 place-items-center rounded-xl bg-[#1b1f3b] text-[20px] font-bold text-white">
+                  <span className="grid size-12 place-items-center rounded-xl bg-[#1f1a17] text-[20px] font-bold text-white">
                     {s.n}
                   </span>
                   <h3 className="mt-6 text-[24px] font-extrabold tracking-[-0.03em]">{s.title}</h3>
@@ -411,7 +411,7 @@ export default function LandingPage() {
         </section>
 
         {/* Be the plug: a full-width cobalt band */}
-        <section className="relative overflow-hidden bg-[#3a5bff] px-5 py-20 text-center text-white md:py-28">
+        <section className="relative overflow-hidden bg-[#d63426] px-5 py-20 text-center text-white md:py-28">
           <Reveal from="top" className="relative mx-auto max-w-3xl">
             <h2 className={h2}>Be the plug</h2>
             <p className="mx-auto mt-4 max-w-lg text-[18px] leading-snug md:text-[20px]">
@@ -437,14 +437,14 @@ export default function LandingPage() {
         </section>
 
         {/* FAQs */}
-        <section id="faq" className="scroll-mt-20 bg-[#f4f5f8] px-4 py-20 md:px-8 md:py-28">
+        <section id="faq" className="scroll-mt-20 bg-[#f7f6f4] px-4 py-20 md:px-8 md:py-28">
           <div className="mx-auto max-w-[1240px]">
             <FaqPanel items={faqs} />
           </div>
         </section>
       </Page>
 
-      <footer className="bg-[#1b1f3b] text-white">
+      <footer className="bg-[#1f1a17] text-white">
         <div className="mx-auto grid max-w-[1240px] gap-10 px-5 py-16 md:grid-cols-[1.6fr_1fr_1fr_1fr] md:px-8">
           <div>
             <p className="text-[30px]">

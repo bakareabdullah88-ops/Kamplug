@@ -11,43 +11,59 @@
 
 :root {
   /* Surfaces: neutral grey canvas, white panels (dashboard references) */
-  --canvas: #f4f5f8;
-  --canvas-sunk: #eceef4;
+  --canvas: #f7f6f4;
+  --canvas-sunk: #efede9;
   --surface: #ffffff;
-  --surface-2: #f4f5f8;
-  --sand: #eef0f6;
-  --line: #e4e6ee;
-  --line-strong: #cfd3e1;
+  --surface-2: #f7f6f4;
+  --sand: #f2f0ed;
+  --line: #e8e4df;
+  --line-strong: #d6d0c9;
   /* Very thin grey separators between open sections and rows (signed-in pages) */
-  --line-thin: rgb(27 31 59 / 0.09);
+  --line-thin: rgb(31 26 23 / 0.09);
 
   /* Ink */
-  --ink: #1b1f3b;
-  --ink-2: #2f3456;
-  --muted: #5a5f78;
-  --faint: #9a9eb5;
+  --ink: #1f1a17;
+  --ink-2: #3a332e;
+  --muted: #6b625c;
+  --faint: #a39a93;
 
   /* Primary: black pills, selected rows, dark panels */
-  --primary: #1b1f3b;
-  --primary-hover: #2a2f55;
+  --primary: #1f1a17;
+  --primary-hover: #3a332e;
   --on-primary: #ffffff;
 
-  /* Brand: cobalt, the same as the landing page: wordmark, main buttons, key states. */
-  --brand: #3a5bff;
-  --brand-ink: #2f4ee6;
-  --accent: #3a5bff;
-  --accent-hover: #2a45d6;
-  --accent-soft: #eef1ff;
-  --accent-ink: #2a3fc4;
+  /* Brand: tomato red. Wordmark, main buttons, key states. White text on it passes AA (4.8:1). */
+  --brand: #d63426;
+  --brand-ink: #c42e22;
+  --accent: #d63426;
+  --accent-hover: #b42a20;
+  --accent-soft: #fdece9;
+  --accent-ink: #b42a20;
   --on-accent: #ffffff;
   /* The solid edge under raised buttons and panels. */
-  --accent-edge: #1f37b8;
+  --accent-edge: #8f2018;
+
+  /* Warm supporting colours: one per category, for icons, tiles and highlights.
+     Vivid values are for fills behind dark or white shapes; the -ink values are safe for text. */
+  --warm-orange: #ff8a3d;
+  --warm-orange-ink: #c2570c;
+  --warm-lime: #a3d63c;
+  --warm-lime-ink: #4d7c0f;
+  --warm-green: #22a060;
+  --warm-green-ink: #1e7f46;
+  --warm-purple: #8b5cf6;
+  --warm-purple-ink: #6b3fc4;
+  --warm-sky: #4db4e6;
+  --warm-sky-ink: #1f78a8;
+  --warm-berry: #f0445b;
+  --warm-berry-ink: #c02655;
+  --warm-sun: #ffc93c;
 
   /* Both sides of the app share the brand colour. */
-  --studio: #3a5bff;
-  --ember: #3a5bff;
-  --studio-contrast: #b9c6ff;
-  --ember-contrast: #b9c6ff;
+  --studio: #d63426;
+  --ember: #d63426;
+  --studio-contrast: #ffc8be;
+  --ember-contrast: #ffc8be;
 
   /* Charts */
   --chart-blue: #2f54ff;
@@ -80,10 +96,10 @@
   --on-mint-cta: #0d3b24;
   /* "Add to bag" on product lists: the same warm yellow in both themes. */
   --buy: #ffd23f;
-  --on-buy: #1b1f3b;
+  --on-buy: #1f1a17;
 
   /* App backdrop (signed-in pages sit on this, slightly tinted vs the landing page) */
-  --app-bg: #f4f5f8;
+  --app-bg: #f7f6f4;
   /* Cards sit close to the background: a near-white fill and a hairline edge, no big drop shadow. */
   --glass-fill: rgb(255 255 255 / 0.82);
   --glass-fill-strong: rgb(255 255 255 / 0.9);
@@ -135,7 +151,7 @@
   color-scheme: light;
 }
 
-/* Selling uses the same brand cobalt; the mode shows in the switch and header, not a new colour. */
+/* Selling uses the same brand red; the mode shows in the switch and header, not a new colour. */
 
 .dark {
   --canvas: #0e1022;
@@ -156,19 +172,19 @@
   --primary-hover: #ffffff;
   --on-primary: #0e1022;
 
-  --brand: #3a5bff;
-  --brand-ink: #9fb0ff;
-  --accent: #7d93ff;
-  --accent-hover: #9fb0ff;
-  --accent-soft: #1d2350;
-  --accent-ink: #b3c0ff;
-  --on-accent: #0b0f2a;
-  --accent-edge: #3a5bff;
+  --brand: #d63426;
+  --brand-ink: #ffb3a7;
+  --accent: #ff7a6b;
+  --accent-hover: #ffb3a7;
+  --accent-soft: #3a1d1a;
+  --accent-ink: #ffc8be;
+  --on-accent: #2a0b08;
+  --accent-edge: #d63426;
 
-  --studio: #7d93ff;
-  --ember: #7d93ff;
-  --studio-contrast: #2a3fc4;
-  --ember-contrast: #2a3fc4;
+  --studio: #ff7a6b;
+  --ember: #ff7a6b;
+  --studio-contrast: #b42a20;
+  --ember-contrast: #b42a20;
 
   --chart-blue: #6f86ff;
   --chart-blue-2: #3b4fae;
@@ -270,6 +286,19 @@
   --color-notice: var(--notice);
   --color-on-notice: var(--on-notice);
   --color-wash-mint: var(--wash-mint);
+  --color-warm-orange: var(--warm-orange);
+  --color-warm-orange-ink: var(--warm-orange-ink);
+  --color-warm-lime: var(--warm-lime);
+  --color-warm-lime-ink: var(--warm-lime-ink);
+  --color-warm-green: var(--warm-green);
+  --color-warm-green-ink: var(--warm-green-ink);
+  --color-warm-purple: var(--warm-purple);
+  --color-warm-purple-ink: var(--warm-purple-ink);
+  --color-warm-sky: var(--warm-sky);
+  --color-warm-sky-ink: var(--warm-sky-ink);
+  --color-warm-berry: var(--warm-berry);
+  --color-warm-berry-ink: var(--warm-berry-ink);
+  --color-warm-sun: var(--warm-sun);
   --color-wash-peach: var(--wash-peach);
 
   /* Faces come from src/config/fonts.ts */

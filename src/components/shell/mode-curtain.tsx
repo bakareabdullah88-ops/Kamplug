@@ -51,8 +51,8 @@ const MIN_HOLD_MS = 420;
 const ease = [0.65, 0, 0.35, 1] as const;
 
 const background: Record<Mode, string> = {
-  selling: "#1b1f3b",
-  buying: "#3a5bff",
+  selling: "#1f1a17",
+  buying: "#d63426",
 };
 
 function farthestCorner(p: Point) {
@@ -94,7 +94,7 @@ function useHeadline(target: Mode) {
     : null;
 }
 
-const K = "#1b1f3b";
+const K = "#1f1a17";
 
 /**
  * The picture in the middle of the curtain. Selling: a little shopfront whose
@@ -111,7 +111,7 @@ function ModeArt({ selling, still }: { selling: boolean; still: boolean }) {
           width="44"
           height="32"
           rx="3"
-          fill="#eef1ff"
+          fill="#fdece9"
           stroke={K}
           strokeWidth="2.5"
         />
@@ -121,7 +121,7 @@ function ModeArt({ selling, still }: { selling: boolean; still: boolean }) {
           width="12"
           height="20"
           rx="1.5"
-          fill="#3a5bff"
+          fill="#d63426"
           stroke={K}
           strokeWidth="2.5"
         />
@@ -160,7 +160,7 @@ function ModeArt({ selling, still }: { selling: boolean; still: boolean }) {
           />
           <path
             d="M15 14 L13 26 M24 14 L23 26 M33 14 V26 M42 14 L42 26 M51 14 L52 26"
-            stroke="#3a5bff"
+            stroke="#d63426"
             strokeWidth="5"
           />
           <path
@@ -203,12 +203,12 @@ function ModeArt({ selling, still }: { selling: boolean; still: boolean }) {
       <path d="M22 26 V20 a10 10 0 0 1 20 0 V26" fill="none" stroke={K} strokeWidth="2.5" />
       <path
         d="M12 26 H52 L48 56 H16 Z"
-        fill="#3a5bff"
+        fill="#d63426"
         stroke={K}
         strokeWidth="2.5"
         strokeLinejoin="round"
       />
-      <path d="M14 30 H50" stroke="#7d93ff" strokeWidth="3" />
+      <path d="M14 30 H50" stroke="#ff7a6b" strokeWidth="3" />
     </svg>
   );
 }
@@ -319,7 +319,7 @@ export function ModeCurtain() {
                 />
               )}
               <motion.span
-                className="grid size-[76px] place-items-center overflow-hidden rounded-[22px] bg-white text-[#3a5bff] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]"
+                className="grid size-[76px] place-items-center overflow-hidden rounded-[22px] bg-white text-[#d63426] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]"
                 initial={reduce ? false : { scale: 0.4, rotate: selling ? -14 : 14 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{

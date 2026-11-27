@@ -15,7 +15,7 @@ export function FaqPanel({ items }: { items: { q: string; a: string }[] }) {
   return (
     <div className="grid gap-8 md:grid-cols-2 md:gap-10">
       <div>
-        <h2 className="text-[clamp(40px,6vw,68px)] leading-[0.95] font-extrabold tracking-[-0.055em] text-[#1b1f3b]">
+        <h2 className="text-[clamp(40px,6vw,68px)] leading-[0.95] font-extrabold tracking-[-0.055em] text-[#1f1a17]">
           Got questions?
         </h2>
         <ul className="mt-8 flex flex-col gap-3">
@@ -26,7 +26,7 @@ export function FaqPanel({ items }: { items: { q: string; a: string }[] }) {
                 key={f.q}
                 className={cn(
                   "overflow-hidden rounded-xl transition-[background-color,box-shadow] duration-300",
-                  on ? "bg-[#3a5bff]" : "bg-white ring-1 ring-[#1b1f3b]/10",
+                  on ? "bg-[#d63426]" : "bg-white ring-1 ring-[#1f1a17]/10",
                 )}
               >
                 <button
@@ -37,7 +37,7 @@ export function FaqPanel({ items }: { items: { q: string; a: string }[] }) {
                   onClick={() => setOpen(i)}
                   className={cn(
                     "flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[16px] font-bold md:text-[18px]",
-                    on ? "text-white" : "text-[#1b1f3b]",
+                    on ? "text-white" : "text-[#1f1a17]",
                   )}
                 >
                   {f.q}
@@ -64,7 +64,7 @@ export function FaqPanel({ items }: { items: { q: string; a: string }[] }) {
                   <div className="overflow-hidden">
                     <p
                       className={cn(
-                        "mx-2 mb-2 origin-top rounded-lg bg-[#ffd23f] p-4 text-[16px] leading-relaxed text-[#1b1f3b] transition-transform duration-400",
+                        "mx-2 mb-2 origin-top rounded-lg bg-[#ffd23f] p-4 text-[16px] leading-relaxed text-[#1f1a17] transition-transform duration-400",
                         on
                           ? "[transform:perspective(600px)_rotateX(0deg)]"
                           : "[transform:perspective(600px)_rotateX(-70deg)]",
@@ -82,9 +82,9 @@ export function FaqPanel({ items }: { items: { q: string; a: string }[] }) {
       <div className="hidden md:block md:pt-24">
         <div
           key={open}
-          className="sticky top-28 min-h-[340px] rounded-[26px] bg-[#ffd23f] p-9 text-[#1b1f3b] motion-safe:animate-[lp-answer_0.35s_ease-out]"
+          className="sticky top-28 min-h-[340px] rounded-[26px] bg-[#ffd23f] p-9 text-[#1f1a17] motion-safe:animate-[lp-answer_0.35s_ease-out]"
         >
-          <Burst className="size-8" color="#1b1f3b" />
+          <Burst className="size-8" color="#1f1a17" />
           <p className="mt-6 text-[22px] leading-snug font-medium">{current?.a}</p>
         </div>
       </div>

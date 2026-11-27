@@ -49,7 +49,7 @@ export function WorkspaceSwitch({
       label: "Selling",
       title: brand ? `Selling: ${brand.name}` : "Selling: open a shop",
       icon: brand ? (
-        <span className="grid size-6 place-items-center rounded-lg bg-[#1b1f3b] text-white dark:bg-white dark:text-[#1b1f3b]">
+        <span className="grid size-6 place-items-center rounded-lg bg-[#1f1a17] text-white dark:bg-white dark:text-[#1f1a17]">
           <Store className="size-3.5" />
         </span>
       ) : (

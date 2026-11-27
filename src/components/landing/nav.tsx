@@ -17,7 +17,7 @@ const links = [
   { label: "FAQs", href: "/#faq" },
 ];
 
-/** The Kamplug wordmark as plain text: "kam" in ink, "plug" in cobalt. */
+/** The Kamplug wordmark as plain text: "kam" in ink, "plug" in the brand red. */
 function LogoText() {
   return (
     <Link href="/" aria-label={`${brand.name} home`} className="text-[25px] md:text-[28px]">
@@ -49,7 +49,7 @@ export function LandingNav() {
   }, [open]);
 
   const cta =
-    "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[#3a5bff] px-4 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#2a45d6] sm:px-5";
+    "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[#d63426] px-4 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#b42a20] sm:px-5";
 
   return (
     <header
@@ -62,7 +62,7 @@ export function LandingNav() {
       <div
         aria-hidden
         className={cn(
-          "absolute inset-0 border-b border-[#1b1f3b]/[0.06] bg-white/65 backdrop-blur-2xl backdrop-saturate-150 transition-opacity duration-300",
+          "absolute inset-0 border-b border-[#1f1a17]/[0.06] bg-white/65 backdrop-blur-2xl backdrop-saturate-150 transition-opacity duration-300",
           scrolled ? "opacity-100" : "opacity-0",
         )}
       />
@@ -76,7 +76,7 @@ export function LandingNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="pointer-events-auto fixed inset-0 bg-[#1b1f3b]/30 lg:hidden"
+            className="pointer-events-auto fixed inset-0 bg-[#1f1a17]/30 lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -90,7 +90,7 @@ export function LandingNav() {
             <Link
               key={l.href}
               href={l.href}
-              className="flex h-11 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1b1f3b]/80 transition-colors hover:bg-[#3a5bff]/[0.08] hover:text-[#3a5bff]"
+              className="flex h-11 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1f1a17]/80 transition-colors hover:bg-[#d63426]/[0.08] hover:text-[#d63426]"
             >
               {l.label}
             </Link>
@@ -111,7 +111,7 @@ export function LandingNav() {
             <>
               <Link
                 href="/login"
-                className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1b1f3b] transition-colors hover:bg-[#3a5bff]/[0.08] hover:text-[#3a5bff] sm:flex"
+                className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1f1a17] transition-colors hover:bg-[#d63426]/[0.08] hover:text-[#d63426] sm:flex"
               >
                 Log in
               </Link>
@@ -126,7 +126,7 @@ export function LandingNav() {
             aria-expanded={open}
             aria-controls="landing-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="grid size-11 place-items-center rounded-lg text-[#1b1f3b] hover:bg-[#1b1f3b]/[0.05] lg:hidden"
+            className="grid size-11 place-items-center rounded-lg text-[#1f1a17] hover:bg-[#1f1a17]/[0.05] lg:hidden"
           >
             {open ? <X className="size-5" /> : <MenuIcon className="size-5" />}
           </button>
@@ -141,14 +141,14 @@ export function LandingNav() {
               exit={{ opacity: 0, y: -10, rotateX: -20 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               style={{ transformPerspective: 800, transformOrigin: "top" }}
-              className="pointer-events-auto absolute top-[calc(100%+12px)] right-0 left-0 rounded-2xl bg-white p-2 ring-1 ring-[#1b1f3b]/10 lg:hidden"
+              className="pointer-events-auto absolute top-[calc(100%+12px)] right-0 left-0 rounded-2xl bg-white p-2 ring-1 ring-[#1f1a17]/10 lg:hidden"
             >
               {links.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="flex h-12 items-center rounded-xl px-4 text-[17px] font-bold text-[#1b1f3b] hover:bg-[#f4f5f8]"
+                  className="flex h-12 items-center rounded-xl px-4 text-[17px] font-bold text-[#1f1a17] hover:bg-[#f7f6f4]"
                 >
                   {l.label}
                 </Link>
@@ -157,7 +157,7 @@ export function LandingNav() {
                 <Link
                   href="/login"
                   onClick={() => setOpen(false)}
-                  className="mt-2 flex h-12 items-center justify-center rounded-full text-[16px] font-bold text-[#1b1f3b] ring-2 ring-[#1b1f3b] sm:hidden"
+                  className="mt-2 flex h-12 items-center justify-center rounded-full text-[16px] font-bold text-[#1f1a17] ring-2 ring-[#1f1a17] sm:hidden"
                 >
                   Log in
                 </Link>

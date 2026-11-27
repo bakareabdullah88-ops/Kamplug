@@ -110,7 +110,7 @@ export function HelpMeChoose() {
 
   return (
     <div className={cn(pagePad, "mx-auto w-full max-w-3xl")}>
-      <header className="rounded-2xl bg-[#1b1f3b] px-5 pt-5 pb-6 text-white md:px-7">
+      <header className="rounded-2xl bg-[#1f1a17] px-5 pt-5 pb-6 text-white md:px-7">
         <div className="flex items-center gap-2">
           {step > 0 && (
             <button

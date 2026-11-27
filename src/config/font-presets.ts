@@ -13,14 +13,14 @@ export const fontPresets = [
   {
     id: "modern",
     label: "Modern",
-    description: "Characterful headings, clean text",
+    description: "One clean sans for headings and text",
     display: {
-      family: "Bricolage Grotesque",
-      cssVar: "--ff-bricolage",
+      family: "Figtree",
+      cssVar: "--ff-figtree",
       weight: 800,
-      tracking: "-0.04em",
+      tracking: "-0.025em",
     },
-    body: { family: "Plus Jakarta Sans", cssVar: "--ff-jakarta" },
+    body: { family: "Figtree", cssVar: "--ff-figtree" },
   },
   {
     id: "clean",

@@ -94,9 +94,9 @@ export function SpotPicker() {
           if (picked) go(picked, street.trim());
           else if (current) choose(current);
         }}
-        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1b1f3b]/10 md:h-[68px]"
+        className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1f1a17]/10 md:h-[68px]"
       >
-        <MapPin className="size-5 shrink-0 text-[#3a5bff]" aria-hidden />
+        <MapPin className="size-5 shrink-0 text-[#d63426]" aria-hidden />
         <label htmlFor="spot-q" className="sr-only">
           Your hostel, faculty or address
         </label>
@@ -109,7 +109,7 @@ export function SpotPicker() {
             placeholder={`Street address near ${picked.name.replace(/\s*\(off campus\)/i, "")}`}
             aria-label="Street address"
             autoComplete="street-address"
-            className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-[#1b1f3b] outline-none placeholder:text-[#6b6f86] md:text-[17px]"
+            className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-[#1f1a17] outline-none placeholder:text-[#7d746d] md:text-[17px]"
           />
         ) : (
           <input
@@ -156,7 +156,7 @@ export function SpotPicker() {
             }}
             placeholder="Your hostel, faculty or address"
             autoComplete="off"
-            className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-[#1b1f3b] outline-none placeholder:text-[#6b6f86] md:text-[17px]"
+            className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-[#1f1a17] outline-none placeholder:text-[#7d746d] md:text-[17px]"
           />
         )}
         {picked && (
@@ -167,14 +167,14 @@ export function SpotPicker() {
               setStreet("");
               setQ("");
             }}
-            className="hidden shrink-0 px-2 text-[14px] font-semibold text-[#3a5bff] hover:underline sm:block"
+            className="hidden shrink-0 px-2 text-[14px] font-semibold text-[#d63426] hover:underline sm:block"
           >
             Change
           </button>
         )}
         <button
           type="submit"
-          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#3a5bff] px-5 text-[15px] font-bold text-white transition-colors hover:bg-[#2a45d6] md:px-6 md:text-[16px]"
+          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#d63426] px-5 text-[15px] font-bold text-white transition-colors hover:bg-[#b42a20] md:px-6 md:text-[16px]"
         >
           <span className="max-sm:sr-only">Find shops</span>
           <ArrowRight className="size-5 sm:hidden" aria-hidden />
@@ -187,14 +187,14 @@ export function SpotPicker() {
         role="listbox"
         aria-label="Places on campus"
         className={cn(
-          "absolute inset-x-0 top-[calc(100%+10px)] z-20 max-h-[320px] origin-top overflow-auto rounded-2xl bg-white p-2 shadow-[0_10px_0_rgba(27,31,59,0.08),0_24px_48px_-16px_rgba(27,31,59,0.35)] ring-1 ring-[#1b1f3b]/10 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "absolute inset-x-0 top-[calc(100%+10px)] z-20 max-h-[320px] origin-top overflow-auto rounded-2xl bg-white p-2 shadow-[0_10px_0_rgba(31, 26, 23,0.08),0_24px_48px_-16px_rgba(31, 26, 23,0.35)] ring-1 ring-[#1f1a17]/10 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           open && !picked && options.length > 0
             ? "[transform:perspective(800px)_rotateX(0deg)] opacity-100"
             : "pointer-events-none [transform:perspective(800px)_rotateX(-30deg)] opacity-0",
         )}
       >
         {tap.keyboardOff && (
-          <li role="presentation" className="px-3 pt-1 pb-1.5 text-[12.5px] text-[#5a5f78]">
+          <li role="presentation" className="px-3 pt-1 pb-1.5 text-[12.5px] text-[#6b625c]">
             Pick one below, or tap the box again to type.
           </li>
         )}
@@ -211,17 +211,17 @@ export function SpotPicker() {
               onClick={() => choose(o)}
               className={cn(
                 "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5",
-                i === active ? "bg-[#eef1ff]" : "",
+                i === active ? "bg-[#fdece9]" : "",
               )}
             >
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#f4f5f8] text-[#3a5bff]">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#f7f6f4] text-[#d63426]">
                 <Icon className="size-[18px]" aria-hidden />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-semibold text-[#1b1f3b]">
+                <span className="block truncate text-[15px] font-semibold text-[#1f1a17]">
                   {o.name}
                 </span>
-                <span className="block truncate text-[13px] text-[#5a5f78]">
+                <span className="block truncate text-[13px] text-[#6b625c]">
                   {kindLabel[o.kind]} · {o.campus}
                   {o.hint ? ` · ${o.hint}` : ""}
                 </span>
@@ -231,7 +231,7 @@ export function SpotPicker() {
         })}
       </ul>
       {picked && (
-        <p className="mt-3 text-center text-[14px] text-[#5a5f78]">
+        <p className="mt-3 text-center text-[14px] text-[#6b625c]">
           Delivering off campus near {picked.campus}. Type your street, then find shops.
         </p>
       )}

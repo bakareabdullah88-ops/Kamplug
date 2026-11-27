@@ -235,7 +235,7 @@ export function OrderTracking({
                 d={map.path
                   .map((i, k) => `${k ? "L" : "M"}${map.pts[i]!.x} ${map.pts[i]!.y}`)
                   .join(" ")}
-                stroke="#1b1f3b"
+                stroke="#1f1a17"
                 strokeWidth="4.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -248,13 +248,13 @@ export function OrderTracking({
             {map.from && (
               <g transform={`translate(${map.from.x} ${map.from.y})`}>
                 <circle r="11" fill="#ffffff" />
-                <circle r="7" fill="#3a5bff" />
+                <circle r="7" fill="#d63426" />
               </g>
             )}
             {map.to && (
               <g transform={`translate(${map.to.x} ${map.to.y})`}>
-                <circle r="17" fill="#ffffff" stroke="#1b1f3b" strokeWidth="3.5" />
-                <House x={-8} y={-8} width={16} height={16} color="#1b1f3b" strokeWidth={2.4} />
+                <circle r="17" fill="#ffffff" stroke="#1f1a17" strokeWidth="3.5" />
+                <House x={-8} y={-8} width={16} height={16} color="#1f1a17" strokeWidth={2.4} />
               </g>
             )}
           </svg>
@@ -268,7 +268,7 @@ export function OrderTracking({
         </p>
       </div>
 
-      <div className="bg-[#1b1f3b] text-white">
+      <div className="bg-[#1f1a17] text-white">
         <div className="px-5 pt-5 pb-4 text-center md:px-8">
           <p className="text-[16px] font-semibold" aria-live="polite">
             {arrivesAt && !stopped && order.status !== "delivered"
@@ -331,7 +331,7 @@ export function OrderTracking({
           <Link
             href={`/brands/${order.brandHandle}`}
             aria-label={`Open ${order.brandName}`}
-            className="grid size-11 place-items-center rounded-full bg-white text-[#1b1f3b] transition-colors hover:bg-[#eef1ff]"
+            className="grid size-11 place-items-center rounded-full bg-white text-[#1f1a17] transition-colors hover:bg-[#fdece9]"
           >
             <Store className="size-5" />
           </Link>
@@ -340,7 +340,7 @@ export function OrderTracking({
               type="button"
               onClick={onChat}
               aria-label={`Message ${order.brandName}`}
-              className="grid size-11 place-items-center rounded-full bg-white text-[#1b1f3b] transition-colors hover:bg-[#eef1ff]"
+              className="grid size-11 place-items-center rounded-full bg-white text-[#1f1a17] transition-colors hover:bg-[#fdece9]"
             >
               <MessageCircle className="size-5" />
             </button>

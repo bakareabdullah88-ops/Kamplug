@@ -119,7 +119,7 @@ export function CategoryStrip() {
           <TiltLink
             href={features.waitlist ? "#waitlist" : t.href}
             className={cn(
-              "flex flex-col justify-end bg-[#1b1f3b] text-white",
+              "flex flex-col justify-end bg-[#1f1a17] text-white",
               t.big ? "min-h-[420px] md:min-h-0" : "min-h-[230px]",
             )}
           >
@@ -150,7 +150,7 @@ export function CategoryStrip() {
             </div>
             <span
               aria-hidden
-              className="absolute top-5 right-5 z-10 grid size-9 place-items-center rounded-full bg-white text-[#1b1f3b] opacity-0 transition-opacity group-hover:opacity-100 max-md:hidden"
+              className="absolute top-5 right-5 z-10 grid size-9 place-items-center rounded-full bg-white text-[#1f1a17] opacity-0 transition-opacity group-hover:opacity-100 max-md:hidden"
             >
               <ArrowUpRight className="size-4" />
             </span>
@@ -160,7 +160,7 @@ export function CategoryStrip() {
       <Reveal from="top" delay={tiles.length * 90} className="col-span-2 md:col-span-4">
         <TiltLink
           href={features.waitlist ? "#waitlist" : "/explore?category=lifestyle"}
-          className="flex min-h-[200px] flex-col justify-end bg-[#1b1f3b] text-white"
+          className="flex min-h-[200px] flex-col justify-end bg-[#1f1a17] text-white"
         >
           <Photo src="/discover/accessories.jpg" wide />
           <div className="relative z-10 flex flex-col p-6 md:p-8">

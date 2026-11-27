@@ -5,7 +5,7 @@
  * readers. Motion classes (lp-*) live in globals.css and stop with reduced motion.
  */
 
-const K = "#1b1f3b";
+const K = "#1f1a17";
 const S = {
   stroke: K,
   strokeWidth: 4,
@@ -223,11 +223,11 @@ export function TuckShop({ className }: { className?: string }) {
         <path
           key={i}
           d={`M${60 + i * 65} 80 h65 v50 q-32 26 -65 0 Z`}
-          fill={i % 2 ? "#ffffff" : "#3a5bff"}
+          fill={i % 2 ? "#ffffff" : "#d63426"}
           {...S}
         />
       ))}
-      <rect x="60" y="56" width="520" height="28" rx="6" fill="#1f37b8" {...S} />
+      <rect x="60" y="56" width="520" height="28" rx="6" fill="#8f2018" {...S} />
       <text
         x="320"
         y="76"
@@ -268,7 +268,7 @@ export function TuckShop({ className }: { className?: string }) {
       </text>
       {/* Counter */}
       <rect x="60" y="280" width="520" height="100" fill="#b78cf2" {...S} />
-      <rect x="60" y="270" width="520" height="22" fill="#1f37b8" {...S} />
+      <rect x="60" y="270" width="520" height="22" fill="#8f2018" {...S} />
       <g className="lp-bob">
         <ellipse cx="200" cy="256" rx="54" ry="16" fill="#fff" {...thin} />
         <path d="M156 252 Q200 214 244 252 Z" fill="#f05a3e" {...thin} />
@@ -297,7 +297,7 @@ export function DeliveryKeke({ className }: { className?: string }) {
           />
         ))}
         <g transform="translate(170 70) scale(3.6)">
-          <Keke body="#3a5bff" />
+          <Keke body="#d63426" />
         </g>
         <rect x="320" y="40" width="80" height="64" rx="6" fill="#ffc23d" {...S} />
         <path d="M320 64 H400 M360 40 V104" {...thin} />
@@ -323,7 +323,7 @@ export function HostelRoom({ className }: { className?: string }) {
       {[
         [740, "#ffffff"],
         [762, "#7fb6f2"],
-        [784, "#1f37b8"],
+        [784, "#8f2018"],
       ].map(([x, c]) => (
         <rect key={x} x={x as number} y="72" width="18" height="78" fill={c as string} {...thin} />
       ))}
@@ -360,7 +360,7 @@ export function HostelRoom({ className }: { className?: string }) {
         fill="#3dd68c"
       />
       {/* Floor and rug */}
-      <rect x="0" y="470" width="900" height="170" fill="#1b1f3b" />
+      <rect x="0" y="470" width="900" height="170" fill="#1f1a17" />
       <path d="M120 600 L220 500 H820 L900 600 Z" fill="#fbd98a" {...S} />
       {/* Desk */}
       <rect x="280" y="440" width="380" height="24" rx="10" fill="#ff6a2c" {...S} />
@@ -372,7 +372,7 @@ export function HostelRoom({ className }: { className?: string }) {
       />
       {/* Laptop */}
       <path d="M330 440 L350 340 H500 L480 440 Z" fill="#b78cf2" {...S} />
-      <rect x="320" y="432" width="200" height="12" rx="4" fill="#1f37b8" {...thin} />
+      <rect x="320" y="432" width="200" height="12" rx="4" fill="#8f2018" {...thin} />
       {/* Phone with message bubbles popping */}
       <rect x="560" y="364" width="50" height="76" rx="10" fill="#111" />
       <rect x="566" y="372" width="38" height="58" rx="5" fill="#3dd68c" />
@@ -406,7 +406,7 @@ export function HostelRoom({ className }: { className?: string }) {
       {/* Kamplug paper bag */}
       <path d="M680 600 L690 480 H780 L800 600 Z" fill="#c8915a" {...S} />
       <path d="M700 480 l10 -14 h50 l10 14" fill="#a87443" {...thin} />
-      <circle cx="740" cy="540" r="24" fill="#3a5bff" {...thin} />
+      <circle cx="740" cy="540" r="24" fill="#d63426" {...thin} />
       <path
         d="M732 528 V552 M732 540 L746 528 M738 536 L748 552"
         stroke="#ffc23d"
@@ -422,7 +422,7 @@ export function HostelRoom({ className }: { className?: string }) {
 export function TakeawaySet({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 600 420" className={className} aria-hidden>
-      <ellipse cx="320" cy="370" rx="250" ry="40" fill="#1f37b8" {...S} />
+      <ellipse cx="320" cy="370" rx="250" ry="40" fill="#8f2018" {...S} />
       <g className="lp-bob">
         <path
           d="M120 360 V170 Q120 150 140 140 V100 H180 V140 Q200 150 200 170 V360 Z"
@@ -491,7 +491,7 @@ export function SellPanel({ className }: { className?: string }) {
         <text x="260" y="78" textAnchor="middle" fontSize="18" fontWeight="800" fill={K}>
           NEW ORDER
         </text>
-        <text x="260" y="130" textAnchor="middle" fontSize="30" fontWeight="800" fill="#3a5bff">
+        <text x="260" y="130" textAnchor="middle" fontSize="30" fontWeight="800" fill="#d63426">
           ₦3,500
         </text>
       </g>
@@ -523,7 +523,7 @@ export function ShopPanel({ className }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      <rect width="520" height="220" fill="#3a5bff" />
+      <rect width="520" height="220" fill="#d63426" />
       <path d="M0 220 q20 -110 100 -110 q70 0 90 110 Z" fill="#ff6a4d" {...S} />
       <path d="M220 220 q60 -90 160 -70 q80 20 140 70 Z" fill="#9fd8ff" {...S} />
       <g transform="translate(260 10) scale(0.62)">
@@ -541,7 +541,7 @@ function PlugBagShape() {
       <path d="M290 80 L330 40 V210 L290 250 Z" fill="#e0b000" {...S} />
       <path
         d="M178 128 V202 M178 166 L216 128 M192 154 L220 202"
-        stroke="#1b1f3b"
+        stroke="#1f1a17"
         strokeWidth="14"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -552,7 +552,7 @@ function PlugBagShape() {
 }
 
 /** A four-point sparkle used as a decorative mark. */
-export function Sparkle({ className, color = "#3a5bff" }: { className?: string; color?: string }) {
+export function Sparkle({ className, color = "#d63426" }: { className?: string; color?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden>
       <path

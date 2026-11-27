@@ -34,7 +34,7 @@ export function HeroHeadline() {
         aria-hidden
         className="inline-block origin-[50%_0%] motion-safe:animate-[lp-flip_0.6s_cubic-bezier(0.22,1,0.36,1)]"
       >
-        {line.lead} <span className="text-[#3a5bff]">{line.end}</span>
+        {line.lead} <span className="text-[#d63426]">{line.end}</span>
       </span>
     </h1>
   );

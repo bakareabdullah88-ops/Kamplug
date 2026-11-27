@@ -29,7 +29,7 @@ export function RelationBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-[#ffd84d] px-2 py-0.5 text-[11.5px] font-bold text-[#1b1f3b]",
+        "inline-flex items-center gap-1 rounded-full bg-[#ffd84d] px-2 py-0.5 text-[11.5px] font-bold text-[#1f1a17]",
         className,
       )}
     >
