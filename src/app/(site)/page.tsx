@@ -143,10 +143,6 @@ export default function LandingPage() {
           <div className="relative mx-auto max-w-4xl px-5 text-center">
             <CampusBadge />
             <HeroHeadline />
-            <p className="mx-auto mt-5 max-w-xl text-[18px] leading-snug md:text-[20px]">
-              Food, thrift, beauty and more from UNILAG students near you. See how far each shop is
-              and how soon it gets to you.
-            </p>
             {waitlist ? (
               <div className="mt-8 flex flex-col items-center gap-3">
                 <p className="text-[15px] font-bold text-[#d63426]">
@@ -155,12 +151,12 @@ export default function LandingPage() {
                 <WaitlistForm anchor />
               </div>
             ) : (
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8 flex justify-center md:mt-10">
                 <SpotPicker />
               </div>
             )}
           </div>
-          <GateScene className="relative mt-6 h-[260px] w-full sm:h-[340px] md:mt-2 md:h-[420px] xl:h-[460px]" />
+          <GateScene className="relative mt-8 h-[260px] w-full sm:h-[340px] md:mt-10 md:h-[420px] xl:h-[460px]" />
         </section>
 
         {/* Categories */}

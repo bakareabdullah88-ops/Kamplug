@@ -1390,6 +1390,19 @@ html {
     transform: rotateX(0deg) translateY(0);
   }
 }
+/* Hero headline: the next language rises gently into place. */
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.14em);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
 
 /* Sections scrolled out of view stop animating (see PauseOffscreen). */
 [data-paused],
