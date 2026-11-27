@@ -187,7 +187,7 @@ export function SpotPicker() {
         role="listbox"
         aria-label="Places on campus"
         className={cn(
-          "absolute inset-x-0 top-[calc(100%+10px)] z-20 max-h-[320px] origin-top overflow-auto rounded-2xl bg-white p-2 shadow-[0_10px_0_rgba(31, 26, 23,0.08),0_24px_48px_-16px_rgba(31, 26, 23,0.35)] ring-1 ring-[#1f1a17]/10 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "shadow-[0_10px_0_rgba(31, 26, 23,0.08),0_24px_48px_-16px_rgba(31, 26, 23,0.35)] absolute inset-x-0 top-[calc(100%+10px)] z-20 max-h-[320px] origin-top overflow-auto rounded-2xl bg-white p-2 ring-1 ring-[#1f1a17]/10 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           open && !picked && options.length > 0
             ? "[transform:perspective(800px)_rotateX(0deg)] opacity-100"
             : "pointer-events-none [transform:perspective(800px)_rotateX(-30deg)] opacity-0",

@@ -72,6 +72,16 @@ const fraunces = Fraunces({
 /** Labels, prices in tables, order codes, status pills. */
 const mono = Geist_Mono({ variable: "--font-mono-face", subsets: ["latin"], display: "swap" });
 
-export const fontClassNames = [figtree, jakarta, bricolage, inter, dmSans, instrument, geist, fraunces, mono]
+export const fontClassNames = [
+  figtree,
+  jakarta,
+  bricolage,
+  inter,
+  dmSans,
+  instrument,
+  geist,
+  fraunces,
+  mono,
+]
   .map((f) => f.variable)
   .join(" ");
