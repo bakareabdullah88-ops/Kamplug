@@ -304,7 +304,8 @@
   /* Faces come from src/config/fonts.ts */
   --font-display: var(--font-display-face), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-body-face), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono-face), ui-monospace, "SFMono-Regular", monospace;
+  /* No typewriter face: "mono" text (prices, codes) is Figtree with even-width digits. */
+  --font-mono: var(--font-body-face), ui-sans-serif, system-ui, sans-serif;
 
   /* Type scale: compact. Headline weight and tracking follow the font style. */
   --text-display-xl: clamp(2.125rem, 1.55rem + 2.6vw, 3.5rem);
@@ -452,12 +453,17 @@
 }
 
 @utility eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+/* Prices and codes keep their digits lined up without a typewriter face. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
 }
 
 @utility container-page {

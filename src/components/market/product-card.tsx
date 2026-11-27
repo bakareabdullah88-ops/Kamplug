@@ -95,7 +95,7 @@ export function ProductCard({
           </div>
         </div>
         <div className={cn("mt-2 flex flex-col", size === "lg" ? "gap-1" : "gap-0.5")}>
-          {showBrand && <p className="truncate eyebrow text-muted">{p.brand.name}</p>}
+          {showBrand && <p className="truncate text-[13px] text-muted">{p.brand.name}</p>}
           <h3
             className={cn(
               "line-clamp-2 font-medium text-ink",

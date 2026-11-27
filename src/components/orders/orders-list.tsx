@@ -1,6 +1,5 @@
 "use client";
 
-import { SceneBanner, RouteScene } from "@/components/scenes/campus-scenes";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Compass, Eye, MessageCircle, Receipt, RotateCcw, Star, X } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -138,9 +137,6 @@ export function OrdersList() {
 
   return (
     <div>
-      <SceneBanner className="-mt-5 mb-3 h-[170px] sm:h-[210px] md:-mt-7 md:h-[22vw] md:max-h-[320px]">
-        <RouteScene className="absolute inset-0" />
-      </SceneBanner>
       <NavPageHeader
         title="Orders"
         description={

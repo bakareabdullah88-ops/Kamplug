@@ -97,9 +97,12 @@ export function HeroFigure({
             ))}
           </dl>
         </div>
-        <div>
-          <AreaChart points={points} />
-        </div>
+        {/* Nothing to draw yet: no empty chart or flat line. */}
+        {points.some((p) => p.amountKobo > 0) && (
+          <div>
+            <AreaChart points={points} />
+          </div>
+        )}
       </div>
       {footer && <div className="pb-5 md:pb-6">{footer}</div>}
     </section>

@@ -70,7 +70,12 @@ const fraunces = Fraunces({
 });
 
 /** Labels, prices in tables, order codes, status pills. */
-const mono = Geist_Mono({ variable: "--font-mono-face", subsets: ["latin"], display: "swap" });
+const mono = Geist_Mono({
+  variable: "--font-mono-face",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
 
 export const fontClassNames = [
   figtree,
