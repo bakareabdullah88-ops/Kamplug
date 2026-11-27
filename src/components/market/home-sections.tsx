@@ -13,6 +13,7 @@ import { useProducts } from "@/queries/catalog";
 import { useNearness } from "@/queries/nearby";
 import type { CategoryId, ImageRef, ProductQuery, ProductWithBrand } from "@/services/types";
 import { CategoryArt } from "./category-art";
+import { CategoryIcon } from "./category-icons";
 import { etaText } from "./nearby";
 import { QuickAdd } from "./quick-add";
 
@@ -60,22 +61,29 @@ export function HomeSectionHead({
   );
 }
 
-/** Every category as a square tile: the drawing on top, the name under it. Two rows of three on phones. */
+/**
+ * The six categories in one row under search: an illustration over a short
+ * name, no boxes. Swipes sideways on phones; spreads out on wider screens.
+ */
 export function CategoryGrid() {
   return (
     <section aria-labelledby="home-categories">
       <h2 id="home-categories" className="sr-only">
         Categories
       </h2>
-      <ul className="grid grid-cols-3 gap-2.5 md:grid-cols-6 md:gap-3">
+      <ul className="-mx-(--gutter) scrollbar-none flex snap-x gap-1 overflow-x-auto px-(--gutter) md:mx-0 md:justify-between md:gap-4 md:overflow-visible md:px-0">
         {categories.map((c) => (
-          <li key={c.id}>
+          <li key={c.id} className="shrink-0 snap-start">
             <Link
               href={`/explore?category=${c.id}`}
-              className="flex aspect-square flex-col items-center justify-center gap-1.5 overflow-hidden rounded-2xl bg-ink/[0.05] px-1 transition-colors hover:bg-ink/[0.08] md:aspect-auto md:h-[112px]"
+              className="group flex w-[84px] flex-col items-center gap-1.5 rounded-2xl py-1.5 outline-offset-2 md:w-[112px]"
             >
-              <CategoryArt id={c.id} centered still className="h-[56%] w-full" />
-              <span className="truncate text-[12px] font-medium md:text-[13px]">{short[c.id]}</span>
+              <span className="grid size-[68px] place-items-center transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:-translate-y-0.5 group-active:scale-95 md:size-[76px]">
+                <CategoryIcon id={c.id} className="size-full" />
+              </span>
+              <span className="text-[13.5px] font-semibold tracking-[-0.01em] text-ink md:text-[14.5px]">
+                {short[c.id]}
+              </span>
             </Link>
           </li>
         ))}
