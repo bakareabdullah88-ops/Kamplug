@@ -177,7 +177,13 @@ export function StudioFinance() {
               tone="var(--chart-green)"
               actions={[{ label: "Open orders", href: "/studio/orders", icon: <Receipt /> }]}
             >
-              <MonthBars months={data.byMonth} />
+              {data.byMonth.some((m) => m.amountKobo > 0) ? (
+                <MonthBars months={data.byMonth} />
+              ) : (
+                <p className="py-10 text-small text-muted">
+                  Your earnings show here month by month once your first order is delivered.
+                </p>
+              )}
             </DashCard>
             <DashCard title="Payout details" icon={<Landmark />} tone="#6366f1">
               <p className="mb-4 text-small text-muted">

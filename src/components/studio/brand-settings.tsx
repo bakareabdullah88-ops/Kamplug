@@ -34,10 +34,13 @@ export function ImagePicker({
   label,
   className,
   withButton = false,
+  category,
 }: {
   image: ImageRef | null;
   name: string;
   variant: "logo" | "cover";
+  /** For a cover with no photo yet: show this category's colour and icon. */
+  category?: CategoryId;
   onUploaded: (id: string, ref: ImageRef) => void;
   label: string;
   className?: string;
@@ -54,7 +57,7 @@ export function ImagePicker({
         className,
       )}
     >
-      <AppImage image={image} alt="" variant={variant} name={name} />
+      <AppImage image={image} alt="" variant={variant} name={name} category={category} />
       {upload.isPending && <Skeleton className="absolute inset-0" rounded="none" />}
       <button
         type="button"
@@ -231,6 +234,7 @@ function BrandForm({ brand }: { brand: Brand }) {
               image={cover.ref}
               name={name}
               variant="cover"
+              category={category}
               label="Upload a cover image"
               onUploaded={(id, ref) => setCover({ id, ref })}
               className="max-w-md"

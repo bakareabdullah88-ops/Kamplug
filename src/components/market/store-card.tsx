@@ -10,21 +10,10 @@ import { formatNaira } from "@/domain/money";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/queries/session";
 import { useToggleFollow } from "@/queries/social";
-import type { Brand, CategoryId } from "@/services/types";
-import { CategoryIcon } from "./category-icons";
+import type { Brand } from "@/services/types";
 import { etaText } from "./nearby";
 
 export type StoreNear = Nearness & { etaMin: number | null };
-
-/** Soft tints of each category's colour, behind its icon when a shop has no cover photo. */
-const noCoverTint: Record<CategoryId, string> = {
-  food: "#FFE8D6",
-  fashion: "#EEE5FF",
-  beauty: "#FFE1E6",
-  tech: "#DDF1FB",
-  academics: "#DDF3E6",
-  lifestyle: "#EEF7D6",
-};
 
 /**
  * A store as a large, tappable card: the shop's cover photo in a wide frame,
@@ -69,23 +58,14 @@ export function StoreCard({
       <Link href={`/brands/${b.handle}`} className="block rounded-[18px] outline-offset-4">
         <div className="relative aspect-[16/9] overflow-hidden rounded-[18px] bg-surface-2">
           <div className="size-full transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)] group-hover:scale-[1.03]">
-            {b.cover.kind === "art" ? (
-              // No cover photo yet: the shop's category colour with its icon.
-              <span
-                className="grid size-full place-items-center"
-                style={{ background: noCoverTint[b.category] }}
-              >
-                <CategoryIcon id={b.category} className="size-[46%] max-h-28" />
-              </span>
-            ) : (
-              <AppImage
-                image={b.cover}
-                alt=""
-                variant="cover"
-                priority={priority}
-                sizes="(min-width: 1024px) 380px, 85vw"
-              />
-            )}
+            <AppImage
+              image={b.cover}
+              alt=""
+              variant="cover"
+              category={b.category}
+              priority={priority}
+              sizes="(min-width: 1024px) 380px, 85vw"
+            />
           </div>
           {badge && (
             <span

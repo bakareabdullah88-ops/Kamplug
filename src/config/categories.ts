@@ -76,6 +76,16 @@ export const categories: readonly Category[] = [
   },
 ] as const;
 
+/** Soft tints of each category's colour, behind its icon when a shop has no cover photo. */
+export const categoryTint: Record<CategoryId, string> = {
+  food: "#FFE8D6",
+  fashion: "#EEE5FF",
+  beauty: "#FFE1E6",
+  tech: "#DDF1FB",
+  academics: "#DDF3E6",
+  lifestyle: "#EEF7D6",
+};
+
 /** Categories from before Phase 1, and where their shops and products live now. */
 export const legacyCategory: Record<string, CategoryId> = {
   thrift: "fashion",

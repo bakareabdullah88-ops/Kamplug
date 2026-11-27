@@ -34,6 +34,7 @@ function ShopFront({ brand }: { brand: Brand | null | undefined }) {
           image={brand.cover}
           alt=""
           variant="cover"
+          category={brand.category}
           sizes="(min-width: 1280px) 1200px, 100vw"
         />
       </div>

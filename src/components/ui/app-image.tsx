@@ -8,7 +8,9 @@ import { hashString } from "@/lib/random";
 import { artPalettes, type ArtPalette } from "@/design/tokens";
 import { BrandMark, ProductArt } from "@/components/art/product-art";
 import { useObjectUrl } from "@/queries/media";
-import type { ImageRef } from "@/services/types";
+import type { CategoryId, ImageRef } from "@/services/types";
+import { categoryTint } from "@/config/categories";
+import { CategoryIcon } from "@/components/market/category-icons";
 
 type Variant = "product" | "logo" | "cover";
 
@@ -21,6 +23,8 @@ type AppImageProps = {
   className?: string;
   sizes?: string;
   priority?: boolean;
+  /** For a shop cover with no photo: show this category's colour and icon. */
+  category?: CategoryId;
 };
 
 const paletteKeys = Object.keys(artPalettes) as ArtPalette[];
@@ -49,6 +53,7 @@ export function AppImage({
   className,
   sizes,
   priority,
+  category,
 }: AppImageProps) {
   const box = cn("relative block size-full overflow-hidden bg-sand", className);
   // Empty alt means decorative: hide it rather than announce an unnamed image.
@@ -67,6 +72,14 @@ export function AppImage({
       <span className={box} {...a11y}>
         {variant === "logo" ? (
           <BrandMark name={name ?? alt} palette={image.palette} className="size-full" />
+        ) : variant === "cover" && category ? (
+          // No cover photo yet: the shop's category colour with its icon.
+          <span
+            className="grid size-full place-items-center"
+            style={{ background: categoryTint[category] }}
+          >
+            <CategoryIcon id={category} className="size-[46%] max-h-28" />
+          </span>
         ) : variant === "cover" ? (
           // Shops without an uploaded cover get a plain tint, never a stand-in picture.
           <span

@@ -327,7 +327,7 @@ export function StudioProducts() {
         const s = scoreOf.get(p.id);
         return (
           <span className="flex items-center gap-2.5">
-            <Gauge value={s?.score ?? 0} size={44} />
+            {(s?.views ?? 0) > 0 && <Gauge value={s?.score ?? 0} size={44} />}
             <span className="text-[12.5px] leading-tight">
               <span className="block font-medium">{s?.performance ?? "New"}</span>
               <span className="text-muted tabular">{s?.views ?? 0} views</span>
@@ -500,7 +500,10 @@ export function StudioProducts() {
                 )}
               </div>
             </div>
-            <Gauge value={scoreOf.get(p.id)?.score ?? 0} size={48} />
+            {/* No arc until people have seen it: an empty ring reads as broken. */}
+            {(scoreOf.get(p.id)?.views ?? 0) > 0 && (
+              <Gauge value={scoreOf.get(p.id)?.score ?? 0} size={48} />
+            )}
           </div>
         )}
         empty={

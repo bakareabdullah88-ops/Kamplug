@@ -279,7 +279,13 @@ export function BrandView() {
     <div>
       <div className="container-page pt-4 md:pt-6">
         <div className="relative aspect-[16/7] overflow-hidden rounded-lg md:aspect-[16/5]">
-          <AppImage image={brand.cover} alt={`${brand.name} cover`} variant="cover" priority />
+          <AppImage
+            image={brand.cover}
+            alt={`${brand.name} cover`}
+            variant="cover"
+            category={brand.category}
+            priority
+          />
           {brand.vacation && (
             <span className="absolute top-4 left-4 rounded-full bg-surface/90 px-3 py-1.5 text-small font-medium backdrop-blur">
               On a short break, back soon

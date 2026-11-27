@@ -95,7 +95,7 @@ export function TableSearch({
   placeholder?: string;
 }) {
   return (
-    <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl bg-surface px-3 ring-1 ring-line focus-within:ring-2 focus-within:ring-accent/40 md:max-w-80">
+    <label className="flex h-10 min-w-0 flex-1 basis-full items-center gap-2 rounded-xl bg-surface px-3 ring-1 ring-line focus-within:ring-2 focus-within:ring-accent/40 sm:basis-auto md:max-w-80">
       <Search className="size-4 shrink-0 text-muted" />
       <input
         type="search"
@@ -365,9 +365,9 @@ export function DataTable<T>({
 
   return (
     <div className="print:text-black">
-      {/* One line, always: search takes the room, then the filter, then one export button. */}
+      {/* Search takes the room (its own line on phones), then the filters and one export button. */}
       {(filters || search || exportName) && (
-        <div className="mb-4 flex items-center gap-2 print:hidden">
+        <div className="mb-4 flex flex-wrap items-center gap-2 print:hidden">
           {search ? <TableSearch {...search} /> : <span className="flex-1" />}
           {filters}
           {exportName && (

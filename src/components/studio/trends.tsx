@@ -46,9 +46,11 @@ export function ShopTrends({ range }: { range: DayRange }) {
               ? "No buyers in this range yet"
               : `${Math.round(d.retention.rate)}% of this range's ${formatNumber(d.customers.value)} buyers had ordered before`}
           </p>
-          <div className="relative mt-auto pt-10">
-            <StepLine points={d.retention.series} />
-          </div>
+          {d.retention.rate !== null && (
+            <div className="relative mt-auto pt-10">
+              <StepLine points={d.retention.series} />
+            </div>
+          )}
         </DashCard>
       </div>
     </div>

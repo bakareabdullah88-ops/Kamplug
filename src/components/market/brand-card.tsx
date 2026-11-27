@@ -58,6 +58,7 @@ export function BrandCard({
             image={b.cover}
             alt=""
             variant="cover"
+            category={b.category}
             sizes="(min-width: 1024px) 40vw, 100vw"
           />
         </div>
