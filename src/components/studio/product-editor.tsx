@@ -48,7 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SegmentedControl } from "@/components/ui/tabs";
 import { useUnsavedChangesGuard } from "@/components/ui/unsaved-guard";
 import { ProductCard } from "@/components/market/product-card";
-import { categories } from "@/config/categories";
+import { categories, subcategories } from "@/config/categories";
 import { spring } from "@/design/motion";
 import { formatNaira, parseNairaInput } from "@/domain/money";
 import { allVariantKeys, variantLabel } from "@/domain/variants";
@@ -73,6 +73,8 @@ type Draft = {
   description: string;
   details: string[];
   category: CategoryId;
+  /** What exactly it is inside the category; "" until the seller picks. */
+  subcategory: string;
   tags: string[];
   price: string;
   compareAt: string;
@@ -97,6 +99,7 @@ function toDraft(p: Product | undefined, fallbackCategory: CategoryId): Draft {
       description: "",
       details: [],
       category: fallbackCategory,
+      subcategory: "",
       tags: [],
       price: "",
       compareAt: "",
@@ -111,6 +114,7 @@ function toDraft(p: Product | undefined, fallbackCategory: CategoryId): Draft {
     description: p.description,
     details: p.details,
     category: p.category,
+    subcategory: p.subcategory ?? "",
     tags: p.tags,
     price: String(p.priceKobo / 100),
     compareAt: p.compareAtKobo ? String(p.compareAtKobo / 100) : "",
@@ -777,6 +781,7 @@ function EditorForm({
       description: draft.description,
       details: draft.details,
       category: draft.category,
+      ...(draft.subcategory ? { subcategory: draft.subcategory } : {}),
       tags: draft.tags,
       priceKobo: priceKobo ?? 0,
       ...(compareKobo ? { compareAtKobo: compareKobo } : {}),
@@ -830,6 +835,7 @@ function EditorForm({
       description: draft.description,
       details,
       category: draft.category,
+      ...(draft.subcategory ? { subcategory: draft.subcategory } : {}),
       tags: draft.tags,
       priceKobo: priceKobo ?? 0,
       ...(compareKobo ? { compareAtKobo: compareKobo } : {}),
@@ -842,6 +848,7 @@ function EditorForm({
     const parsed = productInputSchema.safeParse(input);
     const e: Errors = {};
     if (priceKobo === null) e.priceKobo = "Enter a price, e.g. 4500";
+    if (!draft.subcategory) e.subcategory = "Choose what kind of product this is";
     if (draft.compareAt && compareKobo === null) e.compareAtKobo = "Enter a number";
     if (compareKobo !== null && priceKobo !== null && compareKobo <= priceKobo)
       e.compareAtKobo = "Must be higher than the price";
@@ -1202,9 +1209,36 @@ function EditorForm({
                     label="Category"
                     value={draft.category}
                     onValueChange={(v) =>
-                      setDraft((d) => ({ ...d, category: v as CategoryId }), "category")
+                      setDraft(
+                        (d) =>
+                          // A new category starts with no type picked.
+                          v === d.category
+                            ? d
+                            : { ...d, category: v as CategoryId, subcategory: "" },
+                        "category",
+                      )
                     }
                     options={categories.map((c) => ({ value: c.id, label: c.name }))}
+                  />
+                </Field>
+              </div>
+              <div data-field="subcategory">
+                <Field
+                  label="Type"
+                  error={errors.subcategory}
+                  hint="Shoppers filter by this inside the category."
+                >
+                  <Select
+                    label="Type"
+                    value={draft.subcategory}
+                    placeholder="Choose a type"
+                    onValueChange={(v) =>
+                      setDraft((d) => ({ ...d, subcategory: v }), "subcategory")
+                    }
+                    options={subcategories[draft.category].map((s) => ({
+                      value: s.id,
+                      label: s.name,
+                    }))}
                   />
                 </Field>
               </div>

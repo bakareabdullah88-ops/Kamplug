@@ -2,12 +2,14 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useTransition } from "react";
-import { toCategoryId } from "@/config/categories";
+import { isSubcategoryOf, toCategoryId } from "@/config/categories";
 import type { CategoryId, ProductQuery, SortKey } from "@/services/types";
 
 export type ExploreParams = {
   q: string;
   category: CategoryId | "all";
+  /** A sub-category inside `category`, e.g. "drinks"; null for all of it. */
+  sub: string | null;
   sort: SortKey;
   min: number | null; // naira
   max: number | null; // naira
@@ -55,6 +57,14 @@ export function parseExplore(sp: URLSearchParams): ExploreParams {
     q,
     // Old links (thrift, books…) open the category those items moved to.
     category: toCategoryId(cat) ?? "all",
+    sub: (() => {
+      const c = toCategoryId(cat);
+      const s = sp.get("sub");
+      // An old "thrift" link opens Fashion with Thrift picked.
+      const fromLegacy = cat === "thrift" ? "thrift" : cat === "books" ? "textbooks" : null;
+      const pick = s ?? fromLegacy;
+      return c && isSubcategoryOf(c, pick) ? pick : null;
+    })(),
     sort: sort && SORTS.includes(sort) ? sort : q ? "relevance" : "popular",
     min: num(sp.get("min")),
     max: num(sp.get("max")),
@@ -71,6 +81,7 @@ export function toQuery(p: ExploreParams): Omit<ProductQuery, "page"> {
   return {
     ...(p.q ? { q: p.q } : {}),
     ...(p.category !== "all" ? { category: p.category } : {}),
+    ...(p.category !== "all" && p.sub ? { subcategory: p.sub } : {}),
     sort: p.sort,
     ...(p.min !== null ? { minPriceKobo: p.min * 100 } : {}),
     ...(p.max !== null ? { maxPriceKobo: p.max * 100 } : {}),
@@ -107,10 +118,18 @@ export function useExploreParams() {
   const update = useCallback(
     (patch: Partial<ExploreParams>) => {
       const next = { ...params, ...patch };
+      // A new category starts on "All" of it.
+      if (
+        patch.category !== undefined &&
+        patch.category !== params.category &&
+        patch.sub === undefined
+      )
+        next.sub = null;
       if (patch.campus !== undefined && patch.campus !== params.campus) next.zone = null;
       const out = new URLSearchParams();
       if (next.q) out.set("q", next.q);
       if (next.category !== "all") out.set("category", next.category);
+      if (next.category !== "all" && next.sub) out.set("sub", next.sub);
       const defaultSort = next.q ? "relevance" : "popular";
       if (next.sort !== defaultSort) out.set("sort", next.sort);
       if (next.min !== null) out.set("min", String(next.min));

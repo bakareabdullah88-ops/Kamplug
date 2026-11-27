@@ -565,3 +565,34 @@ describe("waitlist", () => {
     await expectCode(s.waitlist.join({ email: "", role: "buy" }), "VALIDATION");
   });
 });
+
+describe("sub-categories", () => {
+  it("lets sellers say what exactly a product is, and shoppers filter by it", async () => {
+    await openShop();
+    await s.auth.signIn({ email: "kemi@shop.com", password: PASSWORD });
+    const base = {
+      description: "Made fresh every morning on campus.",
+      priceKobo: 80_000,
+      category: "food" as const,
+      options: [],
+      variants: [{ key: "default", stock: 5, priceDeltaKobo: 0 }],
+      status: "published" as const,
+    };
+    const zobo = await s.studio.createProduct({
+      ...base,
+      name: "Zobo 50cl",
+      subcategory: "drinks",
+    });
+    expect(zobo.subcategory).toBe("drinks");
+    await s.studio.createProduct({ ...base, name: "Chin chin pack", subcategory: "snacks" });
+    const drinks = await s.catalog.getProducts({ category: "food", subcategory: "drinks" });
+    expect(drinks.items.map((p) => p.name)).toEqual(["Zobo 50cl"]);
+    const allFood = await s.catalog.getProducts({ category: "food" });
+    expect(allFood.items.length).toBeGreaterThanOrEqual(3);
+    // A type from another category is refused.
+    await expectCode(
+      s.studio.createProduct({ ...base, name: "Odd one", subcategory: "thrift" }),
+      "VALIDATION",
+    );
+  });
+});

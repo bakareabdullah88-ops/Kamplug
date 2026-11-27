@@ -172,6 +172,8 @@ export type Product = {
   description: string;
   details: string[];
   category: CategoryId;
+  /** What exactly it is inside its category, e.g. "snacks" in food. Older products may have none. */
+  subcategory?: string;
   tags: string[];
   priceKobo: Kobo;
   compareAtKobo?: Kobo;
@@ -399,6 +401,8 @@ export type WaitlistEntry = {
 export type ProductQuery = {
   q?: string;
   category?: CategoryId;
+  /** Only products of this kind inside `category`, e.g. "drinks". */
+  subcategory?: string;
   brandId?: ID;
   campusId?: ID;
   zoneId?: ID;

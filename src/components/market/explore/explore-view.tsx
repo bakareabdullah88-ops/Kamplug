@@ -14,7 +14,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/overlay";
 import { ResponsiveSheet } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
-import { categories } from "@/config/categories";
+import { categories, subcategories } from "@/config/categories";
 import { spring } from "@/design/motion";
 import { formatNaira } from "@/domain/money";
 import { formatNumber } from "@/lib/format";
@@ -128,6 +128,7 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
   const total = list.data?.pages[0]?.total ?? 0;
   const filters = activeFilterCount(params);
   const category = categories.find((c) => c.id === params.category);
+  const sub = category ? subcategories[category.id].find((s) => s.id === params.sub) : undefined;
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = list;
 
   // Infinite scroll with a visible "Load more" fallback.
@@ -162,7 +163,7 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
         "Search"
       )
     ) : category ? (
-      category.name
+      (sub?.name ?? category.name)
     ) : (
       "Everything on campus"
     );
@@ -170,7 +171,7 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
   const summary = (
     <span aria-live="polite">
       {list.isPending ? "Loading…" : `${formatNumber(total)} ${total === 1 ? "item" : "items"}`}
-      {category && !list.isPending && ` · ${category.blurb}`}
+      {category && !list.isPending && (sub ? ` in ${category.name}` : ` · ${category.blurb}`)}
     </span>
   );
 
@@ -230,6 +231,23 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
         <div className="min-w-0">
           {category && mode !== "search" && (
             <CategoryPoster category={category.id} blurb={category.blurb} />
+          )}
+          {category && mode !== "search" && (
+            // What exactly, inside the category: All, Meals, Snacks, Drinks…
+            <div className="-mx-4 mb-4 scrollbar-none overflow-x-auto px-4 py-1 md:mx-0 md:px-0">
+              <ChipGroup
+                label={`Type of ${category.name.toLowerCase()}`}
+                value={params.sub ?? "all"}
+                onChange={(v) => update({ sub: v === "all" ? null : v })}
+              >
+                <ChipOption value="all">All {category.name.toLowerCase()}</ChipOption>
+                {subcategories[category.id].map((s) => (
+                  <ChipOption key={s.id} value={s.id}>
+                    {s.name}
+                  </ChipOption>
+                ))}
+              </ChipGroup>
+            </div>
           )}
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 lg:min-h-[52px]">
             <div className="hidden min-w-0 lg:block">

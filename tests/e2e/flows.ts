@@ -64,6 +64,8 @@ export async function addProduct(
   await page.getByLabel("Name", { exact: true }).fill(p.name);
   await page.getByLabel("Description").fill(p.description);
   await page.getByLabel("Price (₦)", { exact: true }).fill(p.price);
+  await page.getByLabel("Type", { exact: true }).click();
+  await page.getByRole("option", { name: "Snacks" }).click();
   await page
     .getByRole("button", { name: "Publish", exact: true })
     .filter({ visible: true })

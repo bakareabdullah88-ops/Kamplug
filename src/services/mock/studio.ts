@@ -94,6 +94,7 @@ function buildProduct(
     description: input.description,
     details: input.details,
     category: input.category,
+    ...(input.subcategory ? { subcategory: input.subcategory } : {}),
     tags: input.tags,
     priceKobo: input.priceKobo,
     ...(input.compareAtKobo ? { compareAtKobo: input.compareAtKobo } : {}),

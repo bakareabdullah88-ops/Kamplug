@@ -23,7 +23,7 @@ import { ChatSheet } from "@/components/messages/chat-sheet";
 import { spring } from "@/design/motion";
 import { purchaseBlock, MAX_LINE_QUANTITY } from "@/domain/bag";
 import { formatEta, formatWhen } from "@/domain/distance";
-import { categories, categoryName } from "@/config/categories";
+import { categories, categoryName, subcategories } from "@/config/categories";
 import { discountPercent, formatNaira } from "@/domain/money";
 import {
   findVariant,
@@ -181,6 +181,7 @@ export function ProductView() {
   const canAdd = !block.blocked && !!key;
   const fulfilment = brand?.fulfilment;
   const CategoryIcon = categories.find((c) => c.id === p.category)?.icon;
+  const sub = subcategories[p.category]?.find((s) => s.id === p.subcategory);
   const points =
     campus?.pickupPoints.filter((pp) => fulfilment?.pickupPointIds.includes(pp.id)) ?? [];
 
@@ -252,8 +253,8 @@ export function ProductView() {
           </li>
           <li aria-hidden>/</li>
           <li>
-            <Link href={`/explore?category=${p.category}`} className="capitalize hover:text-ink">
-              {p.category}
+            <Link href={`/explore?category=${p.category}`} className="hover:text-ink">
+              {categoryName(p.category)}
             </Link>
           </li>
           <li aria-hidden>/</li>
@@ -288,11 +289,12 @@ export function ProductView() {
           <ul className="mt-4 flex flex-wrap gap-2" aria-label="At a glance">
             <li>
               <Link
-                href={`/explore?category=${p.category}`}
+                href={`/explore?category=${p.category}${sub ? `&sub=${sub.id}` : ""}`}
                 className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13.5px] font-medium ring-1 ring-line hover:ring-line-strong"
               >
                 {CategoryIcon && <CategoryIcon className="size-4 text-accent" aria-hidden />}
                 {categoryName(p.category)}
+                {sub && <span className="text-muted">· {sub.name}</span>}
               </Link>
             </li>
             {fulfilment?.pickup && (

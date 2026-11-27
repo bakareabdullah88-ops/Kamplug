@@ -100,6 +100,8 @@ for (const p of products) {
   await page.getByLabel("Name", { exact: true }).fill(p.name);
   await page.getByLabel("Description").fill(p.description);
   await page.getByLabel("Price (₦)", { exact: true }).fill(p.price);
+  await page.getByLabel("Type", { exact: true }).click();
+  await page.getByRole("option", { name: p.type ?? "Snacks" }).click();
   await page.getByRole("button", { name: "Publish" }).first().click();
   await page.waitForURL(/\/studio\/products$/);
 }

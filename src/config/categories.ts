@@ -76,6 +76,52 @@ export const categories: readonly Category[] = [
   },
 ] as const;
 
+export type Subcategory = { id: string; name: string };
+
+/**
+ * What exactly a product is, inside its category (Phase 1). Sellers pick one
+ * when they list a product; shoppers filter by it on Discover.
+ */
+export const subcategories: Record<CategoryId, readonly Subcategory[]> = {
+  food: [
+    { id: "meals", name: "Meals" },
+    { id: "snacks", name: "Snacks" },
+    { id: "drinks", name: "Drinks" },
+    { id: "groceries", name: "Groceries" },
+  ],
+  fashion: [
+    { id: "thrift", name: "Thrift" },
+    { id: "clothes", name: "Clothes" },
+    { id: "shoes", name: "Shoes" },
+    { id: "bags", name: "Bags" },
+  ],
+  beauty: [
+    { id: "skincare", name: "Skincare" },
+    { id: "haircare", name: "Haircare" },
+    { id: "makeup", name: "Makeup" },
+  ],
+  tech: [
+    { id: "chargers", name: "Chargers" },
+    { id: "gadgets", name: "Gadgets" },
+    { id: "tech-accessories", name: "Accessories" },
+  ],
+  academics: [
+    { id: "textbooks", name: "Textbooks" },
+    { id: "past-questions", name: "Past questions" },
+    { id: "stationery", name: "Stationery" },
+  ],
+  lifestyle: [
+    { id: "accessories", name: "Accessories" },
+    { id: "gifts", name: "Gifts" },
+    { id: "room-essentials", name: "Room essentials" },
+  ],
+};
+
+/** True when this sub-category belongs to this category. */
+export function isSubcategoryOf(category: CategoryId, sub: string | null | undefined) {
+  return !!sub && subcategories[category].some((s) => s.id === sub);
+}
+
 /** Soft tints of each category's colour, behind its icon when a shop has no cover photo. */
 export const categoryTint: Record<CategoryId, string> = {
   food: "#FFE8D6",

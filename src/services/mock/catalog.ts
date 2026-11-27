@@ -102,6 +102,8 @@ export const mockCatalog: CatalogService = {
       list = list.filter((p) => set.has(p.id));
     }
     if (query.category) list = list.filter((p) => p.category === query.category);
+    if (query.category && query.subcategory)
+      list = list.filter((p) => p.subcategory === query.subcategory);
     if (query.brandId) list = list.filter((p) => p.brandId === query.brandId);
     if (query.campusId)
       list = list.filter((p) => brandsById.get(p.brandId)?.campusId === query.campusId);

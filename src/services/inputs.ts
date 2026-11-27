@@ -6,6 +6,8 @@ import { z } from "zod";
 import { USERNAME_RE } from "@/domain/username";
 import { BUDDY_COLORS, BUDDY_SHAPES } from "@/domain/buddy";
 
+import { isSubcategoryOf } from "@/config/categories";
+
 /** The Phase 1 categories, in the order shoppers see them. */
 const CATEGORY_IDS = ["food", "fashion", "beauty", "tech", "academics", "lifestyle"] as const;
 
@@ -161,6 +163,7 @@ export const productInputSchema = z
     description: z.string().trim().min(10, "Describe it in a sentence or two").max(1200),
     details: z.array(z.string().trim().min(1).max(120)).max(8).default([]),
     category: z.enum(CATEGORY_IDS),
+    subcategory: z.string().trim().max(40).optional(),
     tags: z.array(z.string().trim().min(1).max(24)).max(8).default([]),
     priceKobo: z.number().int().min(10_000, "Minimum price is ₦100").max(100_000_000),
     compareAtKobo: z.number().int().min(0).max(100_000_000).optional(),
@@ -179,6 +182,10 @@ export const productInputSchema = z
       .min(1)
       .max(200),
     status: z.enum(["published", "draft"]),
+  })
+  .refine((p) => !p.subcategory || isSubcategoryOf(p.category, p.subcategory), {
+    message: "Choose a type from this category",
+    path: ["subcategory"],
   })
   .refine((p) => p.variants.every((v) => p.priceKobo + v.priceDeltaKobo >= 10_000), {
     message: "Every option must cost at least ₦100",
