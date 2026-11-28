@@ -32,16 +32,16 @@
   --primary-hover: #3a332e;
   --on-primary: #ffffff;
 
-  /* Brand: tomato red. Wordmark, main buttons, key states. White text on it passes AA (4.8:1). */
-  --brand: #d63426;
+  /* Brand: Kamplug blue. Logo, main buttons, key states. White text on it passes AA (5.1:1). */
+  --brand: #3a5bff;
   --brand-ink: #c42e22;
-  --accent: #d63426;
-  --accent-hover: #b42a20;
-  --accent-soft: #fdece9;
-  --accent-ink: #b42a20;
+  --accent: #3a5bff;
+  --accent-hover: #2a45d6;
+  --accent-soft: #eef1ff;
+  --accent-ink: #2a3fc4;
   --on-accent: #ffffff;
   /* The solid edge under raised buttons and panels. */
-  --accent-edge: #8f2018;
+  --accent-edge: #1f37b8;
 
   /* Warm supporting colours: one per category, for icons, tiles and highlights.
      Vivid values are for fills behind dark or white shapes; the -ink values are safe for text. */
@@ -69,10 +69,10 @@
   --pin: #e8590c; /* places and pins: orange */
 
   /* Both sides of the app share the brand colour. */
-  --studio: #d63426;
-  --ember: #d63426;
-  --studio-contrast: #ffc8be;
-  --ember-contrast: #ffc8be;
+  --studio: #3a5bff;
+  --ember: #3a5bff;
+  --studio-contrast: #b9c6ff;
+  --ember-contrast: #b9c6ff;
 
   /* Charts */
   --chart-blue: #2f54ff;
@@ -186,19 +186,19 @@
   --primary-hover: #ffffff;
   --on-primary: #0e1022;
 
-  --brand: #d63426;
-  --brand-ink: #ffb3a7;
-  --accent: #ff7a6b;
-  --accent-hover: #ffb3a7;
-  --accent-soft: #3a1d1a;
-  --accent-ink: #ffc8be;
-  --on-accent: #2a0b08;
-  --accent-edge: #d63426;
+  --brand: #3a5bff;
+  --brand-ink: #b9c6ff;
+  --accent: #7d93ff;
+  --accent-hover: #9fb0ff;
+  --accent-soft: #1d2350;
+  --accent-ink: #b3c0ff;
+  --on-accent: #0b0f2a;
+  --accent-edge: #3a5bff;
 
-  --studio: #ff7a6b;
-  --ember: #ff7a6b;
-  --studio-contrast: #b42a20;
-  --ember-contrast: #b42a20;
+  --studio: #7d93ff;
+  --ember: #7d93ff;
+  --studio-contrast: #2a3fc4;
+  --ember-contrast: #2a3fc4;
 
   --chart-blue: #6f86ff;
   --chart-blue-2: #3b4fae;

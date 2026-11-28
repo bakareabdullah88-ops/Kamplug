@@ -106,10 +106,10 @@ const h2 =
 /** Flat buttons: colour does the work, no shadows. */
 const btn = {
   cobalt:
-    "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-[#d63426] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#b42a20]",
+    "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-[#3a5bff] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#2a45d6]",
   ink: "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-[#1f1a17] px-7 text-[16px] font-bold text-white transition-colors hover:bg-black",
   white:
-    "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-white px-7 text-[16px] font-bold text-[#1f1a17] transition-colors hover:bg-[#fdece9]",
+    "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-white px-7 text-[16px] font-bold text-[#1f1a17] transition-colors hover:bg-[#eef1ff]",
 };
 
 /** "SEE MORE →" link under each feature card. */
@@ -141,18 +141,18 @@ export default function LandingPage() {
           className="relative scroll-mt-0 overflow-hidden bg-[#f7f6f4] pt-28 md:pt-36"
         >
           <Clouds3D />
-          <div className="relative mx-auto max-w-4xl px-4 text-left sm:px-5 sm:text-center">
+          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-5">
             <CampusBadge />
             <HeroHeadline />
             {waitlist ? (
-              <div className="mt-8 flex flex-col items-start gap-3 sm:items-center">
-                <p className="text-[15px] font-bold text-[#d63426]">
+              <div className="mt-8 flex flex-col items-center gap-3">
+                <p className="text-[15px] font-bold text-[#3a5bff]">
                   Opening soon. Be first in when we launch.
                 </p>
                 <WaitlistForm anchor />
               </div>
             ) : (
-              <div className="mt-8 flex sm:justify-center md:mt-10">
+              <div className="mt-8 flex justify-center md:mt-10">
                 <SpotPicker />
               </div>
             )}
@@ -187,7 +187,7 @@ export default function LandingPage() {
         >
           <div className="mx-auto grid max-w-[1240px] items-center gap-12 md:grid-cols-[1.1fr_1fr]">
             <Reveal from="top">
-              <p className="text-[13px] font-bold tracking-[0.18em] text-[#ffb3a7] uppercase">
+              <p className="text-[13px] font-bold tracking-[0.18em] text-[#b9c6ff] uppercase">
                 Safe handover
               </p>
               <h2 id="trust-title" className={cn(h2, "mt-4")}>
@@ -289,7 +289,7 @@ export default function LandingPage() {
                 body: "See each step from the shop to your hall, and message the seller in the same place.",
                 href: signupHref,
                 panel: (
-                  <div className="flex h-full flex-col justify-center gap-3 bg-[#fdece9] px-7">
+                  <div className="flex h-full flex-col justify-center gap-3 bg-[#eef1ff] px-7">
                     {["Placed", "Accepted", "On the way", "Handed over"].map((step, n) => (
                       <div key={step} className="flex items-center gap-3">
                         <span

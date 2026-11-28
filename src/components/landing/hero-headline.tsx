@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 /** "What do you need?" in Pidgin, Yoruba, Igbo and Hausa. Each language's last word has its own warm colour, bright enough for large text (3:1 or better). */
 const lines = [
   { lang: "pcm", lead: "Wetin you", end: "need?", color: "#e85d0c" },
-  { lang: "yo", lead: "Kí lo", end: "nílò?", color: "#2a8bc9" },
+  { lang: "yo", lead: "Kí lo", end: "nílò?", color: "#d6336c" },
   { lang: "ig", lead: "Gịnị ka ị", end: "chọrọ?", color: "#1f9a55" },
   { lang: "ha", lead: "Me kake", end: "bukata?", color: "#7c4ddb" },
 ] as const;
@@ -17,8 +17,8 @@ const HOLD_MS = 9600;
  * The landing headline: the biggest thing on the page. Every ~10 seconds the
  * next language rises gently into place over 1.2 seconds. Screen readers
  * always get the Pidgin line; with reduced motion it stays on Pidgin.
- * Two lines on phones so it can be large without squeezing, both on one left
- * edge (centring two lines of different widths looks crooked); one centred line wider.
+ * Two lines on phones so it can be large without squeezing, each centred on the
+ * page as its own row; one centred line from tablets up.
  */
 export function HeroHeadline() {
   const [i, setI] = useState(0);
@@ -37,10 +37,11 @@ export function HeroHeadline() {
         key={line.lang}
         lang={line.lang}
         aria-hidden
-        className="block motion-safe:animate-[lp-rise_1.2s_cubic-bezier(0.2,0,0,1)]"
+        className="flex flex-col items-center motion-safe:animate-[lp-rise_1.2s_cubic-bezier(0.2,0,0,1)] sm:block"
       >
-        <span className="block sm:inline">{line.lead}</span>{" "}
-        <span className="block sm:inline" style={{ color: line.color }}>
+        <span className="sm:inline">{line.lead}</span>
+        <span className="hidden sm:inline"> </span>
+        <span className="sm:inline" style={{ color: line.color }}>
           {line.end}
         </span>
       </span>

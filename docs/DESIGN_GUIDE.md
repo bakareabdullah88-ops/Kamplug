@@ -22,21 +22,21 @@ Generic AI-made apps share the same tells. Avoid all of them:
 
 ## 2. Colour
 
-Brand: **multi-colour and warm**. Tomato red is the action colour (main buttons, selected
+Brand: **multi-colour and warm**. Kamplug blue is the action colour (main buttons, selected
 states, the logo). The supporting colours carry the brand's identity everywhere else: the
 landing headline (one colour per language), section labels and "See more" links on home, step
-numbers, bands, the open FAQ item and the illustrations. Never paint a whole screen red.
+numbers, bands, the open FAQ item and the illustrations. Never paint a whole screen one colour.
 
-| Token                             | Hex                   | Use                                                                       |
-| --------------------------------- | --------------------- | ------------------------------------------------------------------------- |
-| `--brand` / `--accent`            | `#D63426`             | Main buttons, links, selected states, logo. White text passes AA (4.8:1). |
-| `--accent-hover` / `--accent-ink` | `#B42A20`             | Hover, red text on light backgrounds (5.9:1).                             |
-| `--accent-soft`                   | `#FDECE9`             | Selected chips, soft highlights.                                          |
-| `--ink`                           | `#1F1A17`             | Text and dark surfaces. Warm near-black, never navy.                      |
-| `--muted`                         | `#6B625C`             | Secondary text (5.5:1 on canvas).                                         |
-| `--canvas`                        | `#F7F6F4`             | App background.                                                           |
-| `--surface`                       | `#FFFFFF`             | Cards and sheets.                                                         |
-| `--line` / `--line-thin`          | `#E8E4DF` / ink at 9% | Dividers.                                                                 |
+| Token                             | Hex                   | Use                                                                |
+| --------------------------------- | --------------------- | ------------------------------------------------------------------ |
+| `--brand` / `--accent`            | `#3A5BFF`             | Main buttons, selected states, logo. White text passes AA (5.1:1). |
+| `--accent-hover` / `--accent-ink` | `#2A3FC4`             | Hover, blue text on light backgrounds (8:1).                       |
+| `--accent-soft`                   | `#EEF1FF`             | Selected chips, soft highlights.                                   |
+| `--ink`                           | `#1F1A17`             | Text and dark surfaces. Warm near-black, never navy.               |
+| `--muted`                         | `#6B625C`             | Secondary text (5.5:1 on canvas).                                  |
+| `--canvas`                        | `#F7F6F4`             | App background.                                                    |
+| `--surface`                       | `#FFFFFF`             | Cards and sheets.                                                  |
+| `--line` / `--line-thin`          | `#E8E4DF` / ink at 9% | Dividers.                                                          |
 
 Supporting colours (vivid for fills behind shapes; `-ink` versions are safe for text):
 
@@ -49,11 +49,11 @@ Supporting colours (vivid for fills behind shapes; `-ink` versions are safe for 
 | Academics        | green `#22A060`  | `#1E7F46` |
 | Lifestyle        | lime `#A3D63C`   | `#4D7C0F` |
 
-Every detail has a colour job, so screens are never all red:
+Every detail has a colour job, so screens are never one colour:
 
 | Job                                   | Token                    | Colour |
 | ------------------------------------- | ------------------------ | ------ |
-| Main buttons, selected states, logo   | `--accent`               | red    |
+| Main buttons, selected states, logo   | `--accent`               | blue   |
 | Text links                            | `--link`                 | purple |
 | Soft notes, info chips, icon spots    | `--tint` / `--tint-ink`  | orange |
 | Discounts, savings, progress, toggles | `--save`                 | green  |
@@ -68,8 +68,7 @@ Rules:
 - Body text needs 4.5:1 contrast; large text (24px+, or 19px+ bold) needs 3:1. Check every new
   pairing. Bright red (`#FF0000`-like) fails with white text, so darken it.
 - Text in a supporting colour uses its `-ink` version on light backgrounds (all pass 4.5:1).
-- Red means "act" (buy, order, confirm). Don't also use it for errors next to a red button;
-  errors get the danger token plus an icon or wording.
+- Blue means "act" (buy, order, confirm). Errors use the danger token (red) plus an icon or wording.
 - Semantic colours (success, warning, danger) are separate from the brand.
 
 ## 3. Type
@@ -142,7 +141,7 @@ them, and nothing invented: every number and badge comes from real data.
 
 ## 7. Components
 
-- **Buttons:** one primary (red) per view. Secondary: white with a thin line. Text buttons for
+- **Buttons:** one primary (blue) per view. Secondary: white with a thin line. Text buttons for
   low-stakes actions. Height 44–52px; label states the action ("Add to bag", "Place order").
 - **Cards:** image first, then title, then one or two lines of detail. The whole card is the
   tap target.

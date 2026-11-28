@@ -49,7 +49,7 @@ export function LandingNav() {
   }, [open]);
 
   const cta =
-    "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[#d63426] px-4 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#b42a20] sm:px-5";
+    "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[#3a5bff] px-4 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#2a45d6] sm:px-5";
 
   return (
     <header
@@ -90,7 +90,7 @@ export function LandingNav() {
             <Link
               key={l.href}
               href={l.href}
-              className="flex h-11 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1f1a17]/80 transition-colors hover:bg-[#d63426]/[0.08] hover:text-[#d63426]"
+              className="flex h-11 items-center rounded-lg px-3.5 text-[15px] font-semibold text-[#1f1a17]/80 transition-colors hover:bg-[#3a5bff]/[0.08] hover:text-[#3a5bff]"
             >
               {l.label}
             </Link>
@@ -100,7 +100,7 @@ export function LandingNav() {
           {!features.waitlist && !(isReady && user) && (
             <Link
               href="/login"
-              className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1f1a17] transition-colors hover:bg-[#d63426]/[0.08] hover:text-[#d63426] sm:flex"
+              className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1f1a17] transition-colors hover:bg-[#3a5bff]/[0.08] hover:text-[#3a5bff] sm:flex"
             >
               Log in
             </Link>

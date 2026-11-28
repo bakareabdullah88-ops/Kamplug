@@ -10,7 +10,7 @@ export function KamplugMark({ className }: { className?: string }) {
   );
 }
 
-/** The mark on its tomato-red tile, as on the app icon. */
+/** The mark on its blue tile, as on the app icon. */
 export function KamplugTile({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" className={cn("size-8 shrink-0", className)} aria-hidden>

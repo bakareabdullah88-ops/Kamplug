@@ -96,7 +96,7 @@ export function SpotPicker() {
         }}
         className="flex h-16 w-full items-center gap-2 rounded-full bg-white p-2 pl-5 ring-1 ring-[#1f1a17]/10 md:h-[68px]"
       >
-        <MapPin className="size-5 shrink-0 text-[#d63426]" aria-hidden />
+        <MapPin className="size-5 shrink-0 text-[#3a5bff]" aria-hidden />
         <label htmlFor="spot-q" className="sr-only">
           Your hostel, faculty or address
         </label>
@@ -167,14 +167,14 @@ export function SpotPicker() {
               setStreet("");
               setQ("");
             }}
-            className="hidden shrink-0 px-2 text-[14px] font-semibold text-[#d63426] hover:underline sm:block"
+            className="hidden shrink-0 px-2 text-[14px] font-semibold text-[#3a5bff] hover:underline sm:block"
           >
             Change
           </button>
         )}
         <button
           type="submit"
-          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#d63426] px-5 text-[15px] font-bold text-white transition-colors hover:bg-[#b42a20] md:px-6 md:text-[16px]"
+          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#3a5bff] px-5 text-[15px] font-bold text-white transition-colors hover:bg-[#2a45d6] md:px-6 md:text-[16px]"
         >
           <span className="max-sm:sr-only">Find shops</span>
           <ArrowRight className="size-5 sm:hidden" aria-hidden />
@@ -211,10 +211,10 @@ export function SpotPicker() {
               onClick={() => choose(o)}
               className={cn(
                 "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5",
-                i === active ? "bg-[#fdece9]" : "",
+                i === active ? "bg-[#eef1ff]" : "",
               )}
             >
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#f7f6f4] text-[#d63426]">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#f7f6f4] text-[#3a5bff]">
                 <Icon className="size-[18px]" aria-hidden />
               </span>
               <span className="min-w-0 flex-1">
