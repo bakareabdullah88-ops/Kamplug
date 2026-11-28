@@ -7,7 +7,17 @@ import {
   Tooltip as RTooltip,
 } from "radix-ui";
 import { Check, ChevronDown } from "lucide-react";
-import type { ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/cn";
 
 const floatingPanel =
@@ -15,6 +25,81 @@ const floatingPanel =
   "origin-(--radix-popper-transform-origin) " +
   "data-[state=open]:[animation:pop-in_160ms_cubic-bezier(0.22,1,0.36,1)] " +
   "data-[state=closed]:[animation:pop-out_120ms_ease-in_forwards]";
+
+/*
+ * Hover to open: with a mouse, menus and popovers open after a short pause
+ * over the trigger and close soon after the pointer leaves both the trigger
+ * and the panel. Clicking still works; clicking one that opened on hover pins
+ * it open until you click away. Touch and keyboard are unchanged.
+ */
+type HoverProps = {
+  onPointerEnter: (e: PointerEvent) => void;
+  onPointerMove: (e: PointerEvent) => void;
+  onPointerLeave: (e: PointerEvent) => void;
+};
+type Hover = { props: HoverProps; pin: (e: PointerEvent) => void };
+const HoverContext = createContext<Hover | null>(null);
+const OPEN_DELAY = 90;
+const CLOSE_DELAY = 220;
+
+function useHoverOpen(open: boolean | undefined, onOpenChange?: (open: boolean) => void) {
+  const [inner, setInner] = useState(false);
+  const isOpen = open ?? inner;
+  const byHover = useRef(false);
+  const opening = useRef(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const set = useCallback(
+    (next: boolean) => {
+      if (!next) byHover.current = false;
+      setInner(next);
+      onOpenChange?.(next);
+    },
+    [onOpenChange],
+  );
+  const later = (next: boolean, ms: number) => {
+    clearTimeout(timer.current);
+    opening.current = next;
+    timer.current = setTimeout(() => {
+      opening.current = false;
+      if (next) byHover.current = true;
+      set(next);
+    }, ms);
+  };
+  const hover: Hover = {
+    props: {
+      // Back over it before it closes: keep it open.
+      onPointerEnter: (e) => {
+        if (e.pointerType === "mouse" && isOpen) clearTimeout(timer.current);
+      },
+      // Opens on an actual mouse move, not when something under a still
+      // pointer goes away (closing a side panel over the account button).
+      onPointerMove: (e) => {
+        if (e.pointerType !== "mouse" || isOpen || opening.current) return;
+        later(true, OPEN_DELAY);
+      },
+      onPointerLeave: (e) => {
+        if (e.pointerType !== "mouse") return;
+        if (isOpen && byHover.current) later(false, CLOSE_DELAY);
+        else if (!isOpen) {
+          clearTimeout(timer.current);
+          opening.current = false;
+        }
+      },
+    },
+    // A click on a trigger that hover opened keeps it open instead of toggling it shut.
+    pin: (e) => {
+      // A click decides now; drop any pending hover open or close.
+      clearTimeout(timer.current);
+      opening.current = false;
+      if (e.pointerType === "mouse" && isOpen && byHover.current) {
+        e.preventDefault();
+        byHover.current = false;
+      }
+    },
+  };
+  return { isOpen, set, hover };
+}
 
 export const TooltipProvider = RTooltip.Provider;
 
@@ -61,11 +146,17 @@ export function Popover({
   onOpenChange?: (open: boolean) => void;
   className?: string;
 }) {
+  const { isOpen, set, hover } = useHoverOpen(open, onOpenChange);
   return (
-    <RPopover.Root open={open} onOpenChange={onOpenChange}>
-      <RPopover.Trigger asChild>{trigger}</RPopover.Trigger>
+    <RPopover.Root open={isOpen} onOpenChange={set}>
+      <RPopover.Trigger asChild {...hover.props} onPointerDown={hover.pin}>
+        {trigger}
+      </RPopover.Trigger>
       <RPopover.Portal>
         <RPopover.Content
+          {...hover.props}
+          // Opening on hover shouldn't pull focus away from where you are.
+          onOpenAutoFocus={(e) => e.preventDefault()}
           align={align}
           sideOffset={8}
           collisionPadding={12}
@@ -78,8 +169,36 @@ export function Popover({
   );
 }
 
-export const Menu = RMenu.Root;
-export const MenuTrigger = RMenu.Trigger;
+/** A dropdown menu that also opens on hover (see above). Not modal, so the page stays usable around it. */
+export function Menu({
+  open,
+  onOpenChange,
+  children,
+  ...rest
+}: Omit<ComponentProps<typeof RMenu.Root>, "modal">) {
+  const { isOpen, set, hover } = useHoverOpen(open, onOpenChange);
+  return (
+    <HoverContext.Provider value={hover}>
+      <RMenu.Root {...rest} open={isOpen} onOpenChange={set} modal={false}>
+        {children}
+      </RMenu.Root>
+    </HoverContext.Provider>
+  );
+}
+
+export function MenuTrigger({ onPointerDown, ...props }: ComponentProps<typeof RMenu.Trigger>) {
+  const hover = useContext(HoverContext);
+  return (
+    <RMenu.Trigger
+      {...hover?.props}
+      {...props}
+      onPointerDown={(e) => {
+        hover?.pin(e);
+        onPointerDown?.(e);
+      }}
+    />
+  );
+}
 
 export function MenuContent({
   children,
@@ -90,9 +209,11 @@ export function MenuContent({
   align?: "start" | "center" | "end";
   className?: string;
 }) {
+  const hover = useContext(HoverContext);
   return (
     <RMenu.Portal>
       <RMenu.Content
+        {...hover?.props}
         align={align}
         sideOffset={6}
         collisionPadding={12}
@@ -154,6 +275,8 @@ export function Select<T extends string>({
   id,
   invalid,
   describedBy,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: {
   value: T | undefined;
   onValueChange: (v: T) => void;
@@ -164,19 +287,23 @@ export function Select<T extends string>({
   id?: string;
   invalid?: boolean;
   describedBy?: string;
+  /** Set by <Field> when it wraps the select, like it does for inputs. */
+  "aria-invalid"?: boolean | "true" | "false";
+  "aria-describedby"?: string;
 }) {
+  const isInvalid = invalid || ariaInvalid === true || ariaInvalid === "true";
   return (
     <RSelect.Root value={value} onValueChange={(v) => onValueChange(v as T)}>
       <RSelect.Trigger
         id={id}
         aria-label={label}
-        aria-invalid={invalid || undefined}
-        aria-describedby={describedBy}
+        aria-invalid={isInvalid || undefined}
+        aria-describedby={describedBy ?? ariaDescribedBy}
         className={cn(
           "flex h-11 w-full items-center justify-between gap-2 rounded-md bg-surface px-3.5 text-left text-body text-ink",
           "shadow-[inset_0_0_0_1px_var(--line-strong)] hover:shadow-[inset_0_0_0_1px_var(--muted)]",
           "focus-visible:shadow-[inset_0_0_0_1.5px_var(--ink),0_0_0_4px_var(--accent-soft)] focus-visible:outline-none",
-          "aria-invalid:shadow-[inset_0_0_0_1.5px_var(--danger)] data-[placeholder]:text-faint",
+          "aria-invalid:shadow-[inset_0_0_0_1.5px_var(--danger)] data-[placeholder]:text-muted",
           className,
         )}
       >

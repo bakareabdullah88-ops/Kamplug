@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LogOut, Settings, Star } from "lucide-react";
+import { LogOut, MapPin, Settings, Star } from "lucide-react";
 import { Popover } from "@/components/ui/overlay";
-import { AppearanceControls } from "@/components/shell/appearance";
 import { useSession, useSignOut } from "@/queries/session";
 import { useCampus } from "@/queries/catalog";
 import { toast } from "@/stores/toast";
@@ -41,12 +40,18 @@ export function AccountMenu({ side = "bottom" }: { side?: "right" | "bottom" }) 
         <div className="min-w-0">
           <p className="truncate text-small font-semibold">{user.name}</p>
           <p className="truncate text-[12px] text-muted">
-            {campus?.shortName ? `${campus.shortName} · ` : ""}
-            {user.email}
+            {`${campus?.shortName ? `${campus.shortName} · ` : ""}${user.email}`}
           </p>
         </div>
       </div>
       <div className="my-1 h-px bg-line" />
+      <Link
+        href="/account/places"
+        onClick={close}
+        className="flex h-10 items-center gap-2.5 rounded-md px-2.5 text-small font-medium hover:bg-ink/[0.05]"
+      >
+        <MapPin className="size-4 text-muted" /> Addresses
+      </Link>
       <Link
         href="/account/settings"
         onClick={close}
@@ -61,8 +66,6 @@ export function AccountMenu({ side = "bottom" }: { side?: "right" | "bottom" }) 
       >
         <Star className="size-4 text-muted" /> My reviews
       </Link>
-      <div className="my-1 h-px bg-line" />
-      <AppearanceControls className="px-2.5 py-2" />
       <div className="my-1 h-px bg-line" />
       <button
         type="button"

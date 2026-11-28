@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ButtonLink } from "@/components/ui/button";
 import { ResponsiveSheet } from "@/components/ui/sheet";
 import { useUi } from "@/stores/ui";
@@ -15,8 +15,12 @@ export function BagDrawer() {
   const { isEmpty, groups } = useBagView();
   const close = () => setOpen(false);
 
-  // Close on any navigation.
+  // Close when the page changes. Not on mount: the drawer first mounts as it
+  // opens, and closing then left a stuck panel that the X couldn't close.
+  const lastPath = useRef(pathname);
   useEffect(() => {
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
     setOpen(false);
   }, [pathname, setOpen]);
 

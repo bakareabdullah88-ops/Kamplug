@@ -139,7 +139,7 @@ export function useStudioOrders() {
     queryKey: qk.studio.orders,
     queryFn: () => services.studio.listOrders(),
     enabled: useHasBrand(),
-    refetchInterval: 15_000,
+    refetchInterval: 30_000,
   });
 }
 
@@ -147,8 +147,8 @@ export function useStudioOrders() {
 export function useUpdateOrderStatus() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
-      services.studio.updateOrderStatus(id, status),
+    mutationFn: ({ id, status, note }: { id: string; status: OrderStatus; note?: string }) =>
+      services.studio.updateOrderStatus(id, status, note),
     onMutate: async ({ id, status }) => {
       await qc.cancelQueries({ queryKey: qk.studio.orders });
       const prev = qc.getQueryData<Order[]>(qk.studio.orders);
@@ -164,6 +164,28 @@ export function useUpdateOrderStatus() {
       );
       qc.setQueryData(qk.order(o.id), o);
       // Money and counts derived from orders.
+      void qc.invalidateQueries({
+        queryKey: qk.studio.all,
+        predicate: (q) =>
+          ["dashboard", "product-analytics", "finance", "customers", "products"].includes(
+            String(q.queryKey[1]),
+          ),
+      });
+    },
+  });
+}
+
+/** Finishes an order with the buyer's handover code. Not optimistic: the code may be wrong. */
+export function useCompleteOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, code }: { id: string; code: string }) =>
+      services.studio.completeOrder(id, code),
+    onSuccess: (o) => {
+      qc.setQueryData<Order[]>(qk.studio.orders, (list) =>
+        list?.map((x) => (x.id === o.id ? o : x)),
+      );
+      qc.setQueryData(qk.order(o.id), o);
       void qc.invalidateQueries({
         queryKey: qk.studio.all,
         predicate: (q) =>

@@ -36,7 +36,7 @@ export function BrandCard({
           <span className="flex items-center gap-1 truncate text-small font-semibold">
             {b.name}
             {b.verified && (
-              <BadgeCheck className="size-3.5 shrink-0 text-accent" aria-label="Verified" />
+              <BadgeCheck className="size-3.5 shrink-0 text-verified" aria-label="Verified" />
             )}
           </span>
           <span className="block truncate text-small text-muted">{b.tagline}</span>
@@ -46,16 +46,10 @@ export function BrandCard({
   }
   const lead = variant === "lead";
   return (
-    <Link
-      href={`/brands/${b.handle}`}
-      className={cn(
-        "group relative flex flex-col overflow-hidden rounded-lg bg-surface hairline transition-shadow hover:shadow-md",
-        className,
-      )}
-    >
+    <Link href={`/brands/${b.handle}`} className={cn("group relative flex flex-col", className)}>
       <div
         className={cn(
-          "relative overflow-hidden",
+          "relative overflow-hidden rounded-lg",
           lead ? "aspect-[16/10] md:aspect-auto md:min-h-72 md:flex-1" : "aspect-[16/9]",
         )}
       >
@@ -64,6 +58,7 @@ export function BrandCard({
             image={b.cover}
             alt=""
             variant="cover"
+            category={b.category}
             sizes="(min-width: 1024px) 40vw, 100vw"
           />
         </div>
@@ -73,10 +68,10 @@ export function BrandCard({
           </span>
         )}
       </div>
-      <div className={cn("relative flex items-end gap-3", lead ? "p-5 md:p-6" : "p-4")}>
+      <div className={cn("relative flex items-end gap-3", lead ? "py-5 md:py-6" : "py-4")}>
         <span
           className={cn(
-            "-mt-10 shrink-0 overflow-hidden rounded-full ring-4 ring-surface",
+            "-mt-10 ml-3 shrink-0 overflow-hidden rounded-full ring-4 ring-(--app-bg)",
             lead ? "size-16" : "size-12",
           )}
         >
@@ -95,7 +90,7 @@ export function BrandCard({
           >
             <span className="truncate">{b.name}</span>
             {b.verified && (
-              <BadgeCheck className="size-4 shrink-0 text-accent" aria-label="Verified brand" />
+              <BadgeCheck className="size-4 shrink-0 text-verified" aria-label="Verified brand" />
             )}
           </h3>
           <p
@@ -110,8 +105,8 @@ export function BrandCard({
       </div>
       <div
         className={cn(
-          "flex items-center gap-4 border-t border-line text-small text-muted",
-          lead ? "px-5 py-3 md:px-6" : "px-4 py-2.5",
+          "flex items-center gap-4 border-t border-line-thin text-small text-muted",
+          lead ? "py-3" : "py-2.5",
         )}
       >
         {b.ratingCount > 0 && (
@@ -142,20 +137,17 @@ export function BrandCardSkeleton({
 }) {
   const lead = variant === "lead";
   return (
-    <div
-      className={cn("flex flex-col overflow-hidden rounded-lg bg-surface hairline", className)}
-      aria-hidden
-    >
+    <div className={cn("flex flex-col", className)} aria-hidden>
       <Skeleton
-        rounded="none"
+        rounded="lg"
         className={cn(
           lead ? "aspect-[16/10] md:aspect-auto md:min-h-72 md:flex-1" : "aspect-[16/9]",
         )}
       />
-      <div className={cn("flex items-end gap-3", lead ? "p-5 md:p-6" : "p-4")}>
+      <div className={cn("flex items-end gap-3", lead ? "py-5 md:py-6" : "py-4")}>
         <Skeleton
           rounded="full"
-          className={cn("-mt-10 ring-4 ring-surface", lead ? "size-16" : "size-12")}
+          className={cn("-mt-10 ml-3 ring-4 ring-(--app-bg)", lead ? "size-16" : "size-12")}
         />
         <div className="flex-1">
           <Skeleton className="h-2.5 w-24" />
@@ -163,7 +155,7 @@ export function BrandCardSkeleton({
           <Skeleton className="mt-2 h-3.5 w-3/4" />
         </div>
       </div>
-      <div className={cn("border-t border-line", lead ? "px-5 py-3 md:px-6" : "px-4 py-2.5")}>
+      <div className={cn("border-t border-line-thin", lead ? "py-3" : "py-2.5")}>
         <Skeleton className="h-3.5 w-48" />
       </div>
     </div>

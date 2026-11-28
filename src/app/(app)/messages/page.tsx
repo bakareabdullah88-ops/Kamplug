@@ -11,13 +11,12 @@ export const metadata: Metadata = { title: "Messages", robots: { index: false } 
 export default function MessagesPage() {
   return (
     <Page className={pagePad}>
-      <NavPageHeader title="Messages" description="Chats with the brands you buy from." />
+      <NavPageHeader
+        title="Messages"
+        description="Every chat in one place: shops you buy from, and your own shop's customers."
+      />
       <Suspense fallback={<Skeleton className="h-[60dvh] w-full" rounded="lg" />}>
-        <InboxView
-          as="buyer"
-          title="Conversations"
-          emptyBody="Message a brand from its page or a product to ask about sizes, pickup times or custom orders."
-        />
+        <InboxView emptyBody="Message a shop from its page or a product to ask about sizes, pickup times or custom orders. Customers who order from your shop can chat with you here too." />
       </Suspense>
     </Page>
   );

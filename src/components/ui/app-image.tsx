@@ -8,7 +8,9 @@ import { hashString } from "@/lib/random";
 import { artPalettes, type ArtPalette } from "@/design/tokens";
 import { BrandMark, ProductArt } from "@/components/art/product-art";
 import { useObjectUrl } from "@/queries/media";
-import type { ImageRef } from "@/services/types";
+import type { CategoryId, ImageRef } from "@/services/types";
+import { categoryTint } from "@/config/categories";
+import { CategoryIcon } from "@/components/market/category-icons";
 
 type Variant = "product" | "logo" | "cover";
 
@@ -21,6 +23,8 @@ type AppImageProps = {
   className?: string;
   sizes?: string;
   priority?: boolean;
+  /** For a shop cover with no photo: show this category's colour and icon. */
+  category?: CategoryId;
 };
 
 const paletteKeys = Object.keys(artPalettes) as ArtPalette[];
@@ -49,6 +53,7 @@ export function AppImage({
   className,
   sizes,
   priority,
+  category,
 }: AppImageProps) {
   const box = cn("relative block size-full overflow-hidden bg-sand", className);
   // Empty alt means decorative: hide it rather than announce an unnamed image.
@@ -67,6 +72,14 @@ export function AppImage({
       <span className={box} {...a11y}>
         {variant === "logo" ? (
           <BrandMark name={name ?? alt} palette={image.palette} className="size-full" />
+        ) : variant === "cover" && category ? (
+          // No cover photo yet: the shop's category colour with its icon.
+          <span
+            className="grid size-full place-items-center"
+            style={{ background: categoryTint[category] }}
+          >
+            <CategoryIcon id={category} className="size-[74%] max-h-48" />
+          </span>
         ) : variant === "cover" ? (
           // Shops without an uploaded cover get a plain tint, never a stand-in picture.
           <span
@@ -133,6 +146,7 @@ function BlobImage({
 }) {
   const url = useObjectUrl(id);
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
   return (
     <span className={className}>
       <span
@@ -142,18 +156,19 @@ function BlobImage({
         )}
         aria-hidden
       >
-        {url === null ? (
+        {url === null || failed ? (
           <Fallback variant={variant} name={name ?? alt} />
         ) : (
           <span className="absolute inset-0 animate-pulse bg-skeleton" />
         )}
       </span>
       {url && (
-        // eslint-disable-next-line @next/next/no-img-element -- blob: URLs are local; next/image cannot optimise them
+        // eslint-disable-next-line @next/next/no-img-element -- blob: URLs and /api/media redirects; next/image can't optimise them
         <img
           src={url}
           alt={alt}
           onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
           className={cn(
             "absolute inset-0 size-full object-cover transition-[opacity,filter,scale] duration-500 ease-out",
             loaded ? "blur-0 scale-100 opacity-100" : "scale-[1.03] opacity-0 blur-md",

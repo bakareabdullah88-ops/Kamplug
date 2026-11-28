@@ -65,9 +65,7 @@ export function WishlistButton({
       className={cn(
         "relative flex items-center justify-center rounded-full",
         dim,
-        variant === "floating"
-          ? "bg-surface/90 shadow-sm backdrop-blur-sm hover:bg-surface"
-          : "hover:bg-ink/[0.06]",
+        variant === "floating" ? "bg-surface/95 shadow-sm hover:bg-surface" : "hover:bg-ink/[0.06]",
         className,
       )}
     >
@@ -78,7 +76,7 @@ export function WishlistButton({
         transition={spring.bouncy}
         className={saved ? "text-accent" : "text-ink"}
       >
-        <Heart className={icon} fill={saved ? "currentColor" : "none"} strokeWidth={1.8} />
+        <Heart className={icon} fill={saved ? "currentColor" : "none"} />
       </motion.span>
       <AnimatePresence>
         {!reduce && burst > 0 && saved && (

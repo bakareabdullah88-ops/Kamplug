@@ -58,7 +58,11 @@ export function BarChart({
           aria-hidden
         >
           {[0, 1, 2, 3].map((i) => (
-            <span key={i} className="h-px w-full bg-line" style={{ opacity: i === 3 ? 1 : 0.6 }} />
+            <span
+              key={i}
+              className="h-px w-full bg-line-thin"
+              style={{ opacity: i === 3 ? 1 : 0.6 }}
+            />
           ))}
         </div>
         {data.map((d, i) => {
@@ -79,7 +83,9 @@ export function BarChart({
               <motion.div
                 className={cn(
                   "w-full rounded-t-[3px] transition-colors duration-200",
-                  on ? "bg-accent" : "bg-ink/[0.1] group-hover:bg-ink/[0.18] dark:bg-ink/[0.14]",
+                  on
+                    ? "bg-warm-purple"
+                    : "bg-ink/[0.1] group-hover:bg-ink/[0.18] dark:bg-ink/[0.14]",
                 )}
                 initial={reduce ? false : { scaleY: 0 }}
                 animate={inView || reduce ? { scaleY: 1 } : { scaleY: 0 }}

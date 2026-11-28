@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Plus, ShoppingBag } from "lucide-react";
-import { AppImage } from "@/components/ui/app-image";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { useMode, type Mode } from "@/components/shell/mode";
 import { spring } from "@/design/motion";
 import { cn } from "@/lib/cn";
@@ -10,84 +10,75 @@ import { useMyBrand } from "@/queries/studio";
 import { useNavBadges } from "./nav-badges";
 import { useSwitchWorkspace } from "./workspace";
 
-/** Market ⇄ your shop, as a segmented glass control with a sliding thumb. */
-export function WorkspaceSwitch({
-  compact = false,
-  className,
-}: {
-  compact?: boolean;
-  className?: string;
-}) {
+/**
+ * Buy ⇄ Sell, as one pill with a filled thumb that slides to the side you're on.
+ * Both words always show; the pill is sized around them. The thumb moves the
+ * moment you tap, then the other side's page loads; nothing else animates.
+ */
+export function WorkspaceSwitch({ className }: { className?: string }) {
   const mode = useMode();
   const { data: brand } = useMyBrand();
   const badges = useNavBadges();
   const go = useSwitchWorkspace();
-  const options: { value: Mode; label: string; icon: React.ReactNode; count?: number }[] = [
-    {
-      value: "buying",
-      label: "Market",
-      icon: (
-        <span className="grid size-6 place-items-center rounded-lg bg-[linear-gradient(140deg,var(--chart-blue),var(--chart-violet))] text-white shadow-sm">
-          <ShoppingBag className="size-3.5" />
-        </span>
-      ),
-    },
+  const path = usePathname() ?? "/";
+  // The side you just tapped, until the page changes (then the route decides again).
+  const [tapped, setTapped] = useState<{ path: string; to: Mode } | null>(null);
+  const shown = tapped && tapped.path === path ? tapped.to : mode;
+  const options: { value: Mode; label: string; title: string; count?: number }[] = [
+    { value: "buying", label: "Buy", title: "Buy: the market" },
     {
       value: "selling",
-      label: brand ? brand.name : "Open a shop",
-      icon: brand ? (
-        <span className="block size-6 overflow-hidden rounded-lg shadow-sm">
-          <AppImage image={brand.logo} alt="" variant="logo" name={brand.name} />
-        </span>
-      ) : (
-        <span className="grid size-6 place-items-center rounded-lg border border-dashed border-line-strong text-muted">
-          <Plus className="size-3.5" />
-        </span>
-      ),
+      label: "Sell",
+      title: brand ? `Sell: ${brand.name}` : "Sell: open a shop",
       count: badges.newOrders,
     },
   ];
   return (
     <div
       role="radiogroup"
-      aria-label="Workspace"
-      className={cn(
-        "flex items-center gap-0.5 rounded-xl bg-ink/[0.04] p-1 ring-1 ring-line/70",
-        className,
-      )}
+      aria-label="Buy or sell"
+      className={cn("inline-flex shrink-0 items-center rounded-full bg-ink/[0.06] p-1", className)}
     >
       {options.map((o) => {
-        const active = mode === o.value;
+        const active = shown === o.value;
         return (
-          <motion.button
+          <button
             key={o.value}
             type="button"
             role="radio"
             aria-checked={active}
-            aria-label={o.label}
-            onClick={() => go(o.value)}
-            whileTap={{ scale: 0.95 }}
+            aria-label={o.title}
+            title={o.title}
+            onClick={() => {
+              if (o.value === mode) return;
+              setTapped({ path, to: o.value });
+              go(o.value);
+            }}
             className={cn(
-              "relative flex h-9 min-w-0 items-center gap-2 rounded-[10px] px-2 text-[13px] font-semibold transition-colors",
-              active ? "text-ink" : "text-muted hover:text-ink",
+              "relative flex h-9 min-w-[68px] flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-[14px] font-bold transition-colors duration-150",
+              active ? "text-on-accent" : "text-ink-2 hover:text-ink",
             )}
           >
             {active && (
               <motion.span
                 layoutId="workspace-thumb"
                 transition={spring.snappy}
-                className="absolute inset-0 rounded-[10px] bg-surface shadow-sm ring-1 ring-line"
+                className="absolute inset-0 rounded-full bg-accent"
                 aria-hidden
               />
             )}
-            <span className="relative">{o.icon}</span>
-            {!compact && <span className="relative max-w-28 truncate">{o.label}</span>}
+            <span className="relative">{o.label}</span>
             {!!o.count && (
-              <span className="relative grid h-4 min-w-4 place-items-center rounded-full bg-badge px-1 text-[10px] font-bold text-white">
+              <span
+                className={cn(
+                  "relative grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold tabular",
+                  active ? "bg-white text-accent-ink" : "bg-badge text-white",
+                )}
+              >
                 {o.count}
               </span>
             )}
-          </motion.button>
+          </button>
         );
       })}
     </div>

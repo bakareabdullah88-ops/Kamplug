@@ -31,11 +31,10 @@ export async function logIn(page: Page, email: string, next = "/home") {
 }
 
 export async function signOut(page: Page) {
-  await page
-    .getByRole("button", { name: "Account menu" })
-    .filter({ visible: true })
-    .first()
-    .click();
+  // Desktop: the avatar's profile menu. Phones: the side menu, where the profile lives.
+  const account = page.getByRole("button", { name: "Account menu" }).filter({ visible: true });
+  if (await account.count()) await account.first().click();
+  else await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await page.waitForURL((u) => u.pathname === "/");
 }
@@ -45,7 +44,7 @@ export async function openShop(page: Page, name: string, tagline: string) {
   await page.goto("/open-shop");
   await page.getByLabel("Brand name").fill(name);
   await page.getByRole("button", { name: "Continue" }).click();
-  await page.getByRole("radio", { name: "Food & snacks" }).click();
+  await page.getByRole("radio", { name: "Food & groceries" }).click();
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByRole("button", { name: "Skip for now" }).click();
   await page.getByLabel("Tagline").fill(tagline);
@@ -64,7 +63,13 @@ export async function addProduct(
   await page.getByLabel("Name", { exact: true }).fill(p.name);
   await page.getByLabel("Description").fill(p.description);
   await page.getByLabel("Price (₦)", { exact: true }).fill(p.price);
-  await page.getByRole("button", { name: "Publish" }).first().click();
+  await page.getByLabel("Type", { exact: true }).click();
+  await page.getByRole("option", { name: "Snacks" }).click();
+  await page
+    .getByRole("button", { name: "Publish", exact: true })
+    .filter({ visible: true })
+    .first()
+    .click();
   await page.waitForURL(/\/studio\/products$/);
 }
 
@@ -94,16 +99,36 @@ export async function buy(page: Page, productName: string) {
   });
 }
 
-/** Click the next-step button on the first order until it's done. */
-export async function fulfilFirstOrder(page: Page) {
+/** The buyer's handover code, read from their newest order's page. */
+export async function readHandoverCode(page: Page): Promise<string> {
+  await page.goto("/orders");
+  await page
+    .getByRole("button", { name: /Actions for order/ })
+    .filter({ visible: true })
+    .first()
+    .click();
+  await page.getByRole("menuitem", { name: "Track order" }).click();
+  const code = page.getByLabel(/^Handover code/);
+  await expect(code).toBeVisible();
+  const text = (await code.textContent())?.trim() ?? "";
+  expect(text).toMatch(/^\d{4}$/);
+  return text;
+}
+
+/** Click the next-step button on the first order, then finish it with the buyer's code. */
+export async function fulfilFirstOrder(page: Page, code: string) {
   await page.goto("/studio/orders");
-  for (const label of ["Accept", "Start preparing", "Mark ready", "Mark picked up"]) {
+  for (const label of ["Accept", "Start preparing", "Mark ready", "Enter buyer's code"]) {
     await page
       .getByRole("button", { name: label, exact: true })
       .filter({ visible: true })
       .first()
       .click();
   }
+  const dialog = page.getByRole("dialog", { name: "Enter the buyer's code" });
+  await dialog.getByLabel("Buyer's code", { exact: true }).fill(code);
+  await dialog.getByRole("button", { name: "Finish pickup" }).click();
+  await expect(dialog).toBeHidden();
   // Saved, not just optimistic: the server marks pay-at-pickup orders paid on completion.
   await expect(
     page

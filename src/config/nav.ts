@@ -1,21 +1,23 @@
 import {
-  BarChart3,
+  BagIcon,
+  DashboardIcon,
+  DiscoverIcon,
+  HomeIcon,
+  MessagesIcon,
+  OrdersIcon,
+  SavedIcon,
+} from "@/components/icons/kamplug-icons";
+import type { AppIcon } from "@/components/icons/kamplug-icons";
+import {
   Bell,
-  Compass,
-  Gauge,
-  Heart,
-  LayoutGrid,
   MapPin,
-  MessageCircle,
   Package,
-  Receipt,
   Settings,
-  ShoppingBag,
   Star,
   Store,
+  Image as ImageIcon,
   Tag,
   Users,
-  UserCog,
   Wallet,
   type LucideIcon,
 } from "lucide-react";
@@ -23,16 +25,24 @@ import {
 export type NavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: LucideIcon | AppIcon;
   /** Colour of the item's icon tile (a CSS colour or variable). */
   tone: string;
   /** Which badge to show next to the item, if any. */
   badge?: "notifications" | "messages" | "bag" | "activeOrders" | "newOrders" | "shopMessages";
   match?: (path: string) => boolean;
-  /** Shown as a pill in the top bar; the rest live under "More". */
+  /** Shown as a link in the top bar; the rest live under "More" and in the phone menu. */
   primary?: boolean;
-  adminOnly?: boolean;
+  /**
+   * Lives somewhere else, so menus skip it: "header" items have their own
+   * button in the top bar (messages, notifications, bag); "account" items sit
+   * in the profile menu under the avatar.
+   */
+  placement?: "header" | "account";
 };
+
+/** The items a menu should list: everything that doesn't already have its own place. */
+export const menuItems = (items: NavItem[]) => items.filter((i) => !i.placement);
 
 export type NavSection = { title?: string; items: NavItem[] };
 
@@ -63,7 +73,7 @@ export const marketNav: NavSection[] = [
       {
         href: "/home",
         label: "Home",
-        icon: LayoutGrid,
+        icon: HomeIcon,
         tone: T.blue,
         primary: true,
         match: startsWith("/home"),
@@ -71,7 +81,7 @@ export const marketNav: NavSection[] = [
       {
         href: "/explore",
         label: "Discover",
-        icon: Compass,
+        icon: DiscoverIcon,
         tone: T.violet,
         primary: true,
         match: startsWith("/explore", "/search", "/brands", "/products"),
@@ -79,29 +89,37 @@ export const marketNav: NavSection[] = [
       {
         href: "/orders",
         label: "Orders",
-        icon: Receipt,
+        icon: OrdersIcon,
         tone: T.orange,
         primary: true,
         badge: "activeOrders",
         match: startsWith("/orders"),
       },
       {
+        href: "/account",
+        label: "Dashboard",
+        icon: DashboardIcon,
+        tone: T.sky,
+        match: (p) => p === "/account",
+      },
+      {
         href: "/messages",
         label: "Messages",
-        icon: MessageCircle,
+        placement: "header",
+        icon: MessagesIcon,
         tone: T.teal,
-        primary: true,
         badge: "messages",
         match: startsWith("/messages"),
       },
       {
         href: "/wishlist",
         label: "Saved",
-        icon: Heart,
+        icon: SavedIcon,
         tone: T.pink,
         primary: true,
         match: startsWith("/wishlist"),
       },
+      { href: "/account/following", label: "Following", icon: Store, tone: T.green },
     ],
   },
   {
@@ -110,15 +128,16 @@ export const marketNav: NavSection[] = [
       {
         href: "/bag",
         label: "Bag",
-        icon: ShoppingBag,
+        placement: "header",
+        icon: BagIcon,
         tone: T.indigo,
         badge: "bag",
         match: startsWith("/bag", "/checkout"),
       },
-      { href: "/account/following", label: "Following", icon: Store, tone: T.green },
       {
         href: "/notifications",
         label: "Notifications",
+        placement: "header",
         icon: Bell,
         tone: T.amber,
         badge: "notifications",
@@ -129,19 +148,30 @@ export const marketNav: NavSection[] = [
   {
     title: "Account",
     items: [
-      { href: "/account/places", label: "Addresses", icon: MapPin, tone: T.rose },
-      { href: "/account/reviews", label: "My reviews", icon: Star, tone: T.amber },
-      { href: "/account/settings", label: "Settings", icon: Settings, tone: T.slate },
-      { href: "/account/members", label: "Members", icon: UserCog, tone: T.sky, adminOnly: true },
+      {
+        href: "/account/places",
+        label: "Addresses",
+        placement: "account",
+        icon: MapPin,
+        tone: T.rose,
+      },
+      {
+        href: "/account/reviews",
+        label: "My reviews",
+        placement: "account",
+        icon: Star,
+        tone: T.amber,
+      },
+      {
+        href: "/account/settings",
+        label: "Settings",
+        placement: "account",
+        icon: Settings,
+        tone: T.slate,
+      },
     ],
   },
 ];
-
-/** Bottom bar on phones while buying. */
-export const marketTabs: NavItem[] = marketNav[0]!.items
-  .filter((i) => i.href !== "/wishlist")
-  .concat(marketNav[1]!.items.filter((i) => i.href === "/bag"))
-  .filter((i) => i.href !== "/messages");
 
 /* ---------------------------------- Shop ---------------------------------- */
 
@@ -150,23 +180,16 @@ export const shopNav: NavSection[] = [
     items: [
       {
         href: "/studio",
-        label: "Performance",
-        icon: Gauge,
+        label: "Dashboard",
+        icon: DashboardIcon,
         tone: T.blue,
         primary: true,
-        match: (p) => p === "/studio",
-      },
-      {
-        href: "/studio/analytics",
-        label: "Analytics",
-        icon: BarChart3,
-        tone: T.violet,
-        primary: true,
+        match: (p) => p === "/studio" || p.startsWith("/studio?") || p === "/studio/analytics",
       },
       {
         href: "/studio/orders",
         label: "Orders",
-        icon: Receipt,
+        icon: OrdersIcon,
         tone: T.orange,
         primary: true,
         badge: "newOrders",
@@ -175,9 +198,9 @@ export const shopNav: NavSection[] = [
       {
         href: "/studio/messages",
         label: "Inbox",
-        icon: MessageCircle,
+        placement: "header",
+        icon: MessagesIcon,
         tone: T.teal,
-        primary: true,
         badge: "shopMessages",
       },
       { href: "/studio/customers", label: "Customers", icon: Users, tone: T.pink, primary: true },
@@ -187,10 +210,12 @@ export const shopNav: NavSection[] = [
     title: "Grow",
     items: [
       { href: "/studio/promotions", label: "Promotions", icon: Tag, tone: T.rose },
+      { href: "/studio/posters", label: "Posters", icon: ImageIcon, tone: T.orange },
       { href: "/studio/reviews", label: "Reviews", icon: Star, tone: T.amber },
       {
         href: "/notifications",
         label: "Notifications",
+        placement: "header",
         icon: Bell,
         tone: T.amber,
         badge: "notifications",
@@ -207,18 +232,6 @@ export const shopNav: NavSection[] = [
   },
 ];
 
-export const shopTabs: NavItem[] = [
-  shopNav[0]!.items[0]!,
-  shopNav[0]!.items[2]!,
-  shopNav[0]!.items[3]!,
-  shopNav[0]!.items[4]!,
-];
-
 export function isActive(item: NavItem, path: string) {
   return item.match ? item.match(path) : path === item.href || path.startsWith(`${item.href}/`);
-}
-
-/** Sections with admin-only items removed for everyone else. */
-export function visibleSections(sections: NavSection[], isAdmin: boolean): NavSection[] {
-  return sections.map((s) => ({ ...s, items: s.items.filter((i) => !i.adminOnly || isAdmin) }));
 }

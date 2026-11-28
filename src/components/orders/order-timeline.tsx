@@ -41,7 +41,7 @@ export function OrderTimeline({ order }: { order: Order }) {
                 aria-hidden
               >
                 <motion.span
-                  className="block h-full w-full origin-top bg-accent"
+                  className="block h-full w-full origin-top bg-save"
                   initial={false}
                   animate={{ scaleY: i < currentIndex ? 1 : 0 }}
                   transition={reduce ? { duration: 0 } : { ...spring.gentle, delay: 0.1 }}
@@ -51,7 +51,7 @@ export function OrderTimeline({ order }: { order: Order }) {
             <span className="relative z-10 flex size-8 shrink-0 items-center justify-center">
               {current && !reduce && (
                 <motion.span
-                  className="absolute inset-0 rounded-full bg-accent"
+                  className="absolute inset-0 rounded-full bg-save"
                   initial={{ opacity: 0.35, scale: 0.8 }}
                   animate={{ opacity: 0, scale: 1.7 }}
                   transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
@@ -98,6 +98,11 @@ export function OrderTimeline({ order }: { order: Order }) {
                   {statusDescription(s, method)}
                 </motion.p>
               )}
+              {failedStep && order.timeline.find((t) => t.status === s)?.note && (
+                <p className="mt-1 text-small text-ink-2">
+                  Reason: {order.timeline.find((t) => t.status === s)?.note}
+                </p>
+              )}
             </div>
           </li>
         );
@@ -115,7 +120,7 @@ export function OrderProgress({ order }: { order: Order }) {
       {steps.map((s, i) => (
         <span key={s} className="h-1 flex-1 overflow-hidden rounded-full bg-ink/[0.08]">
           <motion.span
-            className="block h-full origin-left rounded-full bg-accent"
+            className="block h-full origin-left rounded-full bg-save"
             initial={false}
             animate={{ scaleX: i <= idx ? 1 : 0 }}
             transition={spring.gentle}

@@ -8,7 +8,9 @@
  * style in font-presets.ts.
  */
 import {
+  Bricolage_Grotesque,
   DM_Sans,
+  Figtree,
   Fraunces,
   Geist,
   Geist_Mono,
@@ -17,10 +19,23 @@ import {
   Plus_Jakarta_Sans,
 } from "next/font/google";
 
+/** The one face for everything: a clean, warm geometric sans that reads well small. */
+const figtree = Figtree({
+  variable: "--ff-figtree",
+  subsets: ["latin"],
+  display: "swap",
+});
 const jakarta = Plus_Jakarta_Sans({
   variable: "--ff-jakarta",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
+});
+const bricolage = Bricolage_Grotesque({
+  variable: "--ff-bricolage",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 const inter = Inter({
   variable: "--ff-inter",
@@ -55,8 +70,23 @@ const fraunces = Fraunces({
 });
 
 /** Labels, prices in tables, order codes, status pills. */
-const mono = Geist_Mono({ variable: "--font-mono-face", subsets: ["latin"], display: "swap" });
+const mono = Geist_Mono({
+  variable: "--font-mono-face",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
 
-export const fontClassNames = [jakarta, inter, dmSans, instrument, geist, fraunces, mono]
+export const fontClassNames = [
+  figtree,
+  jakarta,
+  bricolage,
+  inter,
+  dmSans,
+  instrument,
+  geist,
+  fraunces,
+  mono,
+]
   .map((f) => f.variable)
   .join(" ");

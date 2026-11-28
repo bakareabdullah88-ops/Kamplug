@@ -10,6 +10,21 @@ export function isActive(status: OrderStatus) {
   return !isTerminal(status);
 }
 
+/** A fresh 4-digit handover code, from the secure random source. */
+export function newHandoverCode(): string {
+  const n = crypto.getRandomValues(new Uint32Array(1))[0]! % 10_000;
+  return String(n).padStart(4, "0");
+}
+
+/** Wrong handover codes allowed before entry is paused, and for how long. */
+export const HANDOVER_MAX_WRONG = 5;
+export const HANDOVER_LOCK_MS = 10 * 60_000;
+
+/** True once the order is with the buyer's side of the handover: on its way, or ready to collect. */
+export function awaitingHandover(o: { status: OrderStatus }): boolean {
+  return o.status === "out_for_delivery" || o.status === "ready";
+}
+
 /** The happy path for each fulfilment method. */
 export function stepsFor(method: FulfilmentMethod): OrderStatus[] {
   return method === "pickup"
@@ -102,9 +117,9 @@ export function statusDescription(status: OrderStatus, method: FulfilmentMethod)
     case "ready":
       return "Head to the pickup point with your order code.";
     case "out_for_delivery":
-      return "A rider is on the way to you.";
+      return "It's on the way to you.";
     case "delivered":
-      return method === "pickup" ? "Collected. Enjoy!" : "Delivered. Enjoy!";
+      return method === "pickup" ? "Collected. Enjoy." : "Delivered. Enjoy.";
     case "cancelled":
       return "This order was cancelled.";
     case "declined":
@@ -162,20 +177,6 @@ export function advanceOrder(order: Order, now: number): { order: Order; reached
   };
 }
 
-/** 0 → 1 rider progress while out for delivery (for the map marker). */
-export function deliveryProgress(order: Order, now: number): number {
-  if (order.fulfilment.method !== "delivery") return 0;
-  if (order.status === "delivered") return 1;
-  if (order.status !== "out_for_delivery") return 0;
-  const start = order.timeline.find((t) => t.status === "out_for_delivery");
-  if (!start) return 0;
-  const elapsed = now - Date.parse(start.at);
-  const total = order.autoProgress
-    ? (AUTO_SCHEDULE.delivered - AUTO_SCHEDULE.dispatch) * 1000
-    : 15 * 60 * 1000;
-  return Math.max(0, Math.min(0.97, elapsed / total));
-}
-
 /**
  * Seconds until the next milestone the buyer cares about: delivery for
  * delivery orders, "ready to collect" for pickup orders. Null when there is
@@ -191,14 +192,17 @@ export function etaSeconds(order: Order, now: number): number | null {
 }
 
 /** Apply a seller transition, appending to the timeline. Throws on an illegal move. */
-export function transition(order: Order, to: OrderStatus, now: number): Order {
+export function transition(order: Order, to: OrderStatus, now: number, note?: string): Order {
   if (!canTransition(order, to)) {
     throw new Error(`Can't move an order from ${order.status} to ${to}`);
   }
   return {
     ...order,
     status: to,
-    timeline: [...order.timeline, { status: to, at: new Date(now).toISOString() }],
+    timeline: [
+      ...order.timeline,
+      { status: to, at: new Date(now).toISOString(), ...(note ? { note } : {}) },
+    ],
     payment:
       to === "delivered" && order.payment.method === "pay_on_pickup"
         ? { ...order.payment, status: "paid" }

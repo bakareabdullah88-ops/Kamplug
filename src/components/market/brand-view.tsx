@@ -3,6 +3,7 @@
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
+import { formatWhen } from "@/domain/distance";
 import { BadgeCheck, Bike, Clock, MapPin, MessageCircle, Star, Store } from "lucide-react";
 import { AppImage } from "@/components/ui/app-image";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { useToggleFollow } from "@/queries/social";
 import { isServiceError } from "@/services/errors";
 import type { Brand, SortKey } from "@/services/types";
 import { toast } from "@/stores/toast";
+import { DistanceLine } from "./nearby";
 import { ProductCard, ProductCardSkeleton } from "./product-card";
 import { ReviewsBlock } from "./reviews";
 import { ShareButton } from "./share-button";
@@ -146,6 +148,8 @@ function BrandAbout({ brand }: { brand: Brand }) {
   const points =
     campus?.pickupPoints.filter((p) => brand.fulfilment.pickupPointIds.includes(p.id)) ?? [];
   const zones = campus?.zones.filter((z) => brand.fulfilment.zoneIds.includes(z.id)) ?? [];
+  // Only the spot the seller chose; a pickup point is already listed below.
+  const base = campus?.zones.find((z) => z.id === brand.fulfilment.baseZoneId);
   return (
     <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
       <div className="md:col-span-7">
@@ -158,8 +162,8 @@ function BrandAbout({ brand }: { brand: Brand }) {
           On {campus?.name ?? "campus"} since {formatDate(brand.createdAt, { year: true })}
         </p>
       </div>
-      <dl className="flex flex-col gap-6 md:col-span-5">
-        <div className="card p-5">
+      <dl className="flex flex-col border-b border-line-thin md:col-span-5">
+        <div className="card py-5">
           <dt className="flex items-center gap-2 text-small font-semibold">
             <Clock className="size-4" /> Opening hours
           </dt>
@@ -168,8 +172,18 @@ function BrandAbout({ brand }: { brand: Brand }) {
             {formatClock(brand.openHours.closes)}
           </dd>
         </div>
+        {base && (
+          <div className="card py-5">
+            <dt className="flex items-center gap-2 text-small font-semibold">
+              <Store className="size-4" /> Sells from
+            </dt>
+            <dd className="mt-2 text-small text-ink-2">
+              {base.name}, {campus?.shortName}
+            </dd>
+          </div>
+        )}
         {brand.fulfilment.pickup && (
-          <div className="card p-5">
+          <div className="card py-5">
             <dt className="flex items-center gap-2 text-small font-semibold">
               <MapPin className="size-4" /> Pickup points · free
             </dt>
@@ -186,17 +200,14 @@ function BrandAbout({ brand }: { brand: Brand }) {
           </div>
         )}
         {brand.fulfilment.delivery && (
-          <div className="card p-5">
+          <div className="card py-5">
             <dt className="flex items-center gap-2 text-small font-semibold">
               <Bike className="size-4" /> Delivery · {formatNaira(brand.fulfilment.deliveryFeeKobo)}
             </dt>
             <dd className="mt-2 text-small text-ink-2">
               To {zones.length} {zones.length === 1 ? "zone" : "zones"} on {campus?.shortName}:{" "}
-              {zones.map((z) => z.name).join(", ")}. Ready in about{" "}
-              {brand.fulfilment.prepMinutes >= 60
-                ? `${Math.round(brand.fulfilment.prepMinutes / 60)}h`
-                : `${brand.fulfilment.prepMinutes} min`}
-              .
+              {zones.map((z) => z.name).join(", ")}. Ready{" "}
+              {formatWhen(brand.fulfilment.prepMinutes)}.
             </dd>
           </div>
         )}
@@ -268,7 +279,13 @@ export function BrandView() {
     <div>
       <div className="container-page pt-4 md:pt-6">
         <div className="relative aspect-[16/7] overflow-hidden rounded-lg md:aspect-[16/5]">
-          <AppImage image={brand.cover} alt={`${brand.name} cover`} variant="cover" priority />
+          <AppImage
+            image={brand.cover}
+            alt={`${brand.name} cover`}
+            variant="cover"
+            category={brand.category}
+            priority
+          />
           {brand.vacation && (
             <span className="absolute top-4 left-4 rounded-full bg-surface/90 px-3 py-1.5 text-small font-medium backdrop-blur">
               On a short break, back soon
@@ -279,7 +296,7 @@ export function BrandView() {
 
       <div className="container-page">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:gap-6">
-          <div className="-mt-12 size-24 shrink-0 overflow-hidden rounded-full shadow-md ring-4 ring-canvas md:-mt-16 md:size-32">
+          <div className="-mt-12 size-24 shrink-0 overflow-hidden rounded-full ring-4 ring-canvas md:-mt-16 md:size-32">
             <AppImage
               image={brand.logo}
               alt={`${brand.name} logo`}
@@ -294,7 +311,7 @@ export function BrandView() {
             <h1 className="mt-2 flex items-center gap-2 font-display text-display-md">
               <span className="truncate">{brand.name}</span>
               {brand.verified && (
-                <BadgeCheck className="size-6 shrink-0 text-accent" aria-label="Verified brand" />
+                <BadgeCheck className="size-6 shrink-0 text-verified" aria-label="Verified brand" />
               )}
             </h1>
             <p className="mt-1 text-body text-muted">{brand.tagline}</p>
@@ -322,7 +339,7 @@ export function BrandView() {
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line pb-6 text-small">
+        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line-thin pb-6 text-small">
           <OpenBadge brand={brand} />
           {brand.ratingCount > 0 && (
             <button
@@ -343,6 +360,13 @@ export function BrandView() {
             />{" "}
             <span className="text-muted">followers</span>
           </span>
+          <DistanceLine
+            fulfilment={brand.fulfilment}
+            campusId={brand.campusId}
+            badge
+            eta
+            className="text-small"
+          />
           <span className="text-muted">
             {brand.fulfilment.pickup && brand.fulfilment.delivery
               ? "Pickup or delivery"
@@ -353,7 +377,7 @@ export function BrandView() {
         </div>
 
         {own && (
-          <p className="mt-6 rounded-md bg-accent-soft px-4 py-3 text-small text-accent-ink">
+          <p className="mt-6 rounded-md bg-tint px-4 py-3 text-small text-tint-ink">
             This is your shop, as buyers see it. You can browse it, but you can&apos;t buy from
             yourself.
           </p>

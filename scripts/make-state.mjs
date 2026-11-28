@@ -86,7 +86,7 @@ await signUp(seller);
 await page.goto(`${base}/open-shop`);
 await page.getByLabel("Brand name").fill("Mama Kemi's Kitchen");
 await page.getByRole("button", { name: "Continue" }).click();
-await page.getByRole("radio", { name: "Food & snacks" }).click();
+await page.getByRole("radio", { name: "Food & groceries" }).click();
 await page.getByRole("button", { name: "Continue" }).click();
 await page.getByRole("button", { name: "Skip for now" }).click();
 await page.getByLabel("Tagline").fill("Small chops and jollof, made fresh daily");
@@ -100,12 +100,15 @@ for (const p of products) {
   await page.getByLabel("Name", { exact: true }).fill(p.name);
   await page.getByLabel("Description").fill(p.description);
   await page.getByLabel("Price (₦)", { exact: true }).fill(p.price);
+  await page.getByLabel("Type", { exact: true }).click();
+  await page.getByRole("option", { name: p.type ?? "Snacks" }).click();
   await page.getByRole("button", { name: "Publish" }).first().click();
   await page.waitForURL(/\/studio\/products$/);
 }
 await signOut();
 
 // Buyers browse and order
+let code = "";
 for (const [i, b] of buyers.entries()) {
   await signUp(b);
   for (const p of products.slice(0, 3 + i)) {
@@ -132,12 +135,23 @@ for (const [i, b] of buyers.entries()) {
     .first()
     .click();
   await page.getByRole("heading", { name: "Order placed" }).waitFor();
+  // The newest order is the one the seller finishes below, with this buyer's code.
+  await page.goto(`${base}/orders`);
+  await page
+    .getByRole("button", { name: /Actions for order/ })
+    .filter({ visible: true })
+    .first()
+    .click();
+  await page.getByRole("menuitem", { name: "Track order" }).click();
+  code = ((await page.getByLabel(/^Handover code/).textContent()) ?? "").trim();
   await signOut();
 }
 
 // Seller fulfils one order fully and accepts the other
 await logIn(seller, "/studio/orders");
-for (const l of ["Accept", "Start preparing", "Mark ready", "Mark picked up"]) await next(l);
+for (const l of ["Accept", "Start preparing", "Mark ready", "Enter buyer's code"]) await next(l);
+await page.getByLabel("Buyer's code", { exact: true }).fill(code);
+await next("Finish pickup");
 await next("Accept");
 await ctx.storageState({ path: `${out}/seller.json`, indexedDB: true });
 await signOut();

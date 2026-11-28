@@ -10,6 +10,7 @@ import type {
   SavedPlace,
   Thread,
   UserRecord,
+  WaitlistEntry,
 } from "@/services/types";
 import { seedCampuses } from "./campuses";
 
@@ -25,6 +26,7 @@ export type DbSnapshot = {
   threads: Thread[];
   places: SavedPlace[];
   events: AnalyticsEvent[];
+  waitlist: WaitlistEntry[];
 };
 
 /**
@@ -44,5 +46,6 @@ export async function generateSeed(): Promise<DbSnapshot> {
     threads: [],
     places: [],
     events: [],
+    waitlist: [],
   };
 }

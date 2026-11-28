@@ -62,7 +62,7 @@ export type PillTone = "neutral" | "accent" | "success" | "warning" | "danger" |
 
 const pillTones: Record<PillTone, string> = {
   neutral: "bg-ink/[0.06] text-ink-2 dark:bg-ink/[0.1]",
-  accent: "bg-accent-soft text-accent-ink",
+  accent: "bg-tint text-tint-ink",
   success: "bg-success-soft text-success",
   warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
@@ -111,7 +111,9 @@ export function Avatar({
   tone?: number;
 }) {
   const hue = tone ?? hashHue(name);
+  // "@bisi_x7k2" shows "B", not "@".
   const letters = name
+    .replace(/^@/, "")
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
@@ -282,7 +284,7 @@ export function RatingInput({
           whileTap={{ scale: 0.85 }}
           animate={value >= n ? { scale: [1, 1.18, 1] } : { scale: 1 }}
           transition={spring.bouncy}
-          className="flex size-11 items-center justify-center rounded-md text-accent hover:bg-accent-soft"
+          className="flex size-11 items-center justify-center rounded-md text-warm-sun hover:bg-ink/[0.04]"
         >
           <Star className="size-7" fill={value >= n ? "currentColor" : "none"} strokeWidth={1.5} />
         </motion.button>
@@ -313,7 +315,7 @@ export function Price({
           size === "md" && "font-mono text-body font-medium",
           size === "lg" && "font-mono text-title-lg font-medium",
           size === "display" && "font-display text-display-md",
-          compareAt && compareAt > kobo && "text-accent-ink",
+          compareAt && compareAt > kobo && "text-save",
         )}
       >
         {formatNaira(kobo)}
@@ -414,7 +416,7 @@ export function ProgressBar({
       className={cn("h-1.5 w-full overflow-hidden rounded-full bg-ink/[0.08]", className)}
     >
       <motion.div
-        className="h-full origin-left rounded-full bg-accent"
+        className="h-full origin-left rounded-full bg-save"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: pct / 100 }}
         transition={spring.gentle}
