@@ -28,11 +28,11 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "h-8 rounded-sm px-3 text-small",
-  md: "h-10 rounded-md px-4 text-body",
-  lg: "h-11 rounded-md px-5 text-body font-semibold",
-  icon: "size-10 rounded-md",
-  "icon-sm": "size-8 rounded-sm",
+  sm: "h-8 rounded-full px-3.5 text-small",
+  md: "h-10 rounded-full px-4.5 text-body",
+  lg: "h-12 rounded-full px-6 text-body font-semibold",
+  icon: "size-10 rounded-full",
+  "icon-sm": "size-8 rounded-full",
 };
 
 export function buttonStyles({

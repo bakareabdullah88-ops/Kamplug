@@ -7,7 +7,7 @@
  */
 export const brandColors = {
   /** The brand colour on light backgrounds and on the icon tile. */
-  tomato: "#d63426",
+  tomato: "#cf3f17",
   /** The same red, lifted for dark backgrounds. */
   tomatoBright: "#ffb3a7",
   ink: "#1f1a17",

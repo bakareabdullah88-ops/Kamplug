@@ -33,12 +33,12 @@
   --on-primary: #ffffff;
 
   /* Brand: tomato red. Wordmark, main buttons, key states. White text on it passes AA (4.8:1). */
-  --brand: #d63426;
+  --brand: #cf3f17;
   --brand-ink: #c42e22;
-  --accent: #d63426;
-  --accent-hover: #b42a20;
-  --accent-soft: #fdece9;
-  --accent-ink: #b42a20;
+  --accent: #cf3f17;
+  --accent-hover: #b0330f;
+  --accent-soft: #fdebe4;
+  --accent-ink: #b0330f;
   --on-accent: #ffffff;
   /* The solid edge under raised buttons and panels. */
   --accent-edge: #8f2018;
@@ -60,8 +60,8 @@
   --warm-sun: #ffc93c;
 
   /* Both sides of the app share the brand colour. */
-  --studio: #d63426;
-  --ember: #d63426;
+  --studio: #cf3f17;
+  --ember: #cf3f17;
   --studio-contrast: #ffc8be;
   --ember-contrast: #ffc8be;
 
@@ -172,19 +172,19 @@
   --primary-hover: #ffffff;
   --on-primary: #0e1022;
 
-  --brand: #d63426;
+  --brand: #cf3f17;
   --brand-ink: #ffb3a7;
   --accent: #ff7a6b;
   --accent-hover: #ffb3a7;
   --accent-soft: #3a1d1a;
   --accent-ink: #ffc8be;
   --on-accent: #2a0b08;
-  --accent-edge: #d63426;
+  --accent-edge: #cf3f17;
 
   --studio: #ff7a6b;
   --ember: #ff7a6b;
-  --studio-contrast: #b42a20;
-  --ember-contrast: #b42a20;
+  --studio-contrast: #b0330f;
+  --ember-contrast: #b0330f;
 
   --chart-blue: #6f86ff;
   --chart-blue-2: #3b4fae;
@@ -379,6 +379,12 @@
     text-rendering: optimizeLegibility;
     -webkit-tap-highlight-color: transparent;
     scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+
+  /* Thin, quiet scrollbars that match the page instead of the OS default. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--ink) 22%, transparent) transparent;
   }
 
   body {

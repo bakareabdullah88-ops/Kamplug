@@ -106,10 +106,10 @@ const h2 =
 /** Flat buttons: colour does the work, no shadows. */
 const btn = {
   cobalt:
-    "inline-flex h-14 items-center gap-2 rounded-xl bg-[#d63426] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#b42a20]",
-  ink: "inline-flex h-14 items-center gap-2 rounded-xl bg-[#1f1a17] px-7 text-[16px] font-bold text-white transition-colors hover:bg-black",
+    "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-[#cf3f17] px-7 text-[16px] font-bold text-white transition-colors hover:bg-[#b0330f]",
+  ink: "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-[#1f1a17] px-7 text-[16px] font-bold text-white transition-colors hover:bg-black",
   white:
-    "inline-flex h-14 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-bold text-[#1f1a17] transition-colors hover:bg-[#fdece9]",
+    "inline-flex h-14 items-center gap-2 justify-center rounded-full bg-white px-7 text-[16px] font-bold text-[#1f1a17] transition-colors hover:bg-[#fdebe4]",
 };
 
 /** "SEE MORE →" link under each feature card. */
@@ -146,7 +146,7 @@ export default function LandingPage() {
             <HeroHeadline />
             {waitlist ? (
               <div className="mt-8 flex flex-col items-center gap-3">
-                <p className="text-[15px] font-bold text-[#d63426]">
+                <p className="text-[15px] font-bold text-[#cf3f17]">
                   Opening soon. Be first in when we launch.
                 </p>
                 <WaitlistForm anchor />
@@ -289,7 +289,7 @@ export default function LandingPage() {
                 body: "See each step from the shop to your hall, and message the seller in the same place.",
                 href: signupHref,
                 panel: (
-                  <div className="flex h-full flex-col justify-center gap-3 bg-[#fdece9] px-7">
+                  <div className="flex h-full flex-col justify-center gap-3 bg-[#fdebe4] px-7">
                     {["Placed", "Accepted", "On the way", "Handed over"].map((step, n) => (
                       <div key={step} className="flex items-center gap-3">
                         <span
@@ -350,7 +350,7 @@ export default function LandingPage() {
                 Shops deliver to your hall or faculty, or meet you at a pickup spot like the Main
                 Gate stand or the Library steps. Every order shows when it should reach you.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
+              <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:gap-4">
                 <Link href={signupHref} className={btn.ink}>
                   {waitlist ? "Join the waitlist" : "Start shopping"}
                 </Link>
@@ -427,7 +427,7 @@ export default function LandingPage() {
                 <WaitlistForm tone="dark" />
               </div>
             ) : (
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:justify-center sm:gap-4">
                 <Link href="/signup" className={btn.white}>
                   Create your account
                 </Link>

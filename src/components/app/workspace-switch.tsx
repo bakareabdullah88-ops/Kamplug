@@ -1,7 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
-import { Plus, ShoppingBag, Store } from "lucide-react";
+import { motion } from "motion/react";
 import { useMode, type Mode } from "@/components/shell/mode";
 import { spring } from "@/design/motion";
 import { cn } from "@/lib/cn";
@@ -10,69 +9,34 @@ import { useNavBadges } from "./nav-badges";
 import { centerOf } from "@/components/shell/mode-curtain";
 import { useSwitchWorkspace } from "./workspace";
 
-/** Market ⇄ your shop, as a segmented glass control with a sliding thumb. */
-export function WorkspaceSwitch({
-  compact = false,
-  tight = false,
-  className,
-}: {
-  compact?: boolean;
-  /** Small phones: icons only, so the header icons keep a full tap size. */
-  tight?: boolean;
-  className?: string;
-}) {
+/**
+ * Buy ⇄ Sell, as one pill with a filled thumb that slides to the side you're on.
+ * Both words always show; the pill is sized around them.
+ */
+export function WorkspaceSwitch({ className }: { className?: string }) {
   const mode = useMode();
   const { data: brand } = useMyBrand();
   const badges = useNavBadges();
   const go = useSwitchWorkspace();
-  const options: {
-    value: Mode;
-    /** What the side is for, always shown in words. */
-    label: string;
-    /** Longer description for screen readers and the hover tooltip. */
-    title: string;
-    icon: React.ReactNode;
-    count?: number;
-  }[] = [
-    {
-      value: "buying",
-      label: "Buying",
-      title: "Buying: the market",
-      icon: (
-        <span className="grid size-6 place-items-center rounded-lg bg-brand text-white">
-          <ShoppingBag className="size-3.5" />
-        </span>
-      ),
-    },
+  const options: { value: Mode; label: string; title: string; count?: number }[] = [
+    { value: "buying", label: "Buy", title: "Buy: the market" },
     {
       value: "selling",
-      label: "Selling",
-      title: brand ? `Selling: ${brand.name}` : "Selling: open a shop",
-      icon: brand ? (
-        <span className="grid size-6 place-items-center rounded-lg bg-[#1f1a17] text-white dark:bg-white dark:text-[#1f1a17]">
-          <Store className="size-3.5" />
-        </span>
-      ) : (
-        <span className="grid size-6 place-items-center rounded-lg border border-dashed border-line-strong text-muted">
-          <Plus className="size-3.5" />
-        </span>
-      ),
+      label: "Sell",
+      title: brand ? `Sell: ${brand.name}` : "Sell: open a shop",
       count: badges.newOrders,
     },
   ];
   return (
     <div
       role="radiogroup"
-      aria-label="Workspace"
-      className={cn(
-        "flex items-center gap-0.5 rounded-xl bg-ink/[0.04] p-1 ring-1 ring-line/70",
-        className,
-      )}
+      aria-label="Buy or sell"
+      className={cn("inline-flex shrink-0 items-center rounded-full bg-ink/[0.06] p-1", className)}
     >
       {options.map((o) => {
         const active = mode === o.value;
         return (
-          <motion.button
+          <button
             key={o.value}
             type="button"
             role="radio"
@@ -80,45 +44,31 @@ export function WorkspaceSwitch({
             aria-label={o.title}
             title={o.title}
             onClick={(e) => go(o.value, centerOf(e.currentTarget))}
-            whileTap={{ scale: 0.95 }}
             className={cn(
-              "relative flex h-9 min-w-0 shrink-0 items-center gap-2 rounded-lg px-2 text-[13px] font-semibold transition-colors",
-              active ? "text-ink" : "text-muted hover:text-ink",
+              "relative flex h-9 min-w-[68px] flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-[14px] font-bold transition-colors duration-150",
+              active ? "text-on-accent" : "text-ink-2 hover:text-ink",
             )}
           >
             {active && (
               <motion.span
                 layoutId="workspace-thumb"
                 transition={spring.snappy}
-                className="absolute inset-0 rounded-lg bg-surface ring-1 ring-line"
+                className="absolute inset-0 rounded-full bg-accent"
                 aria-hidden
               />
             )}
-            <span className="relative">{o.icon}</span>
-            {/* Compact (phones, narrow headers): only the active side shows its word. */}
-            <AnimatePresence initial={false}>
-              {(!compact || active) && (
-                <motion.span
-                  key="label"
-                  className={cn(
-                    "relative overflow-hidden whitespace-nowrap",
-                    tight && "max-[419px]:hidden",
-                  )}
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: "auto", opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={spring.snappy}
-                >
-                  {o.label}
-                </motion.span>
-              )}
-            </AnimatePresence>
+            <span className="relative">{o.label}</span>
             {!!o.count && (
-              <span className="relative grid h-4 min-w-4 place-items-center rounded-full bg-badge px-1 text-[10px] font-bold text-white">
+              <span
+                className={cn(
+                  "relative grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold tabular",
+                  active ? "bg-white text-accent-ink" : "bg-badge text-white",
+                )}
+              >
                 {o.count}
               </span>
             )}
-          </motion.button>
+          </button>
         );
       })}
     </div>

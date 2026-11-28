@@ -122,7 +122,7 @@ export function LagoonScene({ className }: { className?: string }) {
                 width="20"
                 height="16"
                 rx="2"
-                fill="#d63426"
+                fill="#cf3f17"
                 opacity={(r + c) % 3 === 0 ? 0.85 : 0.3}
               />
             )),
@@ -289,7 +289,7 @@ export function LibraryScene({ className }: { className?: string }) {
                 width="680"
                 height="30"
                 rx="4"
-                fill="#d63426"
+                fill="#cf3f17"
                 opacity="0.85"
               />
               {Array.from({ length: 16 }, (_, c) => (
@@ -411,7 +411,7 @@ export function RouteScene({ className }: { className?: string }) {
         </g>
         {/* The faculty */}
         <g className="lp-drop" style={{ animationDelay: "0.2s" }}>
-          <path d="M1120 200 L1250 150 L1380 200 Z" fill="#d63426" />
+          <path d="M1120 200 L1250 150 L1380 200 Z" fill="#cf3f17" />
           <Block
             x={1130}
             y={200}
@@ -439,7 +439,7 @@ export function RouteScene({ className }: { className?: string }) {
         {/* Pins at both ends */}
         {[
           [210, 318, "#ff6a4d"],
-          [1230, 308, "#d63426"],
+          [1230, 308, "#cf3f17"],
         ].map(([x, y, c], i) => (
           <g key={i} className={i ? "lp-bob-late" : "lp-bob"}>
             <path
@@ -491,7 +491,7 @@ export function RouteScene({ className }: { className?: string }) {
  */
 export function MarketScene({ className }: { className?: string }) {
   const stalls = [
-    ["#d63426", "#ffffff"],
+    ["#cf3f17", "#ffffff"],
     ["#ff6a4d", "#ffffff"],
     ["#ffd23f", "#1f1a17"],
     ["#3ddc97", "#ffffff"],
@@ -511,7 +511,7 @@ export function MarketScene({ className }: { className?: string }) {
               className="lp-wave"
               style={{ animationDelay: `${-i * 0.15}s` }}
               d={`M${x - 14} ${y} h28 l-14 22 Z`}
-              fill={["#d63426", "#ff6a4d", "#ffd23f", "#3ddc97"][i % 4]}
+              fill={["#cf3f17", "#ff6a4d", "#ffd23f", "#3ddc97"][i % 4]}
             />
           );
         })}

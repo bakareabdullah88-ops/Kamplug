@@ -1,18 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronRight, LogOut, Plus, Search } from "lucide-react";
 import { SidePanel } from "@/components/ui/sheet";
 import { useMode } from "@/components/shell/mode";
-import { isActive, marketNav, shopNav } from "@/config/nav";
+import { isActive, marketNav, menuItems, shopNav, type NavItem } from "@/config/nav";
 import { cn } from "@/lib/cn";
-import { useSession } from "@/queries/session";
+import { useCampus } from "@/queries/catalog";
+import { useSession, useSignOut } from "@/queries/session";
+import { toast } from "@/stores/toast";
 import { useUi } from "@/stores/ui";
 import { useNavBadges } from "./nav-badges";
+import { UserAvatar } from "./user-avatar";
 import { WorkspaceSwitch } from "./workspace-switch";
 
-/** The phone menu: every page of the current side, in a standard slide-in sidebar. */
+const row =
+  "flex h-12 items-center gap-3.5 rounded-xl px-3 text-[15px] font-medium transition-colors";
+
+/**
+ * The phone menu. Your profile on top, then Buy/Sell and search, then the pages
+ * of the side you're on, then your account. Messages, notifications and the bag
+ * aren't repeated here: they have their own buttons in the header.
+ */
 export function MobileSidebar({
   open,
   onOpenChange,
@@ -22,16 +32,48 @@ export function MobileSidebar({
 }) {
   const mode = useMode();
   const path = usePathname() ?? "/";
+  const router = useRouter();
   const badges = useNavBadges();
   const { user } = useSession();
-  const sections = mode === "selling" ? shopNav : marketNav;
+  const campus = useCampus(user?.campusId);
+  const signOut = useSignOut();
+  const setCommandOpen = useUi((s) => s.setCommandOpen);
+  const all = (mode === "selling" ? shopNav : marketNav).flatMap((s) => s.items);
+  const pages = menuItems(all);
+  const account = marketNav.flatMap((s) => s.items).filter((i) => i.placement === "account");
   const hasShop = !!user && user.brandIds.length > 0;
   const action =
     mode === "selling" || hasShop
       ? { href: "/studio/products/new", label: "Add a product" }
       : { href: "/open-shop", label: "Open a shop" };
   const close = () => onOpenChange(false);
-  const setCommandOpen = useUi((s) => s.setCommandOpen);
+
+  const item = (it: NavItem) => {
+    const active = isActive(it, path);
+    const count = it.badge ? badges[it.badge] : 0;
+    const Icon = it.icon;
+    return (
+      <li key={it.href}>
+        <Link
+          href={it.href}
+          onClick={close}
+          aria-current={active ? "page" : undefined}
+          className={cn(
+            row,
+            active ? "bg-ink/[0.06] font-bold text-ink" : "text-ink hover:bg-ink/[0.04]",
+          )}
+        >
+          <Icon className="size-[22px] shrink-0" />
+          <span className="flex-1">{it.label}</span>
+          {count > 0 && (
+            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-badge px-1.5 text-[11px] font-bold text-white tabular">
+              {count > 99 ? "99+" : count}
+            </span>
+          )}
+        </Link>
+      </li>
+    );
+  };
 
   return (
     <SidePanel
@@ -39,72 +81,75 @@ export function MobileSidebar({
       onOpenChange={onOpenChange}
       side="left"
       width="sm"
-      title="Kamplug"
+      title="Menu"
       hideTitle
-      className="max-w-[300px]"
+      className="max-w-[320px]"
       footer={
         <Link
           href={action.href}
           onClick={close}
-          className="flex h-11 items-center justify-center gap-2 rounded-lg bg-accent text-[14px] font-semibold text-on-accent transition-colors hover:bg-accent-hover"
+          className="flex h-12 items-center justify-center gap-2 rounded-full bg-accent text-[15px] font-bold text-on-accent transition-colors hover:bg-accent-hover"
         >
-          <Plus className="size-4" /> {action.label}
+          <Plus className="size-5" /> {action.label}
         </Link>
       }
     >
-      <div className="-mx-2 flex flex-col gap-5">
-        <div className="flex flex-col gap-3 px-2">
-          <WorkspaceSwitch />
+      <div className="-mx-2 flex flex-col">
+        {user && (
+          <Link
+            href="/account/settings"
+            onClick={close}
+            className="flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-ink/[0.04]"
+          >
+            <UserAvatar size={44} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[16px] font-bold">{user.name}</span>
+              <span className="block truncate text-[13px] text-muted">
+                {campus?.shortName ?? user.email}
+              </span>
+            </span>
+            <ChevronRight className="size-5 text-muted" aria-hidden />
+          </Link>
+        )}
+        <div className="flex flex-col gap-3 px-2 pt-4 pb-5">
+          <WorkspaceSwitch className="w-full" />
           <button
             type="button"
             onClick={() => {
               close();
               setCommandOpen(true);
             }}
-            className="flex h-11 items-center gap-2.5 rounded-xl bg-surface-2 px-3.5 text-[14.5px] text-muted ring-1 ring-line transition-colors hover:text-ink"
+            className="flex h-12 items-center gap-3 rounded-full bg-ink/[0.05] px-4 text-[15px] text-muted transition-colors hover:text-ink"
           >
-            <Search className="size-[18px]" /> Search Kamplug
+            <Search className="size-5 text-ink" /> Search Kamplug
           </button>
         </div>
-        {sections.map((s, si) => (
-          <nav key={s.title ?? si} aria-label={s.title ?? (mode === "selling" ? "Shop" : "Market")}>
-            {s.title && (
-              <p className="mb-1 px-3 text-[11px] font-semibold tracking-[0.08em] text-muted uppercase">
-                {s.title}
-              </p>
-            )}
-            <ul>
-              {s.items.map((item) => {
-                const active = isActive(item, path);
-                const count = item.badge ? badges[item.badge] : 0;
-                const Icon = item.icon;
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={close}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "flex h-11 items-center gap-3 rounded-lg px-3 text-[14.5px] transition-colors",
-                        active
-                          ? "bg-accent-soft font-semibold text-accent-ink"
-                          : "text-ink-2 hover:bg-ink/[0.04] hover:text-ink",
-                      )}
-                    >
-                      <Icon className="size-[18px] shrink-0" />
-                      <span className="flex-1">{item.label}</span>
-                      {count > 0 && (
-                        <span className="grid h-5 min-w-5 place-items-center rounded-full bg-badge px-1.5 text-[11px] font-bold text-white tabular">
-                          {count > 99 ? "99+" : count}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        ))}
+        <nav
+          aria-label={mode === "selling" ? "Shop" : "Market"}
+          className="border-t border-line pt-3 pb-3"
+        >
+          <ul>{pages.map(item)}</ul>
+        </nav>
+        <nav aria-label="Account" className="border-t border-line pt-3">
+          <ul>
+            {account.map(item)}
+            <li>
+              <button
+                type="button"
+                onClick={() =>
+                  void signOut.mutateAsync().then(() => {
+                    close();
+                    router.push("/");
+                    toast("Signed out");
+                  })
+                }
+                className={cn(row, "w-full text-danger hover:bg-danger-soft")}
+              >
+                <LogOut className="size-[22px] shrink-0" /> Sign out
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </SidePanel>
   );

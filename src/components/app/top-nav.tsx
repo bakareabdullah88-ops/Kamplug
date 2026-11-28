@@ -8,19 +8,17 @@ import { useState } from "react";
 import { Popover, Tooltip } from "@/components/ui/overlay";
 import { Kbd } from "@/components/ui/misc";
 import { useMode } from "@/components/shell/mode";
-import { isActive, marketNav, shopNav, type NavItem } from "@/config/nav";
+import { isActive, marketNav, menuItems, shopNav, type NavItem } from "@/config/nav";
 import { spring } from "@/design/motion";
 import { cn } from "@/lib/cn";
 import { useUi } from "@/stores/ui";
 import { AccountMenu } from "./account-menu";
+import { iconBtn } from "./icon-button";
 import { KamplugLogo } from "./kamplug-mark";
 import { MessagesButton } from "./messages-button";
 import { NavGrid } from "./more-menu";
 import { useNavBadges } from "./nav-badges";
 import { WorkspaceSwitch } from "./workspace-switch";
-
-const iconBtn =
-  "pressable relative grid size-10 place-items-center rounded-xl text-ink-2 transition-colors hover:bg-ink/[0.05] hover:text-ink";
 
 function Count({ n, className }: { n: number; className?: string }) {
   if (!n) return null;
@@ -88,14 +86,11 @@ export function TopNav() {
 
   const sections = mode === "selling" ? shopNav : marketNav;
   const primary = sections.flatMap((s) => s.items).filter((i) => i.primary);
-  const secondary = sections.flatMap((s) => s.items).filter((i) => !i.primary);
+  // "More" lists only pages with no other place: messages, notifications and
+  // the bag have their own buttons, account pages sit under the avatar.
+  const secondary = menuItems(sections.flatMap((s) => s.items)).filter((i) => !i.primary);
   const moreActive = secondary.some((i) => isActive(i, path));
-  // Notifications and messages already have their own buttons.
-  const own = new Set(["notifications", "messages", "shopMessages"]);
-  const moreCount = secondary.reduce(
-    (n, i) => n + (i.badge && !own.has(i.badge) ? badges[i.badge] : 0),
-    0,
-  );
+  const moreCount = secondary.reduce((n, i) => n + (i.badge ? badges[i.badge] : 0), 0);
 
   return (
     <header
@@ -112,9 +107,8 @@ export function TopNav() {
         >
           <KamplugLogo className="text-[23px]" />
         </Link>
-        <WorkspaceSwitch compact className="2xl:hidden" />
-        <WorkspaceSwitch className="hidden 2xl:flex" />
-        <span className="mx-2 h-6 w-px bg-line" aria-hidden />
+        <WorkspaceSwitch className="ml-2" />
+        <span className="mx-3 h-6 w-px bg-line" aria-hidden />
         <nav
           aria-label={mode === "selling" ? "Shop" : "Market"}
           className="scrollbar-none flex min-w-0 flex-1 items-center overflow-x-auto"
@@ -157,11 +151,11 @@ export function TopNav() {
           type="button"
           onClick={() => setCommandOpen(true)}
           aria-label="Search"
-          className="flex h-10 shrink-0 pressable items-center justify-center gap-2 rounded-xl px-2.5 text-ink-2 transition-colors hover:bg-ink/[0.05] hover:text-ink 2xl:w-56 2xl:justify-start 2xl:px-3 2xl:ring-1 2xl:ring-line"
+          className="flex size-10 shrink-0 pressable items-center justify-center gap-2.5 rounded-full bg-ink/[0.05] text-ink transition-colors hover:bg-ink/[0.09] xl:w-64 xl:justify-start xl:px-4"
         >
-          <Search className="size-[18px]" />
-          <span className="hidden text-[13px] text-muted 2xl:inline">Search Kamplug</span>
-          <Kbd className="ml-auto hidden 2xl:inline-flex">⌘K</Kbd>
+          <Search className="size-5" />
+          <span className="hidden text-[14px] text-muted xl:inline">Search Kamplug</span>
+          <Kbd className="ml-auto hidden xl:inline-flex">⌘K</Kbd>
         </button>
         <MessagesButton />
         <Link
@@ -171,7 +165,7 @@ export function TopNav() {
           }
           className={iconBtn}
         >
-          <Bell className="size-[18px]" />
+          <Bell className="size-5" />
           <Count n={badges.notifications} />
         </Link>
         {mode === "buying" && (
@@ -181,11 +175,11 @@ export function TopNav() {
             className={iconBtn}
             data-bag-target
           >
-            <ShoppingBag className="size-[18px]" />
+            <ShoppingBag className="size-5" />
             <Count n={badges.bag} />
           </Link>
         )}
-        <span className="ml-1">
+        <span className="ml-1 flex">
           <AccountMenu />
         </span>
       </div>

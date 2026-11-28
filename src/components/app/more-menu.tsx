@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMode } from "@/components/shell/mode";
-import { isActive, marketNav, shopNav, type NavItem } from "@/config/nav";
+import { isActive, marketNav, menuItems, shopNav, type NavItem } from "@/config/nav";
 import { cn } from "@/lib/cn";
 import { useNavBadges } from "./nav-badges";
 
@@ -19,7 +19,10 @@ export function NavGrid({
   const path = usePathname() ?? "/";
   const badges = useNavBadges();
   const sections = (mode === "selling" ? shopNav : marketNav)
-    .map((s) => ({ ...s, items: onlySecondary ? s.items.filter((i) => !i.primary) : s.items }))
+    .map((s) => ({
+      ...s,
+      items: menuItems(s.items).filter((i) => !onlySecondary || !i.primary),
+    }))
     .filter((s) => s.items.length);
   return (
     <div className="flex flex-col gap-4">

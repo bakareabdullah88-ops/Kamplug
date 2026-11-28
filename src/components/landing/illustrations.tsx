@@ -223,7 +223,7 @@ export function TuckShop({ className }: { className?: string }) {
         <path
           key={i}
           d={`M${60 + i * 65} 80 h65 v50 q-32 26 -65 0 Z`}
-          fill={i % 2 ? "#ffffff" : "#d63426"}
+          fill={i % 2 ? "#ffffff" : "#cf3f17"}
           {...S}
         />
       ))}
@@ -491,7 +491,7 @@ export function SellPanel({ className }: { className?: string }) {
         <text x="260" y="78" textAnchor="middle" fontSize="18" fontWeight="800" fill={K}>
           NEW ORDER
         </text>
-        <text x="260" y="130" textAnchor="middle" fontSize="30" fontWeight="800" fill="#d63426">
+        <text x="260" y="130" textAnchor="middle" fontSize="30" fontWeight="800" fill="#cf3f17">
           ₦3,500
         </text>
       </g>
@@ -523,7 +523,7 @@ export function ShopPanel({ className }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      <rect width="520" height="220" fill="#d63426" />
+      <rect width="520" height="220" fill="#cf3f17" />
       <path d="M0 220 q20 -110 100 -110 q70 0 90 110 Z" fill="#ff6a4d" {...S} />
       <path d="M220 220 q60 -90 160 -70 q80 20 140 70 Z" fill="#9fd8ff" {...S} />
       <g transform="translate(260 10) scale(0.62)">
@@ -552,7 +552,7 @@ function PlugBagShape() {
 }
 
 /** A four-point sparkle used as a decorative mark. */
-export function Sparkle({ className, color = "#d63426" }: { className?: string; color?: string }) {
+export function Sparkle({ className, color = "#cf3f17" }: { className?: string; color?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden>
       <path

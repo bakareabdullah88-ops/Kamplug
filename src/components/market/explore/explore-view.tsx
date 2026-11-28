@@ -1,6 +1,5 @@
 "use client";
 
-import { CategoryPoster } from "../category-poster";
 import { pagePad } from "@/components/app/layout";
 import { NavPageHeader } from "@/components/app/nav-header";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
@@ -230,9 +229,6 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
 
         <div className="min-w-0">
           {category && mode !== "search" && (
-            <CategoryPoster category={category.id} blurb={category.blurb} />
-          )}
-          {category && mode !== "search" && (
             // What exactly, inside the category: All, Meals, Snacks, Drinks…
             <div className="-mx-4 mb-4 scrollbar-none overflow-x-auto px-4 py-1 md:mx-0 md:px-0">
               <ChipGroup
@@ -256,13 +252,12 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
               </h1>
               <p className="mt-0.5 text-small text-muted">{summary}</p>
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="flex w-full items-center gap-2 lg:ml-auto lg:w-auto">
               {(pending || (list.isFetching && !list.isFetchingNextPage)) && (
                 <Spinner className="size-4 text-muted" label="Updating results" />
               )}
               <Button
                 variant="secondary"
-                size="sm"
                 className="lg:hidden"
                 leadingIcon={<SlidersHorizontal className="size-4" />}
                 onClick={() => setSheet(true)}
@@ -274,13 +269,13 @@ export function ExploreView({ mode = "explore" }: { mode?: "explore" | "search" 
                   </span>
                 )}
               </Button>
-              <div className="w-44 sm:w-52">
+              <div className="ml-auto w-44 sm:w-52">
                 <Select
                   label="Sort by"
                   value={params.sort}
                   onValueChange={(v) => update({ sort: v })}
                   options={sortOptions}
-                  className="h-9 text-small"
+                  className="h-10 rounded-full px-4 text-small"
                 />
               </div>
             </div>

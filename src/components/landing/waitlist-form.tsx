@@ -136,7 +136,7 @@ export function WaitlistForm({
         <button
           type="submit"
           disabled={pending}
-          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#d63426] px-5 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#b42a20] disabled:opacity-60 md:px-6 md:text-[16px]"
+          className="flex h-full shrink-0 items-center gap-1.5 rounded-full bg-[#cf3f17] px-5 text-[15px] font-bold whitespace-nowrap text-white transition-colors hover:bg-[#b0330f] disabled:opacity-60 md:px-6 md:text-[16px]"
         >
           {pending ? "Joining…" : "Join the waitlist"}
           <ArrowRight className="size-5 max-sm:hidden" aria-hidden />
@@ -157,7 +157,7 @@ export function WaitlistForm({
           <label
             key={r.value}
             className={cn(
-              "flex h-10 cursor-pointer items-center rounded-full px-4 text-[14px] font-semibold ring-1 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#d63426]",
+              "flex h-10 cursor-pointer items-center rounded-full px-4 text-[14px] font-semibold ring-1 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#cf3f17]",
               role === r.value
                 ? dark
                   ? "bg-white text-[#1f1a17] ring-white"

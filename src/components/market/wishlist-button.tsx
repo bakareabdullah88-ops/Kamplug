@@ -76,7 +76,7 @@ export function WishlistButton({
         transition={spring.bouncy}
         className={saved ? "text-accent" : "text-ink"}
       >
-        <Heart className={icon} fill={saved ? "currentColor" : "none"} strokeWidth={1.8} />
+        <Heart className={icon} fill={saved ? "currentColor" : "none"} />
       </motion.span>
       <AnimatePresence>
         {!reduce && burst > 0 && saved && (

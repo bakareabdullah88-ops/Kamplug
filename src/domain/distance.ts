@@ -148,21 +148,24 @@ export function isOnMap(zoneId: ID | null | undefined): boolean {
   return pointOf(zoneId) !== null;
 }
 
-/** "25 min", "1 h 10 min", "Next day", "2 days". */
+/** Keeps a number and its unit on one line ("1 h", never "1" then "h"). */
+const NB = "\u00a0";
+
+/** "25 min", "1 h 10 min", "Next day", "2 days" (number and unit never split). */
 export function formatEta(min: number): string {
-  if (min >= 36 * 60) return `${Math.round(min / (24 * 60))} days`;
-  if (min >= 18 * 60) return "Next day";
-  if (min < 60) return `${Math.max(1, Math.round(min))} min`;
+  if (min >= 36 * 60) return `${Math.round(min / (24 * 60))}${NB}days`;
+  if (min >= 18 * 60) return `Next${NB}day`;
+  if (min < 60) return `${Math.max(1, Math.round(min))}${NB}min`;
   const r = Math.round(min / 5) * 5;
   const h = Math.floor(r / 60);
   const m = r % 60;
-  return m ? `${h} h ${m} min` : `${h} h`;
+  return m ? `${h}${NB}h ${m}${NB}min` : `${h}${NB}h`;
 }
 
 /** "in about 25 min", "by the next day", "in about 2 days": reads after "Ready". */
 export function formatWhen(min: number): string {
   const t = formatEta(min);
-  if (t === "Next day") return "by the next day";
+  if (t === `Next${NB}day`) return "by the next day";
   return `in about ${t}`;
 }
 

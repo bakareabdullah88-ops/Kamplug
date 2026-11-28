@@ -31,11 +31,10 @@ export async function logIn(page: Page, email: string, next = "/home") {
 }
 
 export async function signOut(page: Page) {
-  await page
-    .getByRole("button", { name: "Account menu" })
-    .filter({ visible: true })
-    .first()
-    .click();
+  // Desktop: the avatar's profile menu. Phones: the side menu, where the profile lives.
+  const account = page.getByRole("button", { name: "Account menu" }).filter({ visible: true });
+  if (await account.count()) await account.first().click();
+  else await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await page.waitForURL((u) => u.pathname === "/");
 }

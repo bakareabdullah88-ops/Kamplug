@@ -4,14 +4,11 @@ import Link from "next/link";
 import { Bell, Menu, ShoppingBag } from "lucide-react";
 import { useMode } from "@/components/shell/mode";
 import { useUi } from "@/stores/ui";
-import { AccountMenu } from "./account-menu";
+import { iconBtn } from "./icon-button";
 import { MessagesButton } from "./messages-button";
 import { MobileSidebar } from "./mobile-sidebar";
 import { useNavBadges } from "./nav-badges";
 import { KamplugLogo } from "./kamplug-mark";
-
-const iconButton =
-  "pressable relative grid size-10 shrink-0 place-items-center rounded-xl text-ink-2 transition-colors hover:bg-ink/[0.05] hover:text-ink max-[380px]:size-9";
 
 function Dot({ n }: { n: number }) {
   if (!n) return null;
@@ -22,8 +19,8 @@ function Dot({ n }: { n: number }) {
   );
 }
 
-/** Phone header, kept short: menu and logo, then messages, alerts, bag and account.
- * Search and the buying/selling switch live at the top of the menu. */
+/** Phone header: menu and logo, then round buttons for messages, alerts and bag. Your
+ * profile, search and Buy/Sell live in the side menu. */
 export function MobileTopBar() {
   const mode = useMode();
   const badges = useNavBadges();
@@ -35,15 +32,15 @@ export function MobileTopBar() {
       style={{ viewTransitionName: "site-header" }}
       className="sticky top-0 z-(--z-header) border-b border-line bg-surface pt-[env(safe-area-inset-top)] md:hidden"
     >
-      <div className="flex h-14 items-center gap-0.5 px-2">
+      <div className="flex h-16 items-center gap-2 px-4">
         <button
           type="button"
           aria-label="Open menu"
           aria-expanded={menu}
           onClick={() => setMenu(true)}
-          className={iconButton}
+          className="relative -ml-1 grid size-10 shrink-0 pressable place-items-center rounded-full text-ink transition-colors hover:bg-ink/[0.05]"
         >
-          <Menu className="size-5" />
+          <Menu className="size-6" />
           {menuCount > 0 && (
             <span className="absolute top-2 right-2 size-2 rounded-full bg-badge ring-2 ring-surface" />
           )}
@@ -51,7 +48,7 @@ export function MobileTopBar() {
         <Link
           href={mode === "selling" ? "/studio" : "/home"}
           aria-label="Kamplug home"
-          className="ml-1 flex shrink-0 items-center"
+          className="flex shrink-0 items-center"
         >
           <KamplugLogo className="text-[21px]" />
         </Link>
@@ -62,7 +59,7 @@ export function MobileTopBar() {
           aria-label={
             badges.notifications ? `Notifications, ${badges.notifications} unread` : "Notifications"
           }
-          className={iconButton}
+          className={iconBtn}
         >
           <Bell className="size-5" />
           <Dot n={badges.notifications} />
@@ -71,16 +68,13 @@ export function MobileTopBar() {
           <Link
             href="/bag"
             aria-label={badges.bag ? `Bag, ${badges.bag} items` : "Bag"}
-            className={iconButton}
+            className={iconBtn}
             data-bag-target
           >
             <ShoppingBag className="size-5" />
             <Dot n={badges.bag} />
           </Link>
         )}
-        <span className="ml-1 shrink-0">
-          <AccountMenu />
-        </span>
       </div>
       <MobileSidebar open={menu} onOpenChange={setMenu} />
     </header>

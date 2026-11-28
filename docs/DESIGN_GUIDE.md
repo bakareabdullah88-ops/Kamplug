@@ -22,16 +22,16 @@ Generic AI-made apps share the same tells. Avoid all of them:
 
 ## 2. Colour
 
-Brand: **multi-colour and warm**. Tomato red is the action colour (main buttons, selected
+Brand: **multi-colour and warm**. Paprika red (a warm red-orange, picked to feel appetising like jollof and pepper, not alarming) is the action colour (main buttons, selected
 states, the logo). The supporting colours carry the brand's identity everywhere else: the
 landing headline (one colour per language), section labels and "See more" links on home, step
 numbers, bands, the open FAQ item and the illustrations. Never paint a whole screen red.
 
 | Token                             | Hex                   | Use                                                                       |
 | --------------------------------- | --------------------- | ------------------------------------------------------------------------- |
-| `--brand` / `--accent`            | `#D63426`             | Main buttons, links, selected states, logo. White text passes AA (4.8:1). |
-| `--accent-hover` / `--accent-ink` | `#B42A20`             | Hover, red text on light backgrounds (5.9:1).                             |
-| `--accent-soft`                   | `#FDECE9`             | Selected chips, soft highlights.                                          |
+| `--brand` / `--accent`            | `#CF3F17`             | Main buttons, links, selected states, logo. White text passes AA (4.8:1). |
+| `--accent-hover` / `--accent-ink` | `#B0330F`             | Hover, red text on light backgrounds (6:1).                               |
+| `--accent-soft`                   | `#FDEBE4`             | Selected chips, soft highlights.                                          |
 | `--ink`                           | `#1F1A17`             | Text and dark surfaces. Warm near-black, never navy.                      |
 | `--muted`                         | `#6B625C`             | Secondary text (5.5:1 on canvas).                                         |
 | `--canvas`                        | `#F7F6F4`             | App background.                                                           |

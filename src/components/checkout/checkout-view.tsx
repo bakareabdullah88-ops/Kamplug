@@ -73,7 +73,7 @@ function payLine(method: GroupState["method"]) {
 /** "in about 25 min", or "next day" for slow-made things. */
 function inAbout(min: number) {
   const t = formatEta(min);
-  return t === "Next day" ? "next day" : `in about ${t}`;
+  return t.startsWith("Next") ? "next day" : `in about ${t}`;
 }
 
 /**

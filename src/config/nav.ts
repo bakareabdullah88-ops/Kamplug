@@ -31,9 +31,18 @@ export type NavItem = {
   /** Which badge to show next to the item, if any. */
   badge?: "notifications" | "messages" | "bag" | "activeOrders" | "newOrders" | "shopMessages";
   match?: (path: string) => boolean;
-  /** Shown as a pill in the top bar; the rest live under "More". */
+  /** Shown as a link in the top bar; the rest live under "More" and in the phone menu. */
   primary?: boolean;
+  /**
+   * Lives somewhere else, so menus skip it: "header" items have their own
+   * button in the top bar (messages, notifications, bag); "account" items sit
+   * in the profile menu under the avatar.
+   */
+  placement?: "header" | "account";
 };
+
+/** The items a menu should list: everything that doesn't already have its own place. */
+export const menuItems = (items: NavItem[]) => items.filter((i) => !i.placement);
 
 export type NavSection = { title?: string; items: NavItem[] };
 
@@ -96,6 +105,7 @@ export const marketNav: NavSection[] = [
       {
         href: "/messages",
         label: "Messages",
+        placement: "header",
         icon: MessagesIcon,
         tone: T.teal,
         badge: "messages",
@@ -109,6 +119,7 @@ export const marketNav: NavSection[] = [
         primary: true,
         match: startsWith("/wishlist"),
       },
+      { href: "/account/following", label: "Following", icon: Store, tone: T.green },
     ],
   },
   {
@@ -117,15 +128,16 @@ export const marketNav: NavSection[] = [
       {
         href: "/bag",
         label: "Bag",
+        placement: "header",
         icon: BagIcon,
         tone: T.indigo,
         badge: "bag",
         match: startsWith("/bag", "/checkout"),
       },
-      { href: "/account/following", label: "Following", icon: Store, tone: T.green },
       {
         href: "/notifications",
         label: "Notifications",
+        placement: "header",
         icon: Bell,
         tone: T.amber,
         badge: "notifications",
@@ -136,9 +148,27 @@ export const marketNav: NavSection[] = [
   {
     title: "Account",
     items: [
-      { href: "/account/places", label: "Addresses", icon: MapPin, tone: T.rose },
-      { href: "/account/reviews", label: "My reviews", icon: Star, tone: T.amber },
-      { href: "/account/settings", label: "Settings", icon: Settings, tone: T.slate },
+      {
+        href: "/account/places",
+        label: "Addresses",
+        placement: "account",
+        icon: MapPin,
+        tone: T.rose,
+      },
+      {
+        href: "/account/reviews",
+        label: "My reviews",
+        placement: "account",
+        icon: Star,
+        tone: T.amber,
+      },
+      {
+        href: "/account/settings",
+        label: "Settings",
+        placement: "account",
+        icon: Settings,
+        tone: T.slate,
+      },
     ],
   },
 ];
@@ -168,6 +198,7 @@ export const shopNav: NavSection[] = [
       {
         href: "/studio/messages",
         label: "Inbox",
+        placement: "header",
         icon: MessagesIcon,
         tone: T.teal,
         badge: "shopMessages",
@@ -184,6 +215,7 @@ export const shopNav: NavSection[] = [
       {
         href: "/notifications",
         label: "Notifications",
+        placement: "header",
         icon: Bell,
         tone: T.amber,
         badge: "notifications",

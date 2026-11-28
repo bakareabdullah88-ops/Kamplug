@@ -84,14 +84,14 @@ describe("distance", () => {
     expect(formatMetres(0)).toBe("Right here");
     expect(formatMetres(650)).toBe("650 m");
     expect(formatMetres(1450)).toBe("1.4 km");
-    expect(formatEta(25)).toBe("25 min");
-    expect(formatEta(60)).toBe("1 h");
-    expect(formatEta(95)).toBe("1 h 35 min");
-    expect(formatEta(118)).toBe("2 h");
-    expect(formatEta(1440 + 8)).toBe("Next day");
-    expect(formatEta(72 * 60)).toBe("3 days");
+    expect(formatEta(25)).toBe("25\u00a0min");
+    expect(formatEta(60)).toBe("1\u00a0h");
+    expect(formatEta(95)).toBe("1\u00a0h 35\u00a0min");
+    expect(formatEta(118)).toBe("2\u00a0h");
+    expect(formatEta(1440 + 8)).toBe("Next\u00a0day");
+    expect(formatEta(72 * 60)).toBe("3\u00a0days");
     expect(formatWhen(1440)).toBe("by the next day");
-    expect(formatWhen(25)).toBe("in about 25 min");
+    expect(formatWhen(25)).toBe("in about 25\u00a0min");
   });
 });
 

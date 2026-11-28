@@ -248,7 +248,7 @@ export function OrderTracking({
             {map.from && (
               <g transform={`translate(${map.from.x} ${map.from.y})`}>
                 <circle r="11" fill="#ffffff" />
-                <circle r="7" fill="#d63426" />
+                <circle r="7" fill="#cf3f17" />
               </g>
             )}
             {map.to && (
@@ -331,7 +331,7 @@ export function OrderTracking({
           <Link
             href={`/brands/${order.brandHandle}`}
             aria-label={`Open ${order.brandName}`}
-            className="grid size-11 place-items-center rounded-full bg-white text-[#1f1a17] transition-colors hover:bg-[#fdece9]"
+            className="grid size-11 place-items-center rounded-full bg-white text-[#1f1a17] transition-colors hover:bg-[#fdebe4]"
           >
             <Store className="size-5" />
           </Link>
@@ -340,7 +340,7 @@ export function OrderTracking({
               type="button"
               onClick={onChat}
               aria-label={`Message ${order.brandName}`}
-              className="grid size-11 place-items-center rounded-full bg-white text-[#1f1a17] transition-colors hover:bg-[#fdece9]"
+              className="grid size-11 place-items-center rounded-full bg-white text-[#1f1a17] transition-colors hover:bg-[#fdebe4]"
             >
               <MessageCircle className="size-5" />
             </button>
