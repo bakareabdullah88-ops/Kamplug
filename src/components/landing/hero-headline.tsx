@@ -17,7 +17,8 @@ const HOLD_MS = 9600;
  * The landing headline: the biggest thing on the page. Every ~10 seconds the
  * next language rises gently into place over 1.2 seconds. Screen readers
  * always get the Pidgin line; with reduced motion it stays on Pidgin.
- * Two lines on phones so it can be large without squeezing; one line wider.
+ * Two lines on phones so it can be large without squeezing, both on one left
+ * edge (centring two lines of different widths looks crooked); one centred line wider.
  */
 export function HeroHeadline() {
   const [i, setI] = useState(0);

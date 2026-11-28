@@ -141,18 +141,18 @@ export default function LandingPage() {
           className="relative scroll-mt-0 overflow-hidden bg-[#f7f6f4] pt-28 md:pt-36"
         >
           <Clouds3D />
-          <div className="relative mx-auto max-w-4xl px-5 text-center">
+          <div className="relative mx-auto max-w-4xl px-4 text-left sm:px-5 sm:text-center">
             <CampusBadge />
             <HeroHeadline />
             {waitlist ? (
-              <div className="mt-8 flex flex-col items-center gap-3">
+              <div className="mt-8 flex flex-col items-start gap-3 sm:items-center">
                 <p className="text-[15px] font-bold text-[#d63426]">
                   Opening soon. Be first in when we launch.
                 </p>
                 <WaitlistForm anchor />
               </div>
             ) : (
-              <div className="mt-8 flex justify-center md:mt-10">
+              <div className="mt-8 flex sm:justify-center md:mt-10">
                 <SpotPicker />
               </div>
             )}

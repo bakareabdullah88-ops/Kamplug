@@ -97,39 +97,42 @@ export function LandingNav() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          {features.waitlist ? (
-            <Link href="/#waitlist" className={cta}>
-              Join waitlist
+          {!features.waitlist && !(isReady && user) && (
+            <Link
+              href="/login"
+              className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1f1a17] transition-colors hover:bg-[#d63426]/[0.08] hover:text-[#d63426] sm:flex"
+            >
+              Log in
             </Link>
-          ) : isReady && user ? (
-            <Link href="/home" className={cta} aria-label="Open Kamplug">
-              {/* Small phones get the short label so it stays on one line. */}
-              Open<span className="hidden min-[400px]:inline"> Kamplug</span>
-              <ArrowRight className="size-4" aria-hidden />
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="hidden h-11 items-center rounded-lg px-4 text-[15px] font-semibold text-[#1f1a17] transition-colors hover:bg-[#d63426]/[0.08] hover:text-[#d63426] sm:flex"
-              >
-                Log in
+          )}
+          {/* On phones and tablets the main button and the menu share one pill. */}
+          <div className="flex items-center gap-1 rounded-full bg-white p-1 ring-1 ring-[#1f1a17]/10 lg:bg-transparent lg:p-0 lg:ring-0">
+            {features.waitlist ? (
+              <Link href="/#waitlist" className={cta}>
+                Join waitlist
               </Link>
+            ) : isReady && user ? (
+              <Link href="/home" className={cta} aria-label="Open Kamplug">
+                {/* Small phones get the short label so it stays on one line. */}
+                Open<span className="hidden min-[400px]:inline"> Kamplug</span>
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            ) : (
               <Link href="/signup" className={cta}>
                 Sign up
               </Link>
-            </>
-          )}
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            aria-controls="landing-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
-            className="grid size-11 place-items-center rounded-lg text-[#1f1a17] hover:bg-[#1f1a17]/[0.05] lg:hidden"
-          >
-            {open ? <X className="size-5" /> : <MenuIcon className="size-5" />}
-          </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-controls="landing-menu"
+              aria-label={open ? "Close menu" : "Open menu"}
+              className="grid size-11 place-items-center rounded-full text-[#1f1a17] transition-colors hover:bg-[#1f1a17]/[0.05] lg:hidden"
+            >
+              {open ? <X className="size-5" /> : <MenuIcon className="size-5" />}
+            </button>
+          </div>
         </div>
         <AnimatePresence>
           {open && (
