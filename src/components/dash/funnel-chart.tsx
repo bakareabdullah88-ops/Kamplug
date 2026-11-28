@@ -88,7 +88,7 @@ export function FunnelChart({
                   <motion.span
                     layoutId={`${gid}-glow`}
                     transition={spring.smooth}
-                    className="absolute inset-0 bg-accent-soft/40"
+                    className="absolute inset-0 bg-warm-purple/10"
                     aria-hidden
                   />
                 )}
@@ -131,7 +131,7 @@ export function FunnelChart({
                     className={cn(
                       "absolute bottom-0 left-0 origin-bottom transition-[background] duration-300",
                       next ? "right-[26px]" : "right-0",
-                      on ? "bg-accent" : "hatch [--hatch:var(--accent)]",
+                      on ? "bg-warm-purple" : "hatch [--hatch:var(--warm-purple)]",
                     )}
                     style={{ height: `${Math.max(h, s.value > 0 ? 1.5 : 0)}%` }}
                     aria-hidden

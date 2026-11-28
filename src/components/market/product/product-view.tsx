@@ -282,7 +282,7 @@ export function ProductView() {
             </span>
             <span className="text-small font-medium group-hover:underline">{p.brand.name}</span>
             {p.brand.verified && (
-              <BadgeCheck className="size-4 text-accent" aria-label="Verified" />
+              <BadgeCheck className="size-4 text-verified" aria-label="Verified" />
             )}
           </Link>
           <h1 className="mt-4 font-display text-display-md text-balance">{p.name}</h1>
@@ -388,7 +388,7 @@ export function ProductView() {
             <div
               className={cn(
                 "mt-6 rounded-lg p-4",
-                own ? "bg-accent-soft text-accent-ink" : "bg-warning-soft text-warning",
+                own ? "bg-tint text-tint-ink" : "bg-warning-soft text-warning",
               )}
               role="note"
             >

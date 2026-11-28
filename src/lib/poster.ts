@@ -223,7 +223,7 @@ function priceBadge(
 /** The Kamplug socket mark on its tile. */
 function mark(ctx: Ctx, x: number, y: number, s: number) {
   const k = s / 64;
-  ctx.fillStyle = "#cf3f17";
+  ctx.fillStyle = "#d63426";
   roundRect(ctx, x, y, s, s, 16 * k);
   ctx.fill();
   ctx.fillStyle = "#ffffff";

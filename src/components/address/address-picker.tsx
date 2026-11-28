@@ -281,7 +281,7 @@ function SpotCombobox({
                             i === active && "bg-ink/[0.06]",
                           )}
                         >
-                          <span className="grid size-8 shrink-0 place-items-center rounded-md bg-accent-soft text-accent-ink">
+                          <span className="grid size-8 shrink-0 place-items-center rounded-md bg-tint text-tint-ink">
                             <Icon className="size-4" aria-hidden />
                           </span>
                           <span className="min-w-0 flex-1">

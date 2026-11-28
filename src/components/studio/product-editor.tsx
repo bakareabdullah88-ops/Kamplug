@@ -1002,7 +1002,7 @@ function EditorForm({
         )}
       </AnimatePresence>
       {copiedFrom && !product && (
-        <p className="mb-6 flex items-center gap-2 rounded-md bg-accent-soft px-4 py-3 text-small text-accent-ink">
+        <p className="mb-6 flex items-center gap-2 rounded-md bg-tint px-4 py-3 text-small text-tint-ink">
           <Copy className="size-4 shrink-0" />
           <span>
             Copied from <strong className="font-semibold">{copiedFrom.name}</strong>. Change

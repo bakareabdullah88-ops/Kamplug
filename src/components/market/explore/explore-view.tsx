@@ -78,7 +78,7 @@ function ActivePills({
             <button
               type="button"
               onClick={() => update(p.clear)}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent-soft pr-2 pl-3 text-small font-medium text-accent-ink hover:brightness-95"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-tint pr-2 pl-3 text-small font-medium text-tint-ink hover:brightness-95"
               aria-label={`Remove filter ${p.label}`}
             >
               {p.label}

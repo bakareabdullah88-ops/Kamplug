@@ -107,7 +107,7 @@ function OnTheWay({ orders }: { orders: Order[] }) {
               <span className="block truncate text-[14px] font-medium">{o.brandName}</span>
               <span className="block font-mono text-[12px] text-muted">{o.code}</span>
             </span>
-            <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[12px] font-medium text-accent-ink">
+            <span className="rounded-full bg-tint px-2.5 py-1 text-[12px] font-medium text-tint-ink">
               {statusLabel(o.status, o.fulfilment.method)}
             </span>
             <span className="hidden w-20 text-right text-[14px] font-semibold tabular sm:block">
@@ -195,7 +195,7 @@ export function BuyerHome() {
             footer={
               <Link
                 href="/orders"
-                className="tap-area inline-flex items-center gap-1.5 text-small font-medium text-accent-ink hover:underline"
+                className="tap-area inline-flex items-center gap-1.5 text-small font-medium text-link hover:underline"
               >
                 All your orders <ArrowRight className="size-4" />
               </Link>
@@ -209,7 +209,7 @@ export function BuyerHome() {
                 onTheWay.length > 0 && (
                   <Link
                     href="/orders?tab=active"
-                    className="tap-area text-small font-medium text-accent-ink hover:underline"
+                    className="tap-area text-small font-medium text-link hover:underline"
                   >
                     Track
                   </Link>

@@ -149,7 +149,7 @@ function PlaceOption({
         className="flex size-5 shrink-0 rounded-full shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition-[box-shadow] duration-150 group-data-[state=checked]:shadow-[inset_0_0_0_6px_var(--ink)]"
         aria-hidden
       />
-      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-accent-soft text-accent-ink">
+      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-tint text-tint-ink">
         {icon}
       </span>
       <span className="min-w-0 flex-1">{children}</span>
@@ -725,7 +725,7 @@ export function CheckoutView() {
                 aside={
                   <Link
                     href="/account/settings?next=/checkout"
-                    className="-my-2 inline-flex min-h-11 items-center text-small font-medium text-accent-ink underline underline-offset-4"
+                    className="-my-2 inline-flex min-h-11 items-center text-small font-medium text-link underline underline-offset-4"
                   >
                     Edit
                   </Link>

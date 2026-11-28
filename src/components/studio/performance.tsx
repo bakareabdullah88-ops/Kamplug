@@ -47,7 +47,7 @@ function ShopFront({ brand }: { brand: Brand | null | undefined }) {
             <h1 className="flex items-center gap-1.5 text-[22px] leading-tight font-semibold tracking-[-0.02em] md:text-[26px]">
               <span className="truncate">{brand.name}</span>
               {brand.verified && (
-                <BadgeCheck className="size-5 shrink-0 text-accent" aria-label="Verified shop" />
+                <BadgeCheck className="size-5 shrink-0 text-verified" aria-label="Verified shop" />
               )}
             </h1>
             <p className="truncate text-small text-muted">kamplug/{brand.handle}</p>
@@ -163,7 +163,7 @@ export function ShopPerformance() {
               <button
                 type="button"
                 onClick={() => setView("insights")}
-                className="tap-area text-small font-medium text-accent-ink hover:underline"
+                className="tap-area text-small font-medium text-link hover:underline"
               >
                 See the funnel, busiest days and each product
               </button>
@@ -178,7 +178,7 @@ export function ShopPerformance() {
               aside={
                 <Link
                   href="/studio/orders"
-                  className="tap-area text-small font-medium text-accent-ink hover:underline"
+                  className="tap-area text-small font-medium text-link hover:underline"
                 >
                   All orders
                 </Link>
@@ -192,7 +192,7 @@ export function ShopPerformance() {
               aside={
                 <Link
                   href="/studio/products"
-                  className="tap-area text-small font-medium text-accent-ink hover:underline"
+                  className="tap-area text-small font-medium text-link hover:underline"
                 >
                   All products
                 </Link>

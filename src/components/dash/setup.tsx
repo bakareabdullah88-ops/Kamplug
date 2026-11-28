@@ -40,14 +40,14 @@ export function SetupStrip() {
             initial={{ width: 0 }}
             animate={{ width: `${(done / data.length) * 100}%` }}
             transition={spring.smooth}
-            className="h-full rounded-full bg-accent"
+            className="h-full rounded-full bg-save"
           />
         </div>
       </div>
       {next && (
         <Link
           href={next.href}
-          className="flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-accent-soft px-4 text-small font-semibold text-accent-ink transition-colors hover:bg-accent hover:text-on-accent"
+          className="flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-tint px-4 text-small font-semibold text-tint-ink transition-colors hover:bg-tint-ink hover:text-white"
         >
           Next: {next.label} <ArrowRight className="size-4" />
         </Link>

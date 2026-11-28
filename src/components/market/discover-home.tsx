@@ -42,7 +42,7 @@ function SearchBar({ onFilters, active }: { onFilters: () => void; active: numbe
         onClick={() => setCommandOpen(true)}
         className="flex h-full min-w-0 flex-1 items-center gap-3 rounded-2xl pr-2 pl-4 text-left text-[15px] text-muted"
       >
-        <Search className="size-5 shrink-0 text-accent" aria-hidden />
+        <Search className="size-5 shrink-0 text-ink" aria-hidden />
         <span className="truncate">What do you need today?</span>
       </button>
       <button
@@ -286,7 +286,7 @@ function FilterSheet({
             onClick={() => onOpenChange(false)}
             className="inline-flex items-center gap-1.5 text-[16px] font-semibold hover:underline"
           >
-            <MapPin className="size-4 text-accent" aria-hidden />
+            <MapPin className="size-4 text-pin" aria-hidden />
             {view.buyer.label ?? "Set where you are"}
             <span className="text-[14px] font-medium text-accent-ink">· Change</span>
           </Link>
@@ -352,7 +352,7 @@ function useHomeView() {
 function EmptyMarket() {
   return (
     <section className="flex flex-col items-center gap-3 border-t border-line-thin py-12 text-center">
-      <span className="grid size-12 place-items-center rounded-full bg-accent-soft text-accent-ink">
+      <span className="grid size-12 place-items-center rounded-full bg-tint text-tint-ink">
         <Store className="size-6" />
       </span>
       <h2 className="text-[18px] font-semibold">No shops here yet</h2>
@@ -491,7 +491,7 @@ export function DiscoverHome() {
         href="/account"
         className="flex items-center gap-3 border-t border-line-thin pt-5 transition-opacity hover:opacity-80 sm:hidden"
       >
-        <span className="grid size-10 place-items-center rounded-full bg-accent-soft text-accent-ink">
+        <span className="grid size-10 place-items-center rounded-full bg-tint text-tint-ink">
           <Gauge className="size-5" />
         </span>
         <span className="min-w-0 flex-1">

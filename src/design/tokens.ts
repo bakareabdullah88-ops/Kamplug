@@ -60,7 +60,6 @@ export const zIndex = {
   sheet: 60,
   popover: 70,
   toast: 80,
-  curtain: 90,
   skip: 100,
 } as const;
 

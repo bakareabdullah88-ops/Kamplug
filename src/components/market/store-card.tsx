@@ -87,7 +87,10 @@ export function StoreCard({
               <h3 className="flex min-w-0 items-center gap-1 text-[16.5px] font-semibold tracking-[-0.01em]">
                 <span className="truncate">{b.name}</span>
                 {b.verified && (
-                  <BadgeCheck className="size-4 shrink-0 text-accent" aria-label="Verified shop" />
+                  <BadgeCheck
+                    className="size-4 shrink-0 text-verified"
+                    aria-label="Verified shop"
+                  />
                 )}
               </h3>
               {b.ratingCount > 0 ? (

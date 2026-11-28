@@ -50,7 +50,7 @@ export function Switch({
         aria-describedby={description ? `${id}-d` : undefined}
         className={cn(
           "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-accent" : "bg-line-strong",
+          checked ? "bg-save" : "bg-line-strong",
           "disabled:opacity-45",
         )}
       >
@@ -240,14 +240,14 @@ export function RangeSlider({
       className="relative mx-2.5 flex h-10 touch-none items-center select-none"
     >
       <RSlider.Track className="relative h-1 grow overflow-hidden rounded-full bg-line-strong">
-        <RSlider.Range className="absolute h-full bg-accent" />
+        <RSlider.Range className="absolute h-full bg-ink" />
       </RSlider.Track>
       {value.map((v, i) => (
         <RSlider.Thumb
           key={i}
           aria-label={i === 0 ? `Minimum ${label}` : `Maximum ${label}`}
           aria-valuetext={formatValue(v)}
-          className="block size-5 rounded-full bg-surface shadow-[0_0_0_2px_var(--accent),var(--shadow-sm)] transition-transform duration-150 hover:scale-110 focus-visible:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-95"
+          className="block size-5 rounded-full bg-surface shadow-[0_0_0_2px_var(--ink),var(--shadow-sm)] transition-transform duration-150 hover:scale-110 focus-visible:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-95"
         />
       ))}
     </RSlider.Root>

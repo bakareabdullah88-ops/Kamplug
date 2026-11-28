@@ -37,7 +37,7 @@ function Price({ kobo, compareAt }: { kobo: number; compareAt?: number | undefin
       {off && compareAt && (
         <p className="flex items-center gap-1.5 text-[12.5px] leading-none">
           <s className="text-muted tabular">{formatNaira(compareAt)}</s>
-          <span className="font-semibold text-accent-ink">{off}% off</span>
+          <span className="font-semibold text-save">{off}% off</span>
         </p>
       )}
     </div>
@@ -181,7 +181,7 @@ export function ProductRow({
           >
             <span className="truncate">{p.brand.name}</span>
             {p.brand.verified && (
-              <BadgeCheck className="size-3.5 shrink-0 text-accent" aria-label="Verified shop" />
+              <BadgeCheck className="size-3.5 shrink-0 text-verified" aria-label="Verified shop" />
             )}
           </Link>
           <h3 className="mt-0.5 line-clamp-2 text-[16px] leading-snug font-semibold tracking-[-0.01em] sm:text-[18px]">

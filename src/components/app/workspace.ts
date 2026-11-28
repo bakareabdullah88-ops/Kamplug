@@ -2,28 +2,26 @@
 
 import { useRouter } from "next/navigation";
 import { useMode, type Mode } from "@/components/shell/mode";
-import { useCurtain } from "@/components/shell/mode-curtain";
 import { useSession } from "@/queries/session";
 import { usePrefs, useUi } from "@/stores/ui";
 
-/** Switch between the market and your shop, back to where you left each one, with the curtain. */
+/** Switch between the market and your shop, back to where you left each one. */
 export function useSwitchWorkspace() {
   const mode = useMode();
   const { user } = useSession();
   const router = useRouter();
-  const start = useCurtain((s) => s.start);
   const { lastBuyingPath, lastSellingPath } = usePrefs();
   const hasShop = !!user && user.brandIds.length > 0;
 
-  return (next: Mode, origin?: { x: number; y: number }) => {
+  return (next: Mode) => {
     if (next === mode) return;
+    // Whatever was open (the phone menu, search, the bag) belongs to the side you're leaving.
+    useUi.setState({ menuOpen: false, commandOpen: false, bagOpen: false });
     if (next === "selling" && !hasShop) {
-      useUi.setState({ menuOpen: false });
       router.push("/open-shop");
       return;
     }
-    start(
-      next,
+    router.push(
       next === "selling"
         ? lastSellingPath?.startsWith("/studio")
           ? lastSellingPath
@@ -31,7 +29,6 @@ export function useSwitchWorkspace() {
         : lastBuyingPath && !lastBuyingPath.startsWith("/studio")
           ? lastBuyingPath
           : "/home",
-      origin,
     );
   };
 }

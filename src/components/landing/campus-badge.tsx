@@ -19,7 +19,7 @@ export function CampusBadge() {
       trigger={
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-bold ring-1 ring-[#1f1a17]/10 transition-colors hover:bg-[#fdebe4]"
+          className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-bold ring-1 ring-[#1f1a17]/10 transition-colors hover:bg-[#fdece9]"
         >
           <span className="size-2 rounded-full bg-[#3ddc97]" aria-hidden />
           {features.waitlist ? "Coming to" : "Live at"} {live?.shortName ?? "UNILAG"}

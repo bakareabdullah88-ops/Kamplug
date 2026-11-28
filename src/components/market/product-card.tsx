@@ -108,7 +108,7 @@ export function ProductCard({
             <span
               className={cn(
                 "font-mono font-medium tabular",
-                off ? "text-accent-ink" : "text-ink",
+                off ? "text-save" : "text-ink",
                 size === "lg" ? "text-body" : "text-small",
               )}
             >

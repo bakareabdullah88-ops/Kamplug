@@ -84,7 +84,7 @@ export function AddressMenu({ label }: { label: string | undefined }) {
           >
             <span className="text-[12.5px] text-muted">Delivering to</span>
             <span className="inline-flex min-w-0 items-center gap-1.5 text-[17px] font-bold tracking-[-0.01em]">
-              <MapPin className="size-4 shrink-0 text-accent" aria-hidden />
+              <MapPin className="size-4 shrink-0 text-pin" aria-hidden />
               <span className="truncate">{label ?? "Choose your spot"}</span>
               <ChevronDown
                 className="size-4 shrink-0 text-muted transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-data-[state=open]:rotate-180"
@@ -159,7 +159,7 @@ export function AddressMenu({ label }: { label: string | undefined }) {
               <button
                 type="button"
                 onClick={add}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold text-accent-ink transition-colors hover:bg-accent-soft"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold text-tint-ink transition-colors hover:bg-tint"
               >
                 <Plus className="size-5" aria-hidden /> Add a new address
               </button>

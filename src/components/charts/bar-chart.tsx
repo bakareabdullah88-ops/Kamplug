@@ -83,7 +83,9 @@ export function BarChart({
               <motion.div
                 className={cn(
                   "w-full rounded-t-[3px] transition-colors duration-200",
-                  on ? "bg-accent" : "bg-ink/[0.1] group-hover:bg-ink/[0.18] dark:bg-ink/[0.14]",
+                  on
+                    ? "bg-warm-purple"
+                    : "bg-ink/[0.1] group-hover:bg-ink/[0.18] dark:bg-ink/[0.14]",
                 )}
                 initial={reduce ? false : { scaleY: 0 }}
                 animate={inView || reduce ? { scaleY: 1 } : { scaleY: 0 }}

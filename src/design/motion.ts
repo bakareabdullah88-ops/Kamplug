@@ -25,7 +25,7 @@ export const spring = {
   smooth: { type: "spring", stiffness: 300, damping: 34, mass: 0.9 },
   /** Badges, success moments: quick, with barely any overshoot */
   bouncy: { type: "spring", stiffness: 560, damping: 32, mass: 0.6 },
-  /** Large surfaces (mode curtain, hero): ~450ms */
+  /** Large surfaces (hero): ~450ms */
   gentle: { type: "spring", stiffness: 180, damping: 28, mass: 1 },
 } as const satisfies Record<string, Transition>;
 

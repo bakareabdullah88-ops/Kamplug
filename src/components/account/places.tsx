@@ -207,7 +207,7 @@ export function PlacesView() {
                   className="card flex flex-col py-5"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-ink">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-tint text-tint-ink">
                       <KindIcon className="size-5" aria-hidden />
                     </span>
                     <div className="min-w-0 flex-1">

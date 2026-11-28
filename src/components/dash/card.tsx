@@ -91,7 +91,7 @@ export function DeltaBadge({ change, className }: { change: number | null; class
     return (
       <span
         className={cn(
-          "rounded-full bg-accent-soft px-2 py-0.5 text-[11.5px] font-semibold text-accent",
+          "rounded-full bg-tint px-2 py-0.5 text-[11.5px] font-semibold text-tint-ink",
           className,
         )}
       >

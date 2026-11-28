@@ -152,7 +152,7 @@ function RailCard({ product: p, priority }: { product: ProductWithBrand; priorit
       <p className="mt-1 flex items-center gap-1 truncate text-[13px] text-muted">
         <span className="truncate">{p.brand.name}</span>
         {p.brand.verified && (
-          <BadgeCheck className="size-3.5 shrink-0 text-accent" aria-label="Verified shop" />
+          <BadgeCheck className="size-3.5 shrink-0 text-verified" aria-label="Verified shop" />
         )}
       </p>
       <p className="mt-0.5 flex items-center gap-1 text-[13px] text-muted">

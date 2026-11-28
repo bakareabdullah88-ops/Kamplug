@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useUi } from "@/stores/ui";
 import { AppSync } from "./app-sync";
-import { ModeCurtain } from "./mode-curtain";
 import { OfflineBanner } from "./offline-banner";
 import { SpotClaim } from "./spot-claim";
 
@@ -69,7 +68,6 @@ export function GlobalChrome() {
       <OfflineBanner />
       <SpotClaim />
       <Overlays />
-      <ModeCurtain />
     </Suspense>
   );
 }

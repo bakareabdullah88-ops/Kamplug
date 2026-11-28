@@ -129,7 +129,9 @@ function HourlyBars({ hours }: { hours: number[] }) {
             transition={{ ...spring.smooth, delay: h * 0.015 }}
             className={cn(
               "flex-1 origin-bottom rounded-t-md",
-              h === peak && v > 0 ? "bg-accent" : "bg-accent/10 hatch [--hatch:var(--accent)]",
+              h === peak && v > 0
+                ? "bg-warm-purple"
+                : "bg-warm-purple/10 hatch [--hatch:var(--warm-purple)]",
             )}
             style={{ height: `${Math.max((v / max) * 100, 3)}%` }}
           />

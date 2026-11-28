@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import type { LucideIcon } from "lucide-react";
-import { HomeIcon, type AppIcon } from "@/components/icons/kamplug-icons";
+import { CategoryIcon } from "../category-icons";
+import { HomeIcon } from "@/components/icons/kamplug-icons";
 import { Chip } from "@/components/ui/chip";
 import { RangeSlider, Switch } from "@/components/ui/controls";
 import { Select } from "@/components/ui/overlay";
@@ -211,9 +211,9 @@ export function CategoryNav({
   value: ExploreParams["category"];
   onChange: (v: ExploreParams["category"]) => void;
 }) {
-  const items: { id: ExploreParams["category"]; name: string; icon: LucideIcon | AppIcon }[] = [
-    { id: "all", name: "Everything", icon: HomeIcon },
-    ...categories.map((c) => ({ id: c.id, name: c.name, icon: c.icon })),
+  const items: { id: ExploreParams["category"]; name: string }[] = [
+    { id: "all", name: "Everything" },
+    ...categories.map((c) => ({ id: c.id, name: c.name })),
   ];
   return (
     <nav aria-label="Categories">
@@ -221,7 +221,6 @@ export function CategoryNav({
       <ul className="flex flex-col gap-0.5">
         {items.map((c) => {
           const active = value === c.id;
-          const Icon = c.icon;
           return (
             <li key={c.id}>
               <button
@@ -230,24 +229,22 @@ export function CategoryNav({
                 onClick={() => onChange(c.id)}
                 className={cn(
                   "relative flex h-10 w-full items-center gap-3 rounded-lg px-3 text-left text-[14px] font-medium transition-colors",
-                  active ? "text-ink" : "text-ink-2 hover:bg-ink/[0.04] hover:text-ink",
+                  active ? "font-bold text-ink" : "text-ink-2 hover:bg-ink/[0.04] hover:text-ink",
                 )}
               >
                 {active && (
                   <motion.span
                     layoutId="category-active"
                     transition={spring.snappy}
-                    className="absolute inset-0 rounded-lg bg-accent-soft"
+                    className="absolute inset-0 rounded-lg bg-ink/[0.06]"
                     aria-hidden
                   />
                 )}
-                <Icon
-                  className={cn(
-                    "relative size-4 shrink-0",
-                    active ? "text-accent-ink" : "text-muted",
-                  )}
-                  aria-hidden
-                />
+                {c.id === "all" ? (
+                  <HomeIcon className="relative size-5 shrink-0" aria-hidden />
+                ) : (
+                  <CategoryIcon id={c.id} className="relative size-6 shrink-0" />
+                )}
                 <span className="relative min-w-0 flex-1 truncate">{c.name}</span>
               </button>
             </li>

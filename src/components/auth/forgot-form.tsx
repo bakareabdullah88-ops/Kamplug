@@ -31,7 +31,7 @@ export function ForgotForm() {
   if (!features.passwordResetEmail) {
     return (
       <div className="w-full max-w-md">
-        <span className="flex size-14 items-center justify-center rounded-full bg-accent-soft text-accent">
+        <span className="flex size-14 items-center justify-center rounded-full bg-tint text-tint-ink">
           <MailCheck className="size-7" />
         </span>
         <h1 className="mt-6 font-display text-display-md">Forgot your password?</h1>

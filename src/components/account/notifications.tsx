@@ -88,7 +88,7 @@ export function NotificationsView() {
                         <span
                           className={cn(
                             "flex size-10 shrink-0 items-center justify-center rounded-full",
-                            n.read ? "bg-ink/[0.05] text-muted" : "bg-accent-soft text-accent-ink",
+                            n.read ? "bg-ink/[0.05] text-muted" : "bg-tint text-tint-ink",
                           )}
                         >
                           <Icon className="size-4.5" />
@@ -109,7 +109,7 @@ export function NotificationsView() {
                             {formatRelative(n.createdAt, now)}
                           </span>
                           {!n.read && (
-                            <span className="size-2 rounded-full bg-accent" aria-label="Unread" />
+                            <span className="size-2 rounded-full bg-pin" aria-label="Unread" />
                           )}
                         </span>
                       </>

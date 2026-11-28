@@ -36,7 +36,7 @@ export function BrandCard({
           <span className="flex items-center gap-1 truncate text-small font-semibold">
             {b.name}
             {b.verified && (
-              <BadgeCheck className="size-3.5 shrink-0 text-accent" aria-label="Verified" />
+              <BadgeCheck className="size-3.5 shrink-0 text-verified" aria-label="Verified" />
             )}
           </span>
           <span className="block truncate text-small text-muted">{b.tagline}</span>
@@ -90,7 +90,7 @@ export function BrandCard({
           >
             <span className="truncate">{b.name}</span>
             {b.verified && (
-              <BadgeCheck className="size-4 shrink-0 text-accent" aria-label="Verified brand" />
+              <BadgeCheck className="size-4 shrink-0 text-verified" aria-label="Verified brand" />
             )}
           </h3>
           <p

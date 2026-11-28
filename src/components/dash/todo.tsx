@@ -83,7 +83,7 @@ export function TodoList({ items, checklist = false }: { items: Todo[]; checklis
                 {!done && <span className="block truncate text-[12px] text-muted">{t.detail}</span>}
               </span>
               {!done && !checklist && (
-                <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11.5px] font-semibold text-accent-ink tabular">
+                <span className="rounded-full bg-tint px-2 py-0.5 text-[11.5px] font-semibold text-tint-ink tabular">
                   {t.count}
                 </span>
               )}

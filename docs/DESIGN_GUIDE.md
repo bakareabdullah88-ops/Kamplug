@@ -22,16 +22,16 @@ Generic AI-made apps share the same tells. Avoid all of them:
 
 ## 2. Colour
 
-Brand: **multi-colour and warm**. Paprika red (a warm red-orange, picked to feel appetising like jollof and pepper, not alarming) is the action colour (main buttons, selected
+Brand: **multi-colour and warm**. Tomato red is the action colour (main buttons, selected
 states, the logo). The supporting colours carry the brand's identity everywhere else: the
 landing headline (one colour per language), section labels and "See more" links on home, step
 numbers, bands, the open FAQ item and the illustrations. Never paint a whole screen red.
 
 | Token                             | Hex                   | Use                                                                       |
 | --------------------------------- | --------------------- | ------------------------------------------------------------------------- |
-| `--brand` / `--accent`            | `#CF3F17`             | Main buttons, links, selected states, logo. White text passes AA (4.8:1). |
-| `--accent-hover` / `--accent-ink` | `#B0330F`             | Hover, red text on light backgrounds (6:1).                               |
-| `--accent-soft`                   | `#FDEBE4`             | Selected chips, soft highlights.                                          |
+| `--brand` / `--accent`            | `#D63426`             | Main buttons, links, selected states, logo. White text passes AA (4.8:1). |
+| `--accent-hover` / `--accent-ink` | `#B42A20`             | Hover, red text on light backgrounds (5.9:1).                             |
+| `--accent-soft`                   | `#FDECE9`             | Selected chips, soft highlights.                                          |
 | `--ink`                           | `#1F1A17`             | Text and dark surfaces. Warm near-black, never navy.                      |
 | `--muted`                         | `#6B625C`             | Secondary text (5.5:1 on canvas).                                         |
 | `--canvas`                        | `#F7F6F4`             | App background.                                                           |
@@ -48,6 +48,20 @@ Supporting colours (vivid for fills behind shapes; `-ink` versions are safe for 
 | Technology       | sky `#4DB4E6`    | `#1F78A8` |
 | Academics        | green `#22A060`  | `#1E7F46` |
 | Lifestyle        | lime `#A3D63C`   | `#4D7C0F` |
+
+Every detail has a colour job, so screens are never all red:
+
+| Job                                   | Token                    | Colour |
+| ------------------------------------- | ------------------------ | ------ |
+| Main buttons, selected states, logo   | `--accent`               | red    |
+| Text links                            | `--link`                 | purple |
+| Soft notes, info chips, icon spots    | `--tint` / `--tint-ink`  | orange |
+| Discounts, savings, progress, toggles | `--save`                 | green  |
+| Verified badges                       | `--verified`             | sky    |
+| Places and pins, unread dots          | `--pin`                  | orange |
+| Charts                                | `--warm-purple`          | purple |
+| Ratings                               | `--warm-sun`             | yellow |
+| Categories                            | each category's own pair | mixed  |
 
 Rules:
 

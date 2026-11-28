@@ -63,7 +63,7 @@ export function FilterMenu<V extends string>({
             "flex h-10 max-w-[44vw] shrink-0 items-center gap-1.5 rounded-xl px-3 text-[13.5px] font-medium whitespace-nowrap ring-1 transition-colors",
             isDefault
               ? "bg-surface ring-line hover:ring-line-strong"
-              : "bg-accent-soft text-accent ring-accent/30",
+              : "bg-tint text-tint-ink ring-tint-ink/30",
           )}
         >
           <span className="truncate">{isDefault ? label : current?.label}</span>
@@ -566,7 +566,7 @@ export function StatusTag({
     green: "bg-success-soft text-success ring-success/25",
     amber: "bg-warning-soft text-warning ring-warning/25",
     red: "bg-danger-soft text-danger ring-danger/25",
-    blue: "bg-accent-soft text-accent ring-accent/25",
+    blue: "bg-tint text-tint-ink ring-tint-ink/25",
     grey: "bg-ink/[0.05] text-ink-2 ring-line-strong",
     violet:
       "bg-[color-mix(in_oklab,var(--chart-violet)_14%,transparent)] text-chart-violet ring-chart-violet/25",
@@ -588,7 +588,7 @@ export function PersonChip({ name, avatar }: { name: string; avatar?: ReactNode 
   return (
     <span className="inline-flex max-w-full items-center gap-2">
       {avatar ?? (
-        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-soft text-[10.5px] font-semibold text-accent">
+        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-tint text-[10.5px] font-semibold text-tint-ink">
           {name
             .split(" ")
             .map((p) => p[0])

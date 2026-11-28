@@ -399,7 +399,7 @@ export function InboxView({ emptyBody }: { emptyBody: string }) {
                             {name}
                           </span>
                           {both && as === "brand" && (
-                            <span className="shrink-0 rounded-sm bg-accent-soft px-1.5 py-px text-[10.5px] font-semibold text-accent-ink">
+                            <span className="shrink-0 rounded-sm bg-tint px-1.5 py-px text-[10.5px] font-semibold text-tint-ink">
                               Your shop
                             </span>
                           )}

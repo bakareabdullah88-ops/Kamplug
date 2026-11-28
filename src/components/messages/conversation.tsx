@@ -256,7 +256,7 @@ export function Conversation({
                       className={cn(
                         "max-w-[78%] rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed",
                         mine
-                          ? "rounded-tr-md bg-accent-soft text-ink"
+                          ? "rounded-tr-md bg-tint text-ink"
                           : "rounded-tl-md bg-surface-2 text-ink ring-1 ring-line",
                       )}
                     >

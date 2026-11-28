@@ -311,7 +311,7 @@ export function BrandView() {
             <h1 className="mt-2 flex items-center gap-2 font-display text-display-md">
               <span className="truncate">{brand.name}</span>
               {brand.verified && (
-                <BadgeCheck className="size-6 shrink-0 text-accent" aria-label="Verified brand" />
+                <BadgeCheck className="size-6 shrink-0 text-verified" aria-label="Verified brand" />
               )}
             </h1>
             <p className="mt-1 text-body text-muted">{brand.tagline}</p>
@@ -377,7 +377,7 @@ export function BrandView() {
         </div>
 
         {own && (
-          <p className="mt-6 rounded-md bg-accent-soft px-4 py-3 text-small text-accent-ink">
+          <p className="mt-6 rounded-md bg-tint px-4 py-3 text-small text-tint-ink">
             This is your shop, as buyers see it. You can browse it, but you can&apos;t buy from
             yourself.
           </p>

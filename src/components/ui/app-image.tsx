@@ -78,7 +78,7 @@ export function AppImage({
             className="grid size-full place-items-center"
             style={{ background: categoryTint[category] }}
           >
-            <CategoryIcon id={category} className="size-[46%] max-h-28" />
+            <CategoryIcon id={category} className="size-[74%] max-h-48" />
           </span>
         ) : variant === "cover" ? (
           // Shops without an uploaded cover get a plain tint, never a stand-in picture.

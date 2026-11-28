@@ -33,12 +33,12 @@
   --on-primary: #ffffff;
 
   /* Brand: tomato red. Wordmark, main buttons, key states. White text on it passes AA (4.8:1). */
-  --brand: #cf3f17;
+  --brand: #d63426;
   --brand-ink: #c42e22;
-  --accent: #cf3f17;
-  --accent-hover: #b0330f;
-  --accent-soft: #fdebe4;
-  --accent-ink: #b0330f;
+  --accent: #d63426;
+  --accent-hover: #b42a20;
+  --accent-soft: #fdece9;
+  --accent-ink: #b42a20;
   --on-accent: #ffffff;
   /* The solid edge under raised buttons and panels. */
   --accent-edge: #8f2018;
@@ -59,9 +59,18 @@
   --warm-berry-ink: #c02655;
   --warm-sun: #ffc93c;
 
+  /* Jobs for the supporting colours, so small details aren't all red. Red
+     (--accent) stays for main buttons and selected states. */
+  --link: #6b3fc4; /* text links: purple */
+  --tint: #ffeedd; /* soft notes, info chips and icon spots: orange */
+  --tint-ink: #b4500a;
+  --save: #1e7f46; /* discounts and savings, progress: green */
+  --verified: #1f78a8; /* verified badges: sky */
+  --pin: #e8590c; /* places and pins: orange */
+
   /* Both sides of the app share the brand colour. */
-  --studio: #cf3f17;
-  --ember: #cf3f17;
+  --studio: #d63426;
+  --ember: #d63426;
   --studio-contrast: #ffc8be;
   --ember-contrast: #ffc8be;
 
@@ -132,7 +141,6 @@
   --z-sheet: 60;
   --z-popover: 70;
   --z-toast: 80;
-  --z-curtain: 90;
   --z-skip: 100;
 
   /* Layout */
@@ -154,6 +162,12 @@
 /* Selling uses the same brand red; the mode shows in the switch and header, not a new colour. */
 
 .dark {
+  --link: #b9a2ff;
+  --tint: rgb(255 138 61 / 0.16);
+  --tint-ink: #ffb07a;
+  --save: #4fcf86;
+  --verified: #6cc4f0;
+  --pin: #ff9a52;
   --canvas: #0e1022;
   --canvas-sunk: #090b18;
   --surface: #161936;
@@ -172,19 +186,19 @@
   --primary-hover: #ffffff;
   --on-primary: #0e1022;
 
-  --brand: #cf3f17;
+  --brand: #d63426;
   --brand-ink: #ffb3a7;
   --accent: #ff7a6b;
   --accent-hover: #ffb3a7;
   --accent-soft: #3a1d1a;
   --accent-ink: #ffc8be;
   --on-accent: #2a0b08;
-  --accent-edge: #cf3f17;
+  --accent-edge: #d63426;
 
   --studio: #ff7a6b;
   --ember: #ff7a6b;
-  --studio-contrast: #b0330f;
-  --ember-contrast: #b0330f;
+  --studio-contrast: #b42a20;
+  --ember-contrast: #b42a20;
 
   --chart-blue: #6f86ff;
   --chart-blue-2: #3b4fae;
@@ -299,6 +313,12 @@
   --color-warm-berry: var(--warm-berry);
   --color-warm-berry-ink: var(--warm-berry-ink);
   --color-warm-sun: var(--warm-sun);
+  --color-link: var(--link);
+  --color-tint: var(--tint);
+  --color-tint-ink: var(--tint-ink);
+  --color-save: var(--save);
+  --color-verified: var(--verified);
+  --color-pin: var(--pin);
   --color-wash-peach: var(--wash-peach);
 
   /* Faces come from src/config/fonts.ts */
@@ -554,18 +574,6 @@
 }
 ::view-transition-image-pair(.morph) {
   isolation: isolate;
-}
-
-/* The market/shop switch cover stays solid and on top while the page swaps under it. */
-::view-transition-group(mode-curtain) {
-  animation: none;
-  z-index: 200;
-}
-::view-transition-old(mode-curtain) {
-  display: none;
-}
-::view-transition-new(mode-curtain) {
-  animation: none;
 }
 
 /* Persistent chrome never slides */
