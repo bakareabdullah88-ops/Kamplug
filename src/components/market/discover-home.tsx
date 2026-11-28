@@ -30,7 +30,7 @@ import { useHomeFilters, type HomeSort } from "@/stores/home-filters";
 import { useUi } from "@/stores/ui";
 import { AddressMenu } from "./address-menu";
 import { StoreCard, StoreCardSkeleton } from "./store-card";
-import { CategoryGrid, HomeSectionHead, ProductRail } from "./home-sections";
+import { CategoryGrid, HomeSectionHead, ProductRail, sectionTone } from "./home-sections";
 
 /** Search everywhere; the round button beside it sorts and filters this feed in place. */
 function SearchBar({ onFilters, active }: { onFilters: () => void; active: number }) {
@@ -163,7 +163,12 @@ function FeaturedStores({ stores }: { stores: RankedStores | undefined }) {
   if (stores && stores.featured.length === 0) return null;
   return (
     <section>
-      <HomeSectionHead eyebrow="Most loved on campus" title="Popular stores" href="/explore" />
+      <HomeSectionHead
+        eyebrow="Most loved on campus"
+        title="Popular stores"
+        href="/explore"
+        tone={sectionTone.berry}
+      />
       <ul className="-mx-(--gutter) scrollbar-none flex snap-x snap-mandatory scroll-px-(--gutter) gap-4 overflow-x-auto px-(--gutter) pb-1 md:mx-0 md:scroll-px-0 md:px-0 lg:gap-5">
         {stores
           ? stores.featured.map(({ b, n }, i) => (
@@ -222,6 +227,7 @@ function MoreStores({
           view.located ? `${restTitles[view.sort]} from ${view.buyer.label}` : restTitles[view.sort]
         }
         title={stores.featured.length ? "More stores" : "Stores on campus"}
+        tone={sectionTone.sky}
         href="/explore"
       />
       <ul className="grid grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
@@ -446,6 +452,7 @@ export function DiscoverHome() {
           <FeaturedStores stores={stores} />
           <ProductRail
             eyebrow="On campus now"
+            tone={sectionTone.orange}
             title={firstTitle[firstSort] ?? "Popular right now"}
             query={first}
             skip={mineIds}
@@ -454,6 +461,7 @@ export function DiscoverHome() {
           {mine && (
             <ProductRail
               eyebrow="Near you"
+              tone={sectionTone.sky}
               title={mineTitle}
               query={mineQuery}
               href="/explore?sort=nearest"
@@ -462,12 +470,14 @@ export function DiscoverHome() {
           )}
           <ProductRail
             eyebrow="Easy on the pocket"
+            tone={sectionTone.green}
             title="Under ₦2,000"
             query={{ ...base, sort: "popular", maxPriceKobo: 200_000 }}
             href="/explore?max=2000&sort=price_asc"
           />
           <ProductRail
             eyebrow="Fresh on the market"
+            tone={sectionTone.purple}
             title={secondSort === "newest" ? "New on Kamplug" : "Popular right now"}
             query={{ ...base, sort: secondSort }}
             href={`/explore?sort=${secondSort}${view.walking ? "&walk=1" : ""}`}

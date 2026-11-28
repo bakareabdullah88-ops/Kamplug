@@ -297,7 +297,7 @@ export function DeliveryKeke({ className }: { className?: string }) {
           />
         ))}
         <g transform="translate(170 70) scale(3.6)">
-          <Keke body="#d63426" />
+          <Keke body="#22a060" />
         </g>
         <rect x="320" y="40" width="80" height="64" rx="6" fill="#ffc23d" {...S} />
         <path d="M320 64 H400 M360 40 V104" {...thin} />
@@ -406,7 +406,7 @@ export function HostelRoom({ className }: { className?: string }) {
       {/* Kamplug paper bag */}
       <path d="M680 600 L690 480 H780 L800 600 Z" fill="#c8915a" {...S} />
       <path d="M700 480 l10 -14 h50 l10 14" fill="#a87443" {...thin} />
-      <circle cx="740" cy="540" r="24" fill="#d63426" {...thin} />
+      <circle cx="740" cy="540" r="24" fill="#ff8a3d" {...thin} />
       <path
         d="M732 528 V552 M732 540 L746 528 M738 536 L748 552"
         stroke="#ffc23d"

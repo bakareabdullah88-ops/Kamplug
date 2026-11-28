@@ -22,7 +22,10 @@ Generic AI-made apps share the same tells. Avoid all of them:
 
 ## 2. Colour
 
-Brand: **tomato red**. Warm supporting colours, one per category. No blue in the brand.
+Brand: **multi-colour and warm**. Tomato red is the action colour (main buttons, selected
+states, the logo). The supporting colours carry the brand's identity everywhere else: the
+landing headline (one colour per language), section labels and "See more" links on home, step
+numbers, bands, the open FAQ item and the illustrations. Never paint a whole screen red.
 
 | Token                             | Hex                   | Use                                                                       |
 | --------------------------------- | --------------------- | ------------------------------------------------------------------------- |
@@ -39,7 +42,7 @@ Supporting colours (vivid for fills behind shapes; `-ink` versions are safe for 
 
 | Category         | Fill             | Text-safe |
 | ---------------- | ---------------- | --------- |
-| Food & groceries | orange `#FF8A3D` | `#C2570C` |
+| Food & groceries | orange `#FF8A3D` | `#B4500A` |
 | Fashion          | purple `#8B5CF6` | `#6B3FC4` |
 | Beauty           | berry `#F0445B`  | `#C02655` |
 | Technology       | sky `#4DB4E6`    | `#1F78A8` |
@@ -50,6 +53,7 @@ Rules:
 
 - Body text needs 4.5:1 contrast; large text (24px+, or 19px+ bold) needs 3:1. Check every new
   pairing. Bright red (`#FF0000`-like) fails with white text, so darken it.
+- Text in a supporting colour uses its `-ink` version on light backgrounds (all pass 4.5:1).
 - Red means "act" (buy, order, confirm). Don't also use it for errors next to a red button;
   errors get the danger token plus an icon or wording.
 - Semantic colours (success, warning, danger) are separate from the brand.

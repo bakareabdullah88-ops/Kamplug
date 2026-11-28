@@ -26,7 +26,7 @@ export function FaqPanel({ items }: { items: { q: string; a: string }[] }) {
                 key={f.q}
                 className={cn(
                   "overflow-hidden rounded-xl transition-[background-color,box-shadow] duration-300",
-                  on ? "bg-[#d63426]" : "bg-white ring-1 ring-[#1f1a17]/10",
+                  on ? "bg-[#1e7f46]" : "bg-white ring-1 ring-[#1f1a17]/10",
                 )}
               >
                 <button

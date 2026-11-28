@@ -24,20 +24,35 @@ const short: Record<CategoryId, string> = {
   lifestyle: "Lifestyle",
 };
 
-/** A small grey line over a bold title, with "See more" on the right. */
+/** The warm colours section labels take, so home isn't all one colour (all pass AA as text). */
+export const sectionTone = {
+  berry: "#c02655",
+  orange: "#b4500a",
+  green: "#1e7f46",
+  purple: "#6b3fc4",
+  sky: "#1f78a8",
+} as const;
+
+/** A small coloured label over a bold title, with "See more" in the same colour on the right. */
 export function HomeSectionHead({
   eyebrow,
   title,
   href,
+  tone = sectionTone.orange,
 }: {
   eyebrow?: string;
   title: string;
   href?: string;
+  tone?: string;
 }) {
   return (
     <div className="mb-3.5 flex items-end justify-between gap-3">
       <div className="min-w-0">
-        {eyebrow && <p className="text-[13px] text-muted">{eyebrow}</p>}
+        {eyebrow && (
+          <p className="text-[13px] font-semibold" style={{ color: tone }}>
+            {eyebrow}
+          </p>
+        )}
         <h2 className="truncate text-[19px] font-semibold tracking-[-0.02em] md:text-[21px]">
           {title}
         </h2>
@@ -46,7 +61,8 @@ export function HomeSectionHead({
         <Link
           href={href}
           aria-label={`See more: ${title}`}
-          className="shrink-0 pb-0.5 text-[14px] font-semibold text-accent-ink hover:underline"
+          className="shrink-0 pb-0.5 text-[14px] font-semibold hover:underline"
+          style={{ color: tone }}
         >
           See more
         </Link>
@@ -176,6 +192,7 @@ function RailCardSkeleton() {
 /** A titled row of products that scrolls sideways. Hidden when there's nothing in it. */
 export function ProductRail({
   eyebrow,
+  tone,
   title,
   query,
   href,
@@ -183,6 +200,7 @@ export function ProductRail({
   keep,
 }: {
   eyebrow?: string;
+  tone?: string;
   title: string;
   query: ProductQuery;
   href: string;
@@ -196,7 +214,7 @@ export function ProductRail({
   if (items && items.length === 0) return null;
   return (
     <section className="border-t border-line-thin pt-5 md:pt-6">
-      <HomeSectionHead eyebrow={eyebrow} title={title} href={href} />
+      <HomeSectionHead eyebrow={eyebrow} title={title} href={href} tone={tone} />
       <ul className="-mx-(--gutter) scrollbar-none flex snap-x scroll-px-(--gutter) gap-3.5 overflow-x-auto px-(--gutter) pb-1 md:mx-0 md:scroll-px-0 md:gap-4 md:px-0">
         {items
           ? items.map((p, i) => (

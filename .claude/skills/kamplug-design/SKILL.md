@@ -12,8 +12,9 @@ The short version:
 
 - **Phase 1** is the Campus Marketplace: six physical-product categories (Food & groceries,
   Fashion, Beauty, Technology, Academics, Lifestyle). Nothing outside them yet.
-- **Brand** tomato red `#D63426` (white text passes AA). Warm supporting colours, one per
-  category. No blue in the brand. Warm near-black ink `#1F1A17`, canvas `#F7F6F4`.
+- **Brand** is multi-colour: tomato red `#D63426` for main actions (buttons, selected
+  states), and orange, green, purple, sky, berry and lime for identity (headline words,
+  section labels, steps, bands, illustrations). Never all red. Ink `#1F1A17`, canvas `#F7F6F4`.
 - **Type** Figtree only, weights 400–800, the sizes in the guide's table. No second display face.
 - **No vibe-coded tells:** no icon-headline-paragraph blocks, no boxes inside boxes, no
   sparkles or decorative gradients, no stacked poster words, nothing centred by default.

@@ -570,7 +570,7 @@ export function GateScene({ className }: { className?: string }) {
                 side="#8fa6f0"
                 top="#e6ecff"
                 sideRows={9}
-                sideWindow="#d63426"
+                sideWindow="#8b5cf6"
               >
                 <rect x="-30" y="-322" width="60" height="22" fill="#e6ecff" />
                 <rect x="-30" y="-322" width="60" height="6" fill="#ffffff" />
@@ -583,7 +583,7 @@ export function GateScene({ className }: { className?: string }) {
                   h={20}
                   gapX={36}
                   gapY={30}
-                  color="#d63426"
+                  color="#8b5cf6"
                 />
               </Box>
             </g>

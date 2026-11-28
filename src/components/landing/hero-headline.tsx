@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-/** "What do you need?" in Pidgin, Yoruba, Igbo and Hausa. The last word is the red one. */
+/** "What do you need?" in Pidgin, Yoruba, Igbo and Hausa. Each language's last word has its own warm colour, bright enough for large text (3:1 or better). */
 const lines = [
-  { lang: "pcm", lead: "Wetin you", end: "need?" },
-  { lang: "yo", lead: "Kí lo", end: "nílò?" },
-  { lang: "ig", lead: "Gịnị ka ị", end: "chọrọ?" },
-  { lang: "ha", lead: "Me kake", end: "bukata?" },
+  { lang: "pcm", lead: "Wetin you", end: "need?", color: "#e85d0c" },
+  { lang: "yo", lead: "Kí lo", end: "nílò?", color: "#2a8bc9" },
+  { lang: "ig", lead: "Gịnị ka ị", end: "chọrọ?", color: "#1f9a55" },
+  { lang: "ha", lead: "Me kake", end: "bukata?", color: "#7c4ddb" },
 ] as const;
 
 /** How long each language stays before the next one rises in. */
@@ -39,7 +39,9 @@ export function HeroHeadline() {
         className="block motion-safe:animate-[lp-rise_1.2s_cubic-bezier(0.2,0,0,1)]"
       >
         <span className="block sm:inline">{line.lead}</span>{" "}
-        <span className="block text-[#d63426] sm:inline">{line.end}</span>
+        <span className="block sm:inline" style={{ color: line.color }}>
+          {line.end}
+        </span>
       </span>
     </h1>
   );

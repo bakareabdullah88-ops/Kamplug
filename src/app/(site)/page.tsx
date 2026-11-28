@@ -113,11 +113,12 @@ const btn = {
 };
 
 /** "SEE MORE →" link under each feature card. */
-function SeeMore({ href }: { href: string }) {
+function SeeMore({ href, color }: { href: string; color: string }) {
   return (
     <Link
       href={href}
-      className="group mt-6 inline-flex items-center gap-2 text-[14px] font-extrabold tracking-[0.2em] text-[#d63426] uppercase"
+      style={{ color }}
+      className="group mt-6 inline-flex items-center gap-2 text-[14px] font-extrabold tracking-[0.2em] uppercase"
     >
       See more
       <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -248,7 +249,7 @@ export default function LandingPage() {
           <div className="mx-auto grid max-w-[1240px] items-end gap-10 md:grid-cols-2">
             <Reveal from="top" className="md:order-2 md:pb-28">
               <h2 className={h2}>
-                Open a shop for <span className="text-[#b42a20]">₦0</span>
+                Open a shop for <span className="text-[#1e7f46]">₦0</span>
               </h2>
               <p className="mt-5 max-w-md text-[18px] leading-snug md:text-[20px]">
                 No setup fee and no monthly fee. Set where you sell from, list your products and
@@ -270,18 +271,21 @@ export default function LandingPage() {
             {[
               {
                 title: "Start selling",
+                color: "#b4500a",
                 body: "Cook, thrift or sell gadgets and books? Open a shop in minutes and reach every student on your campus.",
                 href: sellHref,
                 panel: <SellPanel className="h-full w-full" />,
               },
               {
                 title: "Shop your campus",
+                color: "#1e7f46",
                 body: "Shops nearest you come first, with the walk time. Order in a few taps and track it to your hall.",
                 href: signupHref,
                 panel: <ShopPanel className="h-full w-full" />,
               },
               {
                 title: "Track every order",
+                color: "#6b3fc4",
                 body: "See each step from the shop to your hall, and message the seller in the same place.",
                 href: signupHref,
                 panel: (
@@ -291,7 +295,7 @@ export default function LandingPage() {
                         <span
                           className={cn(
                             "size-3 shrink-0 rounded-full",
-                            n < 3 ? "bg-[#d63426]" : "bg-[#1f1a17]/20",
+                            n < 3 ? "bg-[#6b3fc4]" : "bg-[#1f1a17]/20",
                           )}
                         />
                         <span
@@ -303,7 +307,7 @@ export default function LandingPage() {
                           {step}
                         </span>
                         {n === 2 && (
-                          <span className="ml-auto text-[13px] font-semibold text-[#d63426]">
+                          <span className="ml-auto text-[13px] font-semibold text-[#6b3fc4]">
                             About 12 min
                           </span>
                         )}
@@ -324,7 +328,7 @@ export default function LandingPage() {
                     {c.title}
                   </h3>
                   <p className="mt-4 text-[17px] leading-relaxed">{c.body}</p>
-                  <SeeMore href={c.href} />
+                  <SeeMore href={c.href} color={c.color} />
                 </div>
                 <div className="h-[220px]">{c.panel}</div>
               </Reveal>
@@ -340,7 +344,7 @@ export default function LandingPage() {
           <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 md:grid-cols-2">
             <Reveal from="top">
               <h2 className={h2}>
-                Delivered to <span className="text-[#a8321b]">your hall</span>
+                Delivered to <span className="text-[#6b3fc4]">your hall</span>
               </h2>
               <p className="mt-5 max-w-lg text-[18px] leading-snug md:text-[20px]">
                 Shops deliver to your hall or faculty, or meet you at a pickup spot like the Main
@@ -395,7 +399,10 @@ export default function LandingPage() {
                   delay={i * 140}
                   className="rounded-[26px] bg-white p-8 ring-1 ring-[#1f1a17]/10"
                 >
-                  <span className="grid size-12 place-items-center rounded-xl bg-[#1f1a17] text-[20px] font-bold text-white">
+                  <span
+                    className="grid size-12 place-items-center rounded-xl text-[20px] font-bold text-white"
+                    style={{ background: ["#b4500a", "#1e7f46", "#6b3fc4"][i] }}
+                  >
                     {s.n}
                   </span>
                   <h3 className="mt-6 text-[24px] font-extrabold tracking-[-0.03em]">{s.title}</h3>
@@ -407,7 +414,7 @@ export default function LandingPage() {
         </section>
 
         {/* Be the plug: a full-width cobalt band */}
-        <section className="relative overflow-hidden bg-[#d63426] px-5 py-20 text-center text-white md:py-28">
+        <section className="relative overflow-hidden bg-[#6b3fc4] px-5 py-20 text-center text-white md:py-28">
           <Reveal from="top" className="relative mx-auto max-w-3xl">
             <h2 className={h2}>Be the plug</h2>
             <p className="mx-auto mt-4 max-w-lg text-[18px] leading-snug md:text-[20px]">

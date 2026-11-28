@@ -46,7 +46,7 @@
   /* Warm supporting colours: one per category, for icons, tiles and highlights.
      Vivid values are for fills behind dark or white shapes; the -ink values are safe for text. */
   --warm-orange: #ff8a3d;
-  --warm-orange-ink: #c2570c;
+  --warm-orange-ink: #b4500a;
   --warm-lime: #a3d63c;
   --warm-lime-ink: #4d7c0f;
   --warm-green: #22a060;
